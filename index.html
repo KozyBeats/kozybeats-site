@@ -3,222 +3,280 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kozybeats Lofi Player</title>
+  <title>Kozybeats | Lofi Player</title>
   <style>
-    html, body {
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
       margin: 0;
       padding: 0;
-      height: 100%;
-      font-family: 'Segoe UI', sans-serif;
+      height:  100%;
       overflow: hidden;
+      font-family: 'Segoe UI', sans-serif;
       background: #111;
       color: #fff;
     }
-
-    #background-video {
+    video.bg-video {
       position: fixed;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
       object-fit: cover;
+      filter: blur(10px) brightness(0.4);
       z-index: -3;
-      filter: blur(8px) brightness(0.6);
     }
-
-    .main-layout {
+    .overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: -2;
+      background-image: radial-gradient(white 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.05;
+    }
+    .container {
       display: flex;
       height: 100vh;
-      flex-direction: row;
+      width: 100%;
     }
-
-    .project-list, .track-list {
-      padding: 20px;
-      background: rgba(0, 0, 0, 0.5);
-      height: 100%;
+    .sidebar, .tracklist {
+      width: 20%;
+      padding: 15px;
+      background: rgba(0,0,0,0.3);
       overflow-y: auto;
     }
-
-    .project-list {
-      width: 20%;
+    .sidebar {
       border-right: 1px solid #444;
     }
-
-    .track-list {
-      width: 25%;
+    .tracklist {
       border-left: 1px solid #444;
     }
-
-    .player-area {
+    .content {
       flex-grow: 1;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
       padding: 20px;
-      position: relative;
     }
-
-    .cover-btn {
-      display: block;
-      margin-bottom: 15px;
-      cursor: pointer;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-
-    .cover-btn img {
+    .cover-button img {
       width: 100%;
-      border-radius: 10px;
-      display: block;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-bottom: 15px;
     }
-
-    .track-btn {
-      background: rgba(255, 255, 255, 0.05);
+    .track-button {
+      background: rgba(255,255,255,0.1);
       border: none;
       color: #fff;
-      padding: 10px;
-      margin-bottom: 10px;
-      width: 100%;
+      padding: 12px;
       border-radius: 8px;
       text-align: left;
       cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
     }
-
-    .track-btn:hover, .track-btn.active {
-      background: rgba(255, 255, 255, 0.15);
+    .track-button:hover, .track-button.active {
+      background: rgba(255,255,255,0.25);
     }
-
-    .player-controls {
+    .player-bar {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      background: rgba(0, 0, 0, 0.5);
+      gap: 20px;
       padding: 20px;
-      border-radius: 20px;
+      background: rgba(0,0,0,0.4);
+      border-radius: 16px;
+      width: 100%;
     }
-
-    .track-info {
-      flex-grow: 1;
-    }
-
-    .vinyl-container {
+    .vinyl-box {
       width: 80px;
       height: 80px;
       border-radius: 50%;
       overflow: hidden;
-      margin-right: 20px;
       flex-shrink: 0;
     }
-
     .vinyl {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      border-radius: 50%;
       animation: spin 5s linear infinite;
+      border-radius: 50%;
     }
-
-    .no-spin {
-      animation: none;
-    }
-
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {transform: rotate(0deg);}
+      100% {transform: rotate(360deg);}
     }
-
-    .buttons {
-      display: flex;
-      gap: 10px;
+    .track-info {
+      flex-grow: 1;
     }
-
-    .buttons button {
-      background: #444;
+    .controls button {
+      background: none;
       border: none;
-      padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
       color: white;
+      font-size: 20px;
+      cursor: pointer;
+      margin: 0 5px;
     }
-
     .spotify-btn {
-      background: #1DB954;
-      color: #fff;
-      padding: 8px 14px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      display: inline-block;
       margin-left: 15px;
+      background: #1DB954;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      color: white;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
-  <video id="background-video" autoplay muted loop>
-    <source src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4" type="video/mp4">
-  </video>
 
-  <div class="main-layout">
-    <div class="project-list" id="projectList"></div>
-    <div class="player-area">
-      <div class="player-controls">
-        <div class="vinyl-container">
-          <img src="" id="vinyl" class="vinyl no-spin" alt="Vinyl" />
-        </div>
-        <div class="track-info">
-          <div id="trackTitle">Now Playing: -</div>
-          <a id="spotifyLink" href="#" target="_blank" class="spotify-btn" style="display:none;">Open in Spotify</a>
-        </div>
-        <div class="buttons">
-          <button id="prevBtn">⏮</button>
-          <button id="playPauseBtn">▶️</button>
-          <button id="nextBtn">⏭</button>
-        </div>
+<video class="bg-video" autoplay muted loop>
+  <source src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4" type="video/mp4">
+</video>
+<div class="overlay"></div>
+
+<div class="container">
+  <div class="sidebar" id="projectList"></div>
+  <div class="content">
+    <div class="player-bar">
+      <div class="vinyl-box">
+        <img id="vinyl" class="vinyl" src="" alt="Vinyl" />
       </div>
-      <audio id="audioPlayer" preload="auto"></audio>
+      <div class="track-info">
+        <div id="nowPlaying">Now Playing: -</div>
+        <a id="spotifyLink" href="#" class="spotify-btn" target="_blank" style="display: none;">Open in Spotify</a>
+      </div>
+      <div class="controls">
+        <button id="prev">⏮</button>
+        <button id="playPause">▶️</button>
+        <button id="next">⏭</button>
+        <button id="shuffle">🔀</button>
+        <button id="repeat">🔁</button>
+      </div>
     </div>
-    <div class="track-list" id="trackList"></div>
+    <audio id="audio" preload="auto"></audio>
   </div>
+  <div class="tracklist" id="trackList"></div>
+</div>
 
-  <script>
-    const projects = {
-      pillowcore: {
-        title: "Pillowcore Radio",
-        cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png",
-        tracks: [
-          { title: "Ceiling Fan Dreams", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3", spotify: "#" },
-          { title: "Curtains Closed", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3", spotify: "#" },
-          { title: "Dream Archive", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3", spotify: "#" },
-          { title: "Glow Sink", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3", spotify: "#" },
-          { title: "Lavender Shadows", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3", spotify: "#" },
-          { title: "Midnight Left on Read", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3", spotify: "#" },
-          { title: "Moonlit Linen", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3", spotify: "#" },
-          { title: "Paper Walls", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3", spotify: "#" },
-          { title: "Rain on 4th Street", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3", spotify: "#" },
-          { title: "Snooze Signal", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3", spotify: "#" },
-          { title: "Warm Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3", spotify: "#" },
-          { title: "Whispers in Blue", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3", spotify: "#" }
-        ]
-      },
-      evening: {
-        title: "Evening Static",
-        cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229102/056f89b5bdd7b2944636c4e480196abe_1_bhyub6.jpg",
-        tracks: [
-          { title: "Curtains Breathing Slow", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Curtains_Breathing_Slow_si8vdi.mp3", spotify: "#" },
-          { title: "Heard My Name in the Hiss", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Heard_My_Name_in_the_Hiss_yi1jfb.mp3", spotify: "#" },
-          { title: "Stayed Just Long Enough", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229136/Stayed_Just_Long_Enough_wlkxsb.mp3", spotify: "#" },
-          { title: "Memories on the Window Glass", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229137/Memories_on_the_Window_Glass_uw4vxm.mp3", spotify: "#" },
-          { title: "TV Snow in My Mind", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229138/TV_Snow_in_My_Mind_oxtsqi.mp3", spotify: "#" },
-          { title: "Pages Left Open", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/Pages_Left_Open_r4bxvz.mp3", spotify: "#" },
-          { title: "The Fan Still Spins", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/The_Fan_Still_Spins_qba31z.mp3", spotify: "#" },
-          { title: "When the Floorboard Creaked", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/When_the_Floorboard_Creaked_ljcd2m.mp3", spotify: "#" },
-          { title: "A Thread Pulled from the Moon", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/A_Thread_Pulled_from_the_Moon_kqjhdq.mp3", spotify: "#" },
-          { title: "Between the Glow and the Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3", spotify: "#" }
-        ]
-      }
-    };
+<script>
 
-    // Remaining JS logic unchanged...
-  </script>
+let currentProject = 'Pillowcore Radio';
+let currentTrackIndex = 0;
+let isPlaying = false;
+let repeat = false;
+let shuffle = false;
+
+const audio = document.getElementById('audio');
+const vinyl = document.getElementById('vinyl');
+const nowPlaying = document.getElementById('nowPlaying');
+const spotifyLink = document.getElementById('spotifyLink');
+
+function loadProjects() {
+  const projectList = document.getElementById('projectList');
+  projectList.innerHTML = '';
+  for (let key in projects) {
+    const cover = projects[key].cover;
+    const button = document.createElement('div');
+    button.className = 'cover-button';
+    button.innerHTML = `<img src="${cover}" alt="${key}" onclick="switchProject('${key}')" />`;
+    projectList.appendChild(button);
+  }
+}
+
+function switchProject(projectName) {
+  currentProject = projectName;
+  renderTracklist();
+}
+
+function renderTracklist() {
+  const trackList = document.getElementById('trackList');
+  trackList.innerHTML = '';
+  projects[currentProject].tracks.forEach((track, index) => {
+    const btn = document.createElement('button');
+    btn.className = 'track-button';
+    btn.textContent = track.title;
+    btn.onclick = () => playTrack(index);
+    if (index === currentTrackIndex && isPlaying) btn.classList.add('active');
+    trackList.appendChild(btn);
+  });
+}
+
+function playTrack(index) {
+  currentTrackIndex = index;
+  const track = projects[currentProject].tracks[index];
+  audio.src = track.url;
+  audio.play();
+  isPlaying = true;
+  updateUI();
+}
+
+function updateUI() {
+  const track = projects[currentProject].tracks[currentTrackIndex];
+  nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
+  vinyl.src = projects[currentProject].cover;
+  spotifyLink.href = `https://open.spotify.com/search/${encodeURIComponent("Kozybeats " + track.title)}`;
+  spotifyLink.style.display = 'inline-block';
+  renderTracklist();
+}
+
+document.getElementById('playPause').onclick = () => {
+  if (isPlaying) {
+    audio.pause();
+    isPlaying = false;
+    document.getElementById('playPause').textContent = '▶️';
+  } else {
+    audio.play();
+    isPlaying = true;
+    document.getElementById('playPause').textContent = '⏸️';
+  }
+};
+
+document.getElementById('next').onclick = () => {
+  if (shuffle) {
+    playTrack(Math.floor(Math.random() * projects[currentProject].tracks.length));
+  } else {
+    currentTrackIndex = (currentTrackIndex + 1) % projects[currentProject].tracks.length;
+    playTrack(currentTrackIndex);
+  }
+};
+
+document.getElementById('prev').onclick = () => {
+  currentTrackIndex = (currentTrackIndex - 1 + projects[currentProject].tracks.length) % projects[currentProject].tracks.length;
+  playTrack(currentTrackIndex);
+};
+
+document.getElementById('repeat').onclick = () => {
+  repeat = !repeat;
+  document.getElementById('repeat').style.color = repeat ? 'lime' : 'white';
+};
+
+document.getElementById('shuffle').onclick = () => {
+  shuffle = !shuffle;
+  document.getElementById('shuffle').style.color = shuffle ? 'lime' : 'white';
+};
+
+audio.addEventListener('ended', () => {
+  if (repeat) {
+    playTrack(currentTrackIndex);
+  } else if (shuffle) {
+    playTrack(Math.floor(Math.random() * projects[currentProject].tracks.length));
+  } else {
+    if (currentTrackIndex < projects[currentProject].tracks.length - 1) {
+      playTrack(currentTrackIndex + 1);
+    }
+  }
+});
+
+// Initial setup
+loadProjects();
+renderTracklist();
+updateUI();
+
+</script>
+
 </body>
 </html>
