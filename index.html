@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kozybeats - Pillowcore</title>
+  <title>Kozybeats - Pillowcore Radio</title>
 
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins&display=swap" rel="stylesheet" />
@@ -33,7 +33,7 @@
       pointer-events: none;
     }
 
-    /* Particle container over background but behind main content */
+    /* Particle container */
     #particles {
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
@@ -41,58 +41,124 @@
       z-index: 1;
     }
 
-    /* Main content container */
+    /* Main container */
     #main-content {
       position: relative;
       z-index: 2;
-      max-width: 360px;
+      max-width: 900px;
       margin: 50px auto 80px auto;
       background: #fff8f0;
       border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 0 20px rgba(150, 100, 50, 0.25);
+      padding: 30px 40px;
+      box-shadow: 0 0 25px rgba(150, 100, 50, 0.25);
       user-select: none;
-      text-align: center;
+      display: flex;
+      gap: 40px;
+      color: #5a3e1a;
     }
 
-    /* Fonts */
-    h2 {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 600;
-      font-size: 28px;
-      margin-bottom: 15px;
-      color: #6a4f3a;
-      user-select: text;
+    /* Left side: cover + vinyl */
+    #left-side {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+
+    /* Vinyl container */
+    #vinyl-container {
+      width: 200px;
+      height: 200px;
+      margin-bottom: 30px;
+      position: relative;
+      user-select: none;
+      z-index: 3;
+    }
+    #vinyl {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #5a3e1a 0%, #3c2a0e 70%, #2c1e08 100%);
+      border: 15px solid #7c5d33;
+      box-shadow: inset 0 0 40px #3c2a0e;
+      animation: spin 20s linear infinite;
+      position: relative;
+      margin: 0 auto;
+    }
+    #vinyl::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80px;
+      height: 80px;
+      background: #d6c1a1;
+      border-radius: 50%;
+      box-shadow: inset 0 0 15px #b39e7e;
+      border: 4px solid #a98b63;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg);}
+      to { transform: rotate(360deg);}
     }
 
     /* Cover image */
     #cover {
       width: 100%;
+      max-width: 280px;
       border-radius: 16px;
-      margin-bottom: 15px;
-      box-shadow: 0 0 10px rgba(150, 100, 50, 0.15);
+      box-shadow: 0 0 15px rgba(150, 100, 50, 0.15);
       user-select: none;
     }
 
-    /* Now playing */
-    #nowPlaying {
+    /* Right side: tracks + player */
+    #right-side {
+      flex: 1.4;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+    }
+
+    h2 {
       font-family: 'Montserrat', sans-serif;
       font-weight: 600;
-      margin-bottom: 15px;
+      font-size: 32px;
+      margin-bottom: 20px;
       color: #6a4f3a;
       user-select: text;
     }
 
-    /* Audio player */
+    #nowPlaying {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      margin-bottom: 20px;
+      font-size: 20px;
+      color: #6a4f3a;
+      user-select: text;
+      min-height: 26px;
+    }
+
     audio {
       width: 100%;
-      border-radius: 10px;
+      border-radius: 12px;
       outline: none;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
       user-select: none;
     }
 
-    /* Tracklist buttons */
+    /* Tracklist styling */
+    .tracklist-section {
+      margin-bottom: 30px;
+    }
+    .tracklist-section h3 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: #7a5f3d;
+    }
     .tracklist button {
       display: block;
       width: 100%;
@@ -100,7 +166,7 @@
       border: none;
       border-radius: 10px;
       padding: 12px 15px;
-      margin: 8px 0;
+      margin: 6px 0;
       font-family: 'Poppins', sans-serif;
       font-size: 16px;
       color: #5a3e1a;
@@ -112,95 +178,82 @@
       background: #a98b63;
     }
 
-    /* Vinyl container */
-    #vinyl-container {
-      width: 150px;
-      height: 150px;
-      margin: 0 auto 25px auto;
-      position: relative;
-      user-select: none;
-      z-index: 3;
-    }
-
-    /* Vinyl disc */
-    #vinyl {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      background: radial-gradient(circle at center, #5a3e1a 0%, #3c2a0e 70%, #2c1e08 100%);
-      border: 10px solid #7c5d33;
-      box-shadow: inset 0 0 30px #3c2a0e;
-      animation: spin 20s linear infinite;
-      position: relative;
-      margin: 0 auto;
-    }
-
-    /* Vinyl center label */
-    #vinyl::before {
-      content: "";
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 60px;
-      height: 60px;
-      background: #d6c1a1;
-      border-radius: 50%;
-      box-shadow: inset 0 0 10px #b39e7e;
-      border: 3px solid #a98b63;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg);}
-      to { transform: rotate(360deg);}
-    }
-
-    /* Particle style */
-    .particle {
-      position: absolute;
-      background: rgba(170, 140, 90, 0.3);
-      border-radius: 50%;
-      opacity: 0.7;
-      filter: blur(1px);
-      will-change: transform;
-      animation-timing-function: linear;
+    /* Responsive tweaks */
+    @media (max-width: 800px) {
+      #main-content {
+        flex-direction: column;
+        max-width: 95%;
+        padding: 20px;
+      }
+      #left-side, #right-side {
+        flex: unset;
+        width: 100%;
+      }
+      #vinyl-container {
+        margin-bottom: 20px;
+        width: 150px;
+        height: 150px;
+      }
+      #vinyl {
+        width: 150px;
+        height: 150px;
+        border-width: 10px;
+      }
+      #vinyl::before {
+        width: 60px;
+        height: 60px;
+        border-width: 3px;
+      }
+      #cover {
+        max-width: 100%;
+        margin-bottom: 20px;
+      }
     }
   </style>
 </head>
 <body>
 
   <div id="background"></div>
-
   <div id="particles"></div>
 
-  <div id="main-content" role="main" aria-label="Music player and tracks">
+  <main id="main-content" role="main" aria-label="Pillowcore Radio Music Player">
 
-    <div id="vinyl-container">
-      <div id="vinyl"></div>
-    </div>
+    <section id="left-side" aria-label="Album cover and spinning vinyl">
+      <div id="vinyl-container">
+        <div id="vinyl"></div>
+      </div>
 
-    <img id="cover" src="https://dl.dropboxusercontent.com/s/keokbqixjjupv7v1bkx71/pillow-radio.png" alt="Pillowcore album cover by Kozybeats" />
+      <img id="cover" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png" alt="Pillowcore album cover by Kozybeats" />
+    </section>
 
-    <h2>Kozybeats - Pillowcore 🎧</h2>
+    <section id="right-side" aria-label="Music player and tracklist">
+      <h2>Kozybeats - Pillowcore Radio 🎧</h2>
 
-    <p id="nowPlaying">Now Playing: —</p>
+      <p id="nowPlaying">Now Playing: —</p>
 
-    <audio id="audioPlayer" controls autoplay></audio>
+      <audio id="audioPlayer" controls autoplay></audio>
 
-    <div class="tracklist">
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', 'Ceiling Fan Dreams')">Ceiling Fan Dreams</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3', 'Curtains Closed')">Curtains Closed</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3', 'Dream Archive')">Dream Archive</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3', 'Glow Sink')">Glow Sink</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3', 'Lavender Shadows')">Lavender Shadows</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3', 'Midnight Left on Read')">Midnight Left on Read</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3', 'Moonlit Linen')">Moonlit Linen</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3', 'Paper Walls')">Paper Walls</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3', 'Rain on 4th Street')">Rain on 4th Street</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3', 'Snooze Signal')">Snooze Signal</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3', 'Warm Silence')">Warm Silence</button>
-      <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3', 'Whispers in Blue')">Whispers in Blue</button>
-    </div>
-  </div>
+      <div class="tracklist-section" aria-label="All Pillowcore Radio tracks">
+        <h3>All Tracks</h3>
+        <div class="tracklist">
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', 'Ceiling Fan Dreams')">Ceiling Fan Dreams</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3', 'Curtains Closed')">Curtains Closed</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3', 'Dream Archive')">Dream Archive</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3', 'Glow Sink')">Glow Sink</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3', 'Lavender Shadows')">Lavender Shadows</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3', 'Midnight Left on Read')">Midnight Left on Read</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3', 'Moonlit Linen')">Moonlit Linen</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3', 'Paper Walls')">Paper Walls</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3', 'Rain on 4th Street')">Rain on 4th Street</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3', 'Snooze Signal')">Snooze Signal</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3', 'Warm Silence')">Warm Silence</button>
+          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3', 'Whispers in Blue')">Whispers in Blue</button>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
 
   <script>
     // Audio player logic
