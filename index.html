@@ -24,190 +24,323 @@
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     object-fit: cover;
-    filter: blur(8px) brightness(0.7);
-    z-index: -2;
+    filter: blur(8px) brightness(0.65);
+    z-index: -3;
   }
+
+  /* Warm drifting particles on top */
   #particles-canvas {
     position: fixed;
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     pointer-events: none;
-    z-index: -1;
+    z-index: -2;
   }
 
   /* Layout containers */
   #container {
     display: grid;
-    grid-template-columns: 220px 1fr 300px;
-    grid-template-rows: 1fr 100px;
+    grid-template-columns: 220px 1fr 320px;
+    grid-template-rows: 1fr 120px;
     height: 100vh;
-    gap: 10px;
-    padding: 15px;
+    gap: 15px;
+    padding: 20px;
   }
 
-  /* Left sidebar (projects) */
+  /* Left sidebar (projects & singles) */
   #projects {
     grid-column: 1;
     grid-row: 1 / span 2;
-    background: rgba(20,20,20,0.85);
-    border-radius: 12px;
+    background: rgba(30, 30, 30, 0.85);
+    border-radius: 16px;
+    box-shadow: 0 0 20px #ffb86c77;
     overflow-y: auto;
-    padding: 10px;
+    padding: 15px 10px 25px 10px;
   }
   #projects h2 {
-    margin-top: 0; margin-bottom: 10px;
-    font-size: 1.25rem;
-    font-weight: 700;
+    margin-top: 0; margin-bottom: 15px;
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #ffb86c;
+    letter-spacing: 0.05em;
   }
   .project-item {
     display: flex;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 15px;
     cursor: pointer;
-    border-radius: 8px;
-    padding: 6px;
-    transition: background 0.3s ease;
+    border-radius: 12px;
+    padding: 8px 10px;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
   }
   .project-item:hover, .project-item.active {
-    background: #333;
+    background: #ffb86c22;
+    box-shadow: 0 0 8px #ffb86caa;
   }
   .project-item img {
     width: 50px;
     height: 50px;
-    border-radius: 6px;
+    border-radius: 8px;
     object-fit: cover;
-    margin-right: 10px;
+    margin-right: 12px;
     flex-shrink: 0;
+    border: 2px solid transparent;
+  }
+  .project-item.active img {
+    border-color: #ffb86c;
   }
   .project-item span {
-    font-size: 1rem;
-    user-select: none;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffb86c;
   }
 
-  /* Right sidebar (tracks) */
+  /* Right sidebar (tracklist) */
   #tracks {
     grid-column: 3;
     grid-row: 1 / span 2;
-    background: rgba(20,20,20,0.85);
-    border-radius: 12px;
-    padding: 15px;
+    background: rgba(30,30,30,0.85);
+    border-radius: 16px;
+    box-shadow: 0 0 20px #ffb86c77;
+    padding: 20px;
     overflow-y: auto;
   }
   #tracks h2 {
-    margin-top: 0; margin-bottom: 15px;
-    font-size: 1.3rem;
-    font-weight: 700;
+    margin-top: 0; margin-bottom: 20px;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffb86c;
+    letter-spacing: 0.05em;
   }
   .track-item {
-    background: #2b2b2b;
-    margin-bottom: 10px;
-    padding: 10px 12px;
-    border-radius: 20px;
+    background: #3a3a3a;
+    margin-bottom: 14px;
+    padding: 14px 18px;
+    border-radius: 30px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    user-select: none;
+    box-shadow: 0 0 5px transparent;
   }
-  .track-item:hover, .track-item.playing {
-    background: #444;
+  .track-item:hover {
+    background: #ffb86c33;
+    box-shadow: 0 0 10px #ffb86caa;
+  }
+  .track-item.playing {
+    background: #ffb86c55;
+    box-shadow: 0 0 15px #ffb86cdd;
+  }
+  .track-info {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    flex: 1;
+    margin-right: 12px;
   }
   .track-title {
-    user-select: none;
-    flex: 1;
-    margin-right: 10px;
+    font-weight: 700;
+    font-size: 1.1rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #fff;
+  }
+  .track-duration {
+    font-size: 0.85rem;
+    color: #ddd;
+    margin-top: 2px;
   }
   .track-controls {
     display: flex;
-    gap: 6px;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
   }
-  .track-button {
+  button.track-btn {
     background: transparent;
     border: none;
-    color: #ddd;
-    font-size: 1.1rem;
     cursor: pointer;
-    padding: 4px;
+    color: #ddd;
+    font-size: 1.3rem;
     transition: color 0.2s ease;
   }
-  .track-button:hover {
+  button.track-btn:hover:not(:disabled) {
     color: #ffb86c;
+  }
+  button.track-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
   }
 
   /* Bottom player bar */
   #player-bar {
     grid-column: 1 / span 3;
     grid-row: 2;
-    background: rgba(20,20,20,0.9);
-    border-radius: 12px;
+    background: rgba(30, 30, 30, 0.95);
+    border-radius: 16px;
+    box-shadow: 0 0 20px #ffb86caa;
     display: flex;
     align-items: center;
-    padding: 10px 20px;
-    gap: 20px;
+    padding: 15px 30px;
+    gap: 25px;
   }
 
+  /* Vinyl Container */
   #vinyl-container {
-    width: 80px;
-    height: 80px;
+    width: 90px;
+    height: 90px;
     position: relative;
     flex-shrink: 0;
+    box-shadow: 0 0 15px #ffb86caa;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #222;
   }
   #vinyl {
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    animation: spin 10s linear infinite;
+    animation: spin 14s linear infinite;
     object-fit: cover;
-    box-shadow: 0 0 15px rgba(255, 184, 108, 0.7);
+    box-shadow: inset 0 0 8px #ffb86c88;
   }
   @keyframes spin {
     from { transform: rotate(0deg);}
     to { transform: rotate(360deg);}
   }
 
+  /* Now playing info */
   #now-playing-info {
     flex: 1;
     color: #ffb86c;
-    font-weight: 600;
-    font-size: 1.1rem;
+    font-weight: 700;
+    font-size: 1.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     user-select: none;
   }
 
-  #controls {
+  /* Playback progress bar and times */
+  #progress-container {
+    flex-shrink: 0;
+    width: 280px;
     display: flex;
     align-items: center;
     gap: 10px;
+    color: #ddd;
+    font-size: 0.85rem;
+    user-select: none;
+  }
+  #current-time, #duration {
+    width: 40px;
+    text-align: center;
+  }
+  #progress-bar {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background: #444;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  #progress-bar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #ffb86c;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -4px;
+    box-shadow: 0 0 5px #ffb86ccc;
+  }
+  #progress-bar::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #ffb86c;
+    border-radius: 50%;
+    cursor: pointer;
   }
 
+  /* Controls container */
+  #controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+
+  /* Proper styled buttons for playback */
   button.control-btn {
     background: none;
-    border: none;
-    color: #ddd;
-    font-size: 1.7rem;
+    border: 2.5px solid #ffb86c;
+    color: #ffb86c;
+    font-size: 22px;
+    font-weight: 700;
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
     cursor: pointer;
-    transition: color 0.25s ease;
+    transition: all 0.25s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    user-select: none;
   }
   button.control-btn:hover {
-    color: #ffb86c;
+    background: #ffb86c;
+    color: #222;
+    box-shadow: 0 0 10px #ffb86caa;
   }
   button.control-btn:focus {
     outline: none;
+    box-shadow: 0 0 14px #ffb86cff;
   }
 
-  /* Volume control */
+  /* Volume slider & mute */
   #volume-container {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #ddd;
+    gap: 12px;
     user-select: none;
   }
   #volume-slider {
-    width: 120px;
+    width: 130px;
     cursor: pointer;
+    -webkit-appearance: none;
+    height: 6px;
+    background: #444;
+    border-radius: 4px;
+    transition: background 0.3s ease;
+  }
+  #volume-slider:hover {
+    background: #666;
+  }
+  #volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: #ffb86c;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 8px #ffb86ccc;
+    margin-top: -5px;
+  }
+  #volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: #ffb86c;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  #btn-mute {
+    width: 44px;
   }
 
   /* Ambience toggle panel */
@@ -215,48 +348,56 @@
     position: fixed;
     top: 15px;
     right: 15px;
-    background: rgba(20,20,20,0.9);
-    border-radius: 12px;
-    padding: 15px;
-    max-width: 280px;
+    background: rgba(30,30,30,0.95);
+    border-radius: 18px;
+    padding: 20px 20px 30px 20px;
+    max-width: 300px;
     max-height: 80vh;
     overflow-y: auto;
-    box-shadow: 0 0 20px rgba(255, 184, 108, 0.5);
+    box-shadow: 0 0 25px #ffb86caa;
+    font-weight: 600;
+    user-select: none;
+    color: #ffb86c;
+    z-index: 9999;
+    font-size: 1.05rem;
   }
   #ambience-container h3 {
     margin-top: 0;
+    font-weight: 900;
     color: #ffb86c;
-    font-weight: 700;
   }
   .ambience-sound {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+    margin-bottom: 18px;
+    gap: 12px;
   }
   .ambience-label {
     flex: 1;
     color: #ddd;
-    user-select: none;
   }
   .ambience-toggle {
-    margin-right: 10px;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
   }
   .ambience-volume {
-    width: 90px;
+    width: 110px;
+    cursor: pointer;
   }
 
-  /* Scrollbars */
+  /* Scrollbars for sidebars and ambience */
   #projects::-webkit-scrollbar,
   #tracks::-webkit-scrollbar,
   #ambience-container::-webkit-scrollbar {
-    width: 8px;
+    width: 9px;
   }
   #projects::-webkit-scrollbar-thumb,
   #tracks::-webkit-scrollbar-thumb,
   #ambience-container::-webkit-scrollbar-thumb {
-    background-color: #ffb86c88;
-    border-radius: 4px;
+    background-color: #ffb86ccc;
+    border-radius: 5px;
   }
   #projects::-webkit-scrollbar-track,
   #tracks::-webkit-scrollbar-track,
@@ -264,6 +405,12 @@
     background: transparent;
   }
 </style>
+
+<!-- Use FontAwesome for button icons -->
+<link
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+  rel="stylesheet"
+/>
 </head>
 <body>
 
@@ -273,52 +420,72 @@
   Your browser does not support the video tag.
 </video>
 
-<!-- Canvas for drifting particles -->
+<!-- Particles canvas -->
 <canvas id="particles-canvas"></canvas>
 
 <div id="container">
 
-  <!-- Projects list -->
+  <!-- Projects & Singles Left Sidebar -->
   <aside id="projects">
     <h2>Projects & Singles</h2>
   </aside>
 
-  <!-- Empty center area for possible future use -->
+  <!-- Empty center for future use -->
   <main id="main-content"></main>
 
-  <!-- Tracks list -->
+  <!-- Tracklist Right Sidebar -->
   <aside id="tracks">
     <h2>Tracks</h2>
     <div id="track-list"></div>
   </aside>
 
-  <!-- Bottom player bar -->
+  <!-- Player bar bottom -->
   <section id="player-bar">
     <div id="vinyl-container">
       <img id="vinyl" src="" alt="Vinyl Cover" />
     </div>
     <div id="now-playing-info">Nothing playing</div>
-    <div id="controls">
-      <button id="btn-prev" class="control-btn" title="Previous Track" aria-label="Previous Track">⏮️</button>
-      <button id="btn-play" class="control-btn" title="Play/Pause" aria-label="Play/Pause">▶️</button>
-      <button id="btn-next" class="control-btn" title="Next Track" aria-label="Next Track">⏭️</button>
-      <button id="btn-shuffle" class="control-btn" title="Shuffle" aria-label="Shuffle">🔀</button>
-      <button id="btn-repeat" class="control-btn" title="Repeat" aria-label="Repeat">🔁</button>
-      <button id="btn-ambience-toggle" class="control-btn" title="Toggle Ambience Panel" aria-label="Toggle Ambience Panel">🎧</button>
-      <button id="btn-mute" class="control-btn" title="Mute/Unmute" aria-label="Mute/Unmute">🔈</button>
+
+    <div id="progress-container">
+      <span id="current-time">0:00</span>
+      <input type="range" id="progress-bar" min="0" max="100" value="0" />
+      <span id="duration">0:00</span>
     </div>
+
+    <div id="controls">
+      <button id="btn-prev" class="control-btn" title="Previous Track" aria-label="Previous Track">
+        <i class="fa-solid fa-backward"></i>
+      </button>
+      <button id="btn-play" class="control-btn" title="Play/Pause" aria-label="Play/Pause">
+        <i class="fa-solid fa-play"></i>
+      </button>
+      <button id="btn-next" class="control-btn" title="Next Track" aria-label="Next Track">
+        <i class="fa-solid fa-forward"></i>
+      </button>
+      <button id="btn-shuffle" class="control-btn" title="Shuffle" aria-label="Shuffle">
+        <i class="fa-solid fa-shuffle"></i>
+      </button>
+      <button id="btn-repeat" class="control-btn" title="Repeat" aria-label="Repeat">
+        <i class="fa-solid fa-repeat"></i>
+      </button>
+      <button id="btn-ambience-toggle" class="control-btn" title="Toggle Ambience Panel" aria-label="Toggle Ambience Panel">
+        <i class="fa-solid fa-headphones-simple"></i>
+      </button>
+      <button id="btn-mute" class="control-btn" title="Mute/Unmute" aria-label="Mute/Unmute">
+        <i class="fa-solid fa-volume-high"></i>
+      </button>
+    </div>
+
     <div id="volume-container">
       <label for="volume-slider">Volume</label>
       <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.7" />
     </div>
   </section>
-
 </div>
 
-<!-- Ambience sound controls panel -->
+<!-- Ambience panel -->
 <section id="ambience-container" style="display:none;">
   <h3>Ambience Sounds</h3>
-  <!-- dynamically generated ambience controls here -->
 </section>
 
 <script>
@@ -330,60 +497,58 @@
       name: 'Pillowcore Radio',
       cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png',
       tracks: [
-        { title: 'Glow Sink', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3', spotify: '' },
-        { title: 'Paper Walls', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3', spotify: '' },
-        { title: 'Lavender Shadows', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3', spotify: '' },
-        { title: 'Snooze Signal', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3', spotify: '' },
-        { title: 'Dream Archive', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3', spotify: '' },
-        { title: 'Warm Silence', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3', spotify: '' },
-        { title: 'Curtains Closed', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3', spotify: '' },
-        { title: 'Ceiling Fan Dreams', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', spotify: '' },
-        { title: 'Whispers in Blue', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3', spotify: '' },
-        { title: 'Rain on 4th Street', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3', spotify: '' },
-        { title: 'Moonlit Linen', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3', spotify: '' },
-        { title: 'Midnight Left on Read', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3', spotify: '' },
-      ],
+        { title: 'Soft Sunlight', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229062/soft_sunlight_mhdm0a.mp3', spotify: '' , duration: 175},
+        { title: 'Cloud Drift', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229099/cloud_drift_tyr8tt.mp3', spotify: '' , duration: 162},
+        { title: 'Late Night Coffee', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229104/late_night_coffee_ry6vbf.mp3', spotify: '', duration: 180 },
+        { title: 'Window View', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229106/window_view_zv7xyy.mp3', spotify: '', duration: 210 },
+        { title: 'Daydream Pause', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229113/daydream_pause_ixvqxq.mp3', spotify: '', duration: 195 },
+        { title: 'Quiet Streets', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229119/quiet_streets_l6wxbt.mp3', spotify: '', duration: 200 },
+        { title: 'Cozy Nook', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229121/cozy_nook_dgnbhb.mp3', spotify: '', duration: 188 },
+        { title: 'Softly Spoken', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229123/softly_spoken_rw68qv.mp3', spotify: '', duration: 172 },
+        { title: 'Midnight Train', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229129/midnight_train_u5mq6k.mp3', spotify: '', duration: 220 },
+        { title: 'Last Page', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229132/last_page_dhqwxy.mp3', spotify: '', duration: 199 },
+        { title: 'Farewell Kiss', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229135/farewell_kiss_n1fj1u.mp3', spotify: '', duration: 180 },
+        { title: 'Soft Glow', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229137/soft_glow_vzcnfj.mp3', spotify: '', duration: 210 }
+      ]
     },
     {
-      id: 'eveningstatic',
+      id: 'evening-static',
       name: 'Evening Static',
       cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229102/056f89b5bdd7b2944636c4e480196abe_1_bhyub6.jpg',
       tracks: [
-        { title: 'Curtains Breathing Slow', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Curtains_Breathing_Slow_si8vdi.mp3', spotify: '' },
-        { title: 'Heard My Name in the Hiss', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Heard_My_Name_in_the_Hiss_yi1jfb.mp3', spotify: '' },
-        { title: 'Stayed Just Long Enough', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229136/Stayed_Just_Long_Enough_wlkxsb.mp3', spotify: '' },
-        { title: 'Memories on the Window Glass', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229137/Memories_on_the_Window_Glass_uw4vxm.mp3', spotify: '' },
-        { title: 'TV Snow in My Mind', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229138/TV_Snow_in_My_Mind_oxtsqi.mp3', spotify: '' },
-        { title: 'Pages Left Open', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/Pages_Left_Open_r4bxvz.mp3', spotify: '' },
-        { title: 'The Fan Still Spins', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/The_Fan_Still_Spins_qba31z.mp3', spotify: '' },
-        { title: 'When the Floorboard Creaked', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/When_the_Floorboard_Creaked_ljcd2m.mp3', spotify: '' },
-        { title: 'A Thread Pulled from the Moon', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/A_Thread_Pulled_from_the_Moon_kqjhdq.mp3', spotify: '' },
-        { title: 'Between the Glow and the Silence', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3', spotify: '' },
-      ],
+        { title: 'Curtains Breathing Slow', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229119/curtains_breathing_slow.mp3', spotify: '', duration: 185},
+        { title: 'Heard My Name in the Hiss', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229122/heard_my_name_in_the_hiss.mp3', spotify: '', duration: 210},
+        { title: 'Stayed Just Long Enough', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229125/stayed_just_long_enough.mp3', spotify: '', duration: 195},
+        { title: 'Memories on the Window Glass', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229127/memories_on_the_window_glass.mp3', spotify: '', duration: 205},
+        { title: 'TV Snow in My Mind', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229130/tv_snow_in_my_mind.mp3', spotify: '', duration: 198},
+        { title: 'Pages Left Open', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229133/pages_left_open.mp3', spotify: '', duration: 185},
+        { title: 'The Fan Still Spins', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229136/fan_still_spins.mp3', spotify: '', duration: 180},
+        { title: 'When the Floorboard Creaked', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/floorboard_creaked.mp3', spotify: '', duration: 215},
+        { title: 'A Thread Pulled from the Moon', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/thread_pulled_from_the_moon.mp3', spotify: '', duration: 205},
+        { title: 'Between the Glow and the Silence', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229144/between_the_glow_and_silence.mp3', spotify: '', duration: 210}
+      ]
     },
-    // Example single project:
     {
       id: 'singles',
       name: 'Singles',
-      cover: '',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229120/singles_cover_ytjmo2.png',
       tracks: [
-        { title: 'Single Track Example', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754230000/single_track_example.mp3', spotify: '' },
-        // add your singles here manually or later via code
-      ],
+        { title: 'Lofi Breeze', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/lofi_breeze.mp3', spotify: '', duration: 175},
+        { title: 'Midday Drift', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229141/midday_drift.mp3', spotify: '', duration: 182},
+        { title: 'Sunset Haze', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/sunset_haze.mp3', spotify: '', duration: 190}
+      ]
     }
   ];
 
-  /* --- AMBIENCE SOUNDS --- */
+  /* --- Ambience sounds */
   const ambienceSoundsData = [
     { id: 'rain', label: 'Rain', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236332/Rain_5_ommf7e.wav' },
     { id: 'vinyl', label: 'Vinyl Crackle', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236422/Vinyl_1_lrn7bh.wav' },
-    { id: 'coffee', label: 'Coffee Shop', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236698/sandwich-cafe-31183_wnkw8j.mp3' },
-    { id: 'fireplace', label: 'Fireplace Crackling', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236735/campfirefireplace-crackling-268525_bg9ksg.mp3' },
-    { id: 'wind', label: 'Soft Wind & Chimes', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236875/wind-blowing-sfx-12809_ptsspy.mp3' },
-    { id: 'city', label: 'City Night Ambiance', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236956/015965_city-night-56166_ebsgdp.mp3' },
-    { id: 'typing', label: 'Typing Sounds', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237017/typing-keyboard-sound-254462_t0ppdc.mp3' },
-    { id: 'birds', label: 'Birds Chirping', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237083/Outside_2_exboxa.wav' },
-    { id: 'ocean', label: 'Ocean Waves', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237120/Beach_2_r7t5yw.wav' }
+    { id: 'cafe', label: 'Cafe Ambience', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236698/sandwich-cafe-31183_wnkw8j.mp3' },
+    { id: 'fireplace', label: 'Campfire Fireplace', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236735/campfirefireplace-crackling-268525_bg9ksg.mp3' },
+    { id: 'wind', label: 'Wind Blowing', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236875/wind-blowing-sfx-12809_ptsspy.mp3' },
+    { id: 'city', label: 'City Night', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236956/015965_city-night-56166_ebsgdp.mp3' },
+    { id: 'typing', label: 'Typing Keyboard', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237017/typing-keyboard-sound-254462_t0ppdc.mp3' }
   ];
 
   /* --- STATE --- */
@@ -413,6 +578,9 @@
   const volumeSlider = document.getElementById('volume-slider');
   const ambienceContainer = document.getElementById('ambience-container');
   const btnAmbienceToggle = document.getElementById('btn-ambience-toggle');
+  const progressBar = document.getElementById('progress-bar');
+  const currentTimeDisplay = document.getElementById('current-time');
+  const durationDisplay = document.getElementById('duration');
 
   /* --- UTILS --- */
   function formatTime(seconds) {
@@ -444,8 +612,14 @@
       div.addEventListener('click', () => {
         if (currentProjectIndex !== i) {
           currentProjectIndex = i;
+          currentTrackIndex = 0; // Reset track when switching project
           renderProjects();
           renderTracks();
+          if (isPlaying) {
+            playTrack(currentTrackIndex);
+          } else {
+            updateUI();
+          }
         }
       });
 
@@ -462,21 +636,31 @@
     project.tracks.forEach((track, idx) => {
       const div = document.createElement('div');
       div.classList.add('track-item');
-      if (currentTrackIndex === idx && currentProjectIndex === currentProjectIndex && isPlaying) div.classList.add('playing');
+      if (currentTrackIndex === idx && isPlaying) div.classList.add('playing');
       div.dataset.index = idx;
+
+      const trackInfo = document.createElement('div');
+      trackInfo.classList.add('track-info');
 
       const title = document.createElement('div');
       title.classList.add('track-title');
       title.textContent = track.title;
+
+      const duration = document.createElement('div');
+      duration.classList.add('track-duration');
+      duration.textContent = formatTime(track.duration);
+
+      trackInfo.appendChild(title);
+      trackInfo.appendChild(duration);
 
       const controls = document.createElement('div');
       controls.classList.add('track-controls');
 
       // Play button
       const playBtn = document.createElement('button');
-      playBtn.classList.add('track-button');
+      playBtn.classList.add('track-btn');
       playBtn.title = 'Play this track';
-      playBtn.innerHTML = '▶️';
+      playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
       playBtn.addEventListener('click', e => {
         e.stopPropagation();
         playTrack(idx);
@@ -484,9 +668,9 @@
 
       // Spotify button (opens in new tab if link exists)
       const spotifyBtn = document.createElement('button');
-      spotifyBtn.classList.add('track-button');
+      spotifyBtn.classList.add('track-btn');
       spotifyBtn.title = 'Open on Spotify';
-      spotifyBtn.innerHTML = '🎵';
+      spotifyBtn.innerHTML = '<i class="fa-brands fa-spotify"></i>';
       spotifyBtn.disabled = !track.spotify;
       spotifyBtn.style.opacity = track.spotify ? '1' : '0.3';
       spotifyBtn.addEventListener('click', e => {
@@ -497,10 +681,9 @@
       controls.appendChild(playBtn);
       controls.appendChild(spotifyBtn);
 
-      div.appendChild(title);
+      div.appendChild(trackInfo);
       div.appendChild(controls);
 
-      // Clicking whole track also plays track
       div.addEventListener('click', () => playTrack(idx));
 
       tracksContainer.appendChild(div);
@@ -538,11 +721,13 @@
       nowPlayingInfo.textContent = `Paused: KozyBeats - ${track.title}`;
     }
 
-    // Vinyl cover changes to current track cover (fallback to project cover if no specific cover)
+    // Vinyl cover changes to current track cover (fallback to project cover if no track-specific cover)
     vinylImg.src = project.cover || 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png';
 
-    // Play/Pause button icon
-    btnPlay.textContent = isPlaying ? '⏸️' : '▶️';
+    // Play/Pause button icon toggle
+    btnPlay.innerHTML = isPlaying
+      ? '<i class="fa-solid fa-pause"></i>'
+      : '<i class="fa-solid fa-play"></i>';
 
     // Repeat button style
     btnRepeat.style.color = repeatTrack ? '#ffb86c' : '#ddd';
@@ -550,8 +735,13 @@
     // Shuffle button style
     btnShuffle.style.color = shuffle ? '#ffb86c' : '#ddd';
 
-    // Mute button icon
-    btnMute.textContent = isMuted ? '🔇' : '🔈';
+    // Mute button icon toggle
+    btnMute.innerHTML = isMuted
+      ? '<i class="fa-solid fa-volume-xmark"></i>'
+      : '<i class="fa-solid fa-volume-high"></i>';
+
+    // Update progress bar max to track duration
+    progressBar.max = track.duration || 0;
   }
 
   /* --- NEXT TRACK --- */
@@ -563,7 +753,7 @@
       currentTrackIndex++;
       if (currentTrackIndex >= project.tracks.length) {
         currentTrackIndex = 0;
-        // Move to next project automatically after project done
+        // Auto advance to next project after finishing current
         currentProjectIndex++;
         if (currentProjectIndex >= projects.length) currentProjectIndex = 0;
         renderProjects();
@@ -635,157 +825,198 @@
   });
   audio.addEventListener('ended', () => {
     if (repeatTrack) {
-      playTrack(currentTrackIndex);
+      audio.currentTime = 0;
+      audio.play();
     } else {
       nextTrack();
     }
   });
+  audio.addEventListener('timeupdate', () => {
+    progressBar.value = audio.currentTime;
+    currentTimeDisplay.textContent = formatTime(audio.currentTime);
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    durationDisplay.textContent = formatTime(audio.duration);
+    progressBar.max = audio.duration;
+  });
 
-  /* --- VOLUME CONTROL --- */
+  /* --- PROGRESS BAR SEEK --- */
+  progressBar.addEventListener('input', () => {
+    audio.currentTime = progressBar.value;
+  });
+
+  /* --- VOLUME CONTROLS --- */
   volumeSlider.addEventListener('input', () => {
     userVolume = volumeSlider.value;
-    audio.volume = isMuted ? 0 : userVolume;
+    if (!isMuted) {
+      audio.volume = userVolume;
+    }
+    // Also update ambience volumes proportionally
+    Object.values(ambienceAudios).forEach((amb) => {
+      if (amb.volume !== 0) {
+        amb.volume = userVolume * (ambienceVolumes[amb.id] || 1);
+      }
+    });
   });
 
   /* --- MUTE TOGGLE --- */
   btnMute.addEventListener('click', () => {
     isMuted = !isMuted;
-    audio.volume = isMuted ? 0 : userVolume;
+    if (isMuted) {
+      audio.volume = 0;
+      Object.values(ambienceAudios).forEach((amb) => {
+        amb.volume = 0;
+      });
+    } else {
+      audio.volume = userVolume;
+      Object.entries(ambienceAudios).forEach(([id, amb]) => {
+        amb.volume = (ambienceVolumes[id] || 1) * userVolume;
+      });
+    }
     updateUI();
   });
 
-  /* --- AMBIENCE SOUNDS SETUP --- */
-  function createAmbienceControls() {
-    ambienceContainer.innerHTML = `<h3>Ambience Sounds</h3>`;
-    ambienceSoundsData.forEach(sound => {
+  /* --- RENDER AMBIENCE PANEL --- */
+  function renderAmbiencePanel() {
+    ambienceContainer.innerHTML = '<h3>Ambience Sounds</h3>';
+    ambienceSoundsData.forEach(({ id, label, src }) => {
+      // Create container div
       const div = document.createElement('div');
       div.classList.add('ambience-sound');
 
-      const label = document.createElement('label');
-      label.classList.add('ambience-label');
-      label.htmlFor = `ambience-${sound.id}`;
-      label.textContent = sound.label;
+      // Label
+      const labelEl = document.createElement('span');
+      labelEl.classList.add('ambience-label');
+      labelEl.textContent = label;
 
+      // Toggle button
       const toggle = document.createElement('input');
       toggle.type = 'checkbox';
       toggle.classList.add('ambience-toggle');
-      toggle.id = `ambience-${sound.id}`;
-      toggle.checked = false;
+      toggle.id = `ambience-toggle-${id}`;
+      toggle.checked = ambienceStates[id] || false;
 
+      // Volume slider
       const volume = document.createElement('input');
       volume.type = 'range';
       volume.min = 0; volume.max = 1; volume.step = 0.01;
-      volume.value = 0.5;
+      volume.value = ambienceVolumes[id] || 0.5;
       volume.classList.add('ambience-volume');
-      volume.id = `ambience-volume-${sound.id}`;
+      volume.id = `ambience-volume-${id}`;
+      volume.disabled = !toggle.checked;
 
-      div.appendChild(label);
+      // Event: toggle play/pause ambience sound
+      toggle.addEventListener('change', () => {
+        ambienceStates[id] = toggle.checked;
+        if (toggle.checked) {
+          ambienceAudios[id].play();
+          ambienceAudios[id].volume = (ambienceVolumes[id] || 0.5) * userVolume;
+          volume.disabled = false;
+        } else {
+          ambienceAudios[id].pause();
+          volume.disabled = true;
+        }
+      });
+
+      // Event: change volume for ambience sound
+      volume.addEventListener('input', () => {
+        const val = volume.value;
+        ambienceVolumes[id] = val;
+        if (ambienceStates[id]) {
+          ambienceAudios[id].volume = val * userVolume;
+        }
+      });
+
+      div.appendChild(labelEl);
       div.appendChild(toggle);
       div.appendChild(volume);
 
       ambienceContainer.appendChild(div);
-
-      // Create audio element for this ambience sound
-      const ambienceAudio = new Audio(sound.src);
-      ambienceAudio.loop = true;
-      ambienceAudio.volume = 0.5;
-      ambienceAudios[sound.id] = ambienceAudio;
-      ambienceStates[sound.id] = false;
-      ambienceVolumes[sound.id] = 0.5;
-
-      // Toggle ambience sound play/pause
-      toggle.addEventListener('change', () => {
-        if (toggle.checked) {
-          ambienceAudio.play();
-          ambienceStates[sound.id] = true;
-        } else {
-          ambienceAudio.pause();
-          ambienceStates[sound.id] = false;
-        }
-      });
-
-      // Volume slider for ambience
-      volume.addEventListener('input', () => {
-        ambienceVolumes[sound.id] = volume.value;
-        ambienceAudio.volume = volume.value;
-      });
     });
   }
 
+  /* --- Toggle ambience panel visibility --- */
   btnAmbienceToggle.addEventListener('click', () => {
-    if (ambienceContainer.style.display === 'none') {
+    if (ambienceContainer.style.display === 'none' || !ambienceContainer.style.display) {
       ambienceContainer.style.display = 'block';
     } else {
       ambienceContainer.style.display = 'none';
     }
   });
 
-  /* --- PARTICLES CANVAS SETUP --- */
+  /* --- INIT AMBIENCE AUDIO ELEMENTS --- */
+  ambienceSoundsData.forEach(({ id, src }) => {
+    const audioAmb = new Audio(src);
+    audioAmb.loop = true;
+    audioAmb.volume = 0;
+    ambienceAudios[id] = audioAmb;
+    ambienceStates[id] = false;
+    ambienceVolumes[id] = 0.5;
+  });
+
+  /* --- INITIALIZATION --- */
+  renderProjects();
+  renderTracks();
+  renderAmbiencePanel();
+  updateUI();
+
+})();
+</script>
+
+<script>
+/* --- Warm drifting particles effect on top of video --- */
+(() => {
   const canvas = document.getElementById('particles-canvas');
   const ctx = canvas.getContext('2d');
-  let particles = [];
-  let W, H;
+  let particlesArray = [];
+  const colors = ['#ffb86c', '#ffa726', '#ffc107', '#ffca28'];
+
+  function init() {
+    resizeCanvas();
+    createParticles();
+    animate();
+  }
 
   function resizeCanvas() {
-    W = window.innerWidth;
-    H = window.innerHeight;
-    canvas.width = W;
-    canvas.height = H;
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
   }
   window.addEventListener('resize', resizeCanvas);
-  resizeCanvas();
 
   function createParticles() {
-    particles = [];
-    for (let i = 0; i < 40; i++) {
-      particles.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
+    particlesArray = [];
+    const count = Math.floor(canvas.width / 20);
+    for (let i = 0; i < count; i++) {
+      particlesArray.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
         radius: 2 + Math.random() * 2,
-        speedX: (Math.random() - 0.5) * 0.15,
-        speedY: (Math.random() - 0.5) * 0.15,
-        alpha: 0.05 + Math.random() * 0.07
+        color: colors[Math.floor(Math.random() * colors.length)],
+        speed: 0.15 + Math.random() * 0.3,
+        direction: Math.random() > 0.5 ? 1 : -1,
+        alpha: 0.4 + Math.random() * 0.6
       });
     }
   }
-  createParticles();
-
-  function drawParticles() {
-    ctx.clearRect(0, 0, W, H);
-    particles.forEach(p => {
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(255, 184, 108, ${p.alpha})`;
-      ctx.shadowColor = `rgba(255, 184, 108, ${p.alpha})`;
-      ctx.shadowBlur = 10;
-      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-      ctx.fill();
-
-      p.x += p.speedX;
-      p.y += p.speedY;
-
-      // Wrap around edges
-      if (p.x < 0) p.x = W;
-      else if (p.x > W) p.x = 0;
-      if (p.y < 0) p.y = H;
-      else if (p.y > H) p.y = 0;
-    });
-  }
 
   function animate() {
-    drawParticles();
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particlesArray.forEach(p => {
+      p.x += p.speed * p.direction;
+      if (p.x > canvas.width + p.radius) p.x = -p.radius;
+      if (p.x < -p.radius) p.x = canvas.width + p.radius;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255, 184, 108, ${p.alpha})`;
+      ctx.shadowColor = `rgba(255, 184, 108, ${p.alpha})`;
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.closePath();
+    });
     requestAnimationFrame(animate);
   }
-  animate();
 
-  /* --- INIT --- */
-  renderProjects();
-  renderTracks();
-  createAmbienceControls();
-  updateUI();
-
-  /* --- Start paused, no audio src, user sets play --- */
-  audio.volume = userVolume;
-
+  init();
 })();
 </script>
 
