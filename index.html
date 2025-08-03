@@ -664,32 +664,48 @@
       bars.push(bar);
     }
 
-    // Initialize Web Audio API
+    // Initialize Web Audio API when audio starts playing
+    audio.addEventListener('play', initWebAudio, { once: false });
+    
+    // Start animation loop
+    animateVisualizer();
+  }
+
+  // Initialize Web Audio API
+  function initWebAudio() {
+    if (audioContext) return; // Already initialized
+    
     try {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
       analyser = audioContext.createAnalyser();
       analyser.fftSize = 128;
+      analyser.smoothingTimeConstant = 0.8;
       dataArray = new Uint8Array(analyser.frequencyBinCount);
       
       source = audioContext.createMediaElementSource(audio);
       source.connect(analyser);
       analyser.connect(audioContext.destination);
       
-      animateVisualizer();
+      console.log('Web Audio API initialized');
     } catch (error) {
-      console.log('Web Audio API not supported');
+      console.log('Web Audio API not supported:', error);
     }
   }
 
   // Animate visualizer bars
   function animateVisualizer() {
-    if (!analyser) return;
-    
-    analyser.getByteFrequencyData(dataArray);
-    
-    for (let i = 0; i < bars.length; i++) {
-      const barHeight = (dataArray[i] / 255) * 80;
-      bars[i].style.height = Math.max(2, barHeight) + 'px';
+    if (analyser && isPlaying) {
+      analyser.getByteFrequencyData(dataArray);
+      
+      for (let i = 0; i < bars.length; i++) {
+        const barHeight = (dataArray[i] / 255) * 80;
+        bars[i].style.height = Math.max(2, barHeight) + 'px';
+      }
+    } else {
+      // Default animation when not playing or no audio data
+      for (let i = 0; i < bars.length; i++) {
+        bars[i].style.height = '2px';
+      }
     }
     
     requestAnimationFrame(animateVisualizer);
@@ -822,20 +838,9 @@
     const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
     const track = project.tracks[currentTrackIndex];
     
-    // Crossfade effect
-    if (isPlaying) {
-      const fadeOut = setInterval(() => {
-        if (audio.volume > 0.1) {
-          audio.volume -= 0.1;
-        } else {
-          clearInterval(fadeOut);
-          audio.src = track.url;
-          audio.volume = userPreferences.volume;
-        }
-      }, 50);
-    } else {
-      audio.src = track.url;
-    }
+    // Simple load without crossfade to avoid audio issues
+    audio.src = track.url;
+    audio.load(); // Ensure the audio loads properly
     
     nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
     spotifyLink.style.display = track.spotifyId ? 'inline-block' : 'none';
@@ -852,12 +857,23 @@
 
   // Play audio
   function playAudio() {
-    if (audioContext && audioContext.state === 'suspended') {
-      audioContext.resume();
+    const playPromise = audio.play();
+    
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        isPlaying = true;
+        updatePlayPauseIcon();
+        
+        // Resume audio context if suspended
+        if (audioContext && audioContext.state === 'suspended') {
+          audioContext.resume();
+        }
+      }).catch(error => {
+        console.log('Playback failed:', error);
+        isPlaying = false;
+        updatePlayPauseIcon();
+      });
     }
-    audio.play();
-    isPlaying = true;
-    updatePlayPauseIcon();
   }
 
   // Pause audio
