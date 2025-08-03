@@ -2,52 +2,182 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kozybeats - Pillowcore</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins&display=swap" rel="stylesheet" />
+
   <style>
-    body {
-      background: #1e1e2f url('https://i.imgur.com/j0g9zcb.gif') no-repeat center center fixed;
+    /* Reset & base */
+    body, html {
+      margin: 0; padding: 0; height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background: url('https://i.imgur.com/j0g9zcb.gif') no-repeat center center fixed;
       background-size: cover;
-      font-family: sans-serif;
-      color: white;
-      text-align: center;
-      padding-top: 50px;
+      overflow: hidden;
+      position: relative;
+      filter: blur(2px);
     }
-    .player {
-      background: rgba(0,0,0,0.6);
-      padding: 20px;
+    /* Blur overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(250, 240, 230, 0.3);
+      pointer-events: none;
+      filter: none;
+      z-index: 0;
+    }
+
+    /* Container for player + visuals, unblurred */
+    #main-content {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      width: 360px;
+      background: #fff8f0cc; /* soft warm white, semi-transparent */
       border-radius: 20px;
-      width: 320px;
-      margin: 0 auto;
+      padding: 20px;
+      box-shadow: 0 0 20px rgba(150, 100, 50, 0.25);
+      backdrop-filter: none;
+      color: #5a3e1a;
+      user-select: none;
     }
+
+    h2 {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      margin-bottom: 15px;
+      font-size: 28px;
+      color: #6a4f3a;
+      user-select: text;
+    }
+
+    /* Cover image */
+    #cover {
+      width: 100%;
+      border-radius: 16px;
+      margin-bottom: 15px;
+      user-select: none;
+      box-shadow: 0 0 10px rgba(150, 100, 50, 0.15);
+    }
+
+    /* Audio player */
     audio {
       width: 100%;
-      margin-top: 10px;
+      border-radius: 10px;
+      outline: none;
+      margin-bottom: 20px;
+      user-select: none;
     }
+
+    /* Tracklist buttons */
     .tracklist button {
       display: block;
-      background: #333;
-      color: white;
-      border: none;
-      margin: 10px auto;
-      padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
       width: 100%;
+      background: #c9b08c;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 15px;
+      margin: 8px 0;
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      color: #5a3e1a;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      user-select: none;
     }
     .tracklist button:hover {
-      background: #555;
+      background: #a98b63;
     }
-    h2 {
-      font-size: 24px;
+
+    /* Now Playing text */
+    #nowPlaying {
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #6a4f3a;
+      font-family: 'Montserrat', sans-serif;
+      user-select: text;
+    }
+
+    /* Spinning vinyl container */
+    #vinyl-container {
+      width: 150px;
+      height: 150px;
+      margin: 0 auto 25px auto;
+      position: relative;
+      user-select: none;
+    }
+
+    /* Vinyl circle */
+    #vinyl {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: radial-gradient(circle at center, #5a3e1a 0%, #3c2a0e 70%, #2c1e08 100%);
+      border: 10px solid #7c5d33;
+      box-shadow: inset 0 0 30px #3c2a0e;
+      animation: spin 20s linear infinite;
+      position: relative;
+    }
+
+    /* Vinyl center label */
+    #vinyl::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      background: #d6c1a1;
+      border-radius: 50%;
+      box-shadow: inset 0 0 10px #b39e7e;
+      border: 3px solid #a98b63;
+    }
+
+    /* Spin animation */
+    @keyframes spin {
+      from { transform: rotate(0deg);}
+      to { transform: rotate(360deg);}
+    }
+
+    /* Particle container */
+    #particles {
+      pointer-events: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      z-index: 5;
+      overflow: hidden;
+    }
+
+    /* Particle style */
+    .particle {
+      position: absolute;
+      background: rgba(170, 140, 90, 0.3);
+      border-radius: 50%;
+      opacity: 0.7;
+      animation-timing-function: linear;
+      filter: blur(1px);
+      will-change: transform;
     }
   </style>
 </head>
 <body>
-  <div class="player">
+
+  <div id="particles"></div>
+
+  <div id="main-content" role="main" aria-label="Music player and tracks">
+
+    <img id="cover" src="https://dl.dropboxusercontent.com/s/keokbqixjjupv7v1bkx71/pillow-radio.png" alt="Pillowcore album cover by Kozybeats" />
+
     <h2>Kozybeats - Pillowcore 🎧</h2>
+
     <p id="nowPlaying">Now Playing: —</p>
+
     <audio id="audioPlayer" controls autoplay></audio>
+
     <div class="tracklist">
       <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', 'Ceiling Fan Dreams')">Ceiling Fan Dreams</button>
       <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3', 'Curtains Closed')">Curtains Closed</button>
@@ -64,7 +194,12 @@
     </div>
   </div>
 
+  <div id="vinyl-container">
+    <div id="vinyl"></div>
+  </div>
+
   <script>
+    // Audio player logic
     const audioPlayer = document.getElementById('audioPlayer');
     const nowPlaying = document.getElementById('nowPlaying');
 
@@ -73,6 +208,72 @@
       nowPlaying.textContent = `Now Playing: ${title}`;
       audioPlayer.play();
     }
+
+    // Particles code
+    const particlesContainer = document.getElementById('particles');
+    const particleCount = 40;
+    const particles = [];
+
+    function randomRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    class Particle {
+      constructor() {
+        this.el = document.createElement('div');
+        this.el.classList.add('particle');
+        this.reset();
+        particlesContainer.appendChild(this.el);
+      }
+
+      reset() {
+        this.x = randomRange(0, window.innerWidth);
+        this.y = randomRange(0, window.innerHeight);
+        this.size = randomRange(4, 10);
+        this.speedX = randomRange(-0.1, 0.1);
+        this.speedY = randomRange(0.02, 0.07);
+        this.el.style.width = this.size + 'px';
+        this.el.style.height = this.size + 'px';
+        this.el.style.background = `rgba(170, 140, 90, ${randomRange(0.15, 0.3)})`;
+        this.el.style.opacity = 0.7;
+        this.el.style.filter = 'blur(1px)';
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+
+        if (this.x > window.innerWidth) this.x = 0;
+        else if (this.x < 0) this.x = window.innerWidth;
+
+        if (this.y > window.innerHeight) this.y = 0;
+
+        this.el.style.transform = `translate(${this.x}px, ${this.y}px)`;
+      }
+    }
+
+    for(let i = 0; i < particleCount; i++) {
+      particles.push(new Particle());
+    }
+
+    function animate() {
+      particles.forEach(p => p.update());
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Vinyl container positioning (center above player)
+    const vinylContainer = document.getElementById('vinyl-container');
+    const mainContent = document.getElementById('main-content');
+    function positionVinyl() {
+      const rect = mainContent.getBoundingClientRect();
+      vinylContainer.style.position = 'fixed';
+      vinylContainer.style.top = (rect.top - 180) + 'px';
+      vinylContainer.style.left = (rect.left + rect.width / 2 - 75) + 'px';
+      vinylContainer.style.zIndex = '10';
+    }
+    window.addEventListener('resize', positionVinyl);
+    window.addEventListener('load', positionVinyl);
   </script>
 </body>
 </html>
