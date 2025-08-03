@@ -625,8 +625,9 @@
   ambientSounds.rain.volume = 0;
   ambientSounds.vinylCrackle.volume = 0;
 
-  // State variables - EXACTLY like your original
-  let currentProjectId = PROJECTS_CONFIG[0].id;
+  // State variables - MODIFIED to track what's actually playing vs what project is selected
+  let selectedProjectId = PROJECTS_CONFIG[0].id; // Which project sidebar is showing
+  let currentPlayingProjectId = PROJECTS_CONFIG[0].id; // Which project the current song is from
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isShuffle = false;
@@ -659,20 +660,31 @@
   }
 
   // Shuffle helper
-  function getRandomTrackIndex() {
-    return Math.floor(Math.random() * PROJECTS_CONFIG.find(p => p.id === currentProjectId).tracks.length);
+  function getRandomTrackIndex(projectId) {
+    return Math.floor(Math.random() * PROJECTS_CONFIG.find(p => p.id === projectId).tracks.length);
   }
 
-  // Initialize volume (back to your original)
+  // Initialize volume
   audio.volume = 0.6;
 
-  // Render projects sidebar
+  // Helper to find which project and track index a track belongs to
+  function findTrackLocation(trackUrl) {
+    for (let project of PROJECTS_CONFIG) {
+      const trackIndex = project.tracks.findIndex(track => track.url === trackUrl);
+      if (trackIndex !== -1) {
+        return { projectId: project.id, trackIndex };
+      }
+    }
+    return null;
+  }
+
+  // Render projects sidebar - MODIFIED to only change visual selection
   function renderProjects() {
     projectsContainer.innerHTML = '';
     PROJECTS_CONFIG.forEach(project => {
       const div = document.createElement('div');
       div.classList.add('project-item');
-      if (project.id === currentProjectId) div.classList.add('active');
+      if (project.id === selectedProjectId) div.classList.add('active');
       div.dataset.projectId = project.id;
 
       const img = document.createElement('img');
@@ -686,27 +698,29 @@
       div.appendChild(span);
 
       div.addEventListener('click', () => {
-        if (currentProjectId !== project.id) {
-          currentProjectId = project.id;
-          currentTrackIndex = 0;
-          renderProjects();
-          renderTracks();
-          loadTrack();
-        }
+        // Only change the selected project for display, don't interrupt playback
+        selectedProjectId = project.id;
+        renderProjects();
+        renderTracks();
       });
 
       projectsContainer.appendChild(div);
     });
   }
 
-  // Render tracklist for current project
+  // Render tracklist for selected project - MODIFIED to show correct active track
   function renderTracks() {
-    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    const project = PROJECTS_CONFIG.find(p => p.id === selectedProjectId);
     tracksContainer.innerHTML = '';
     project.tracks.forEach((track, idx) => {
       const div = document.createElement('div');
       div.classList.add('track');
-      if (idx === currentTrackIndex) div.classList.add('active');
+      
+      // Highlight track as active if it's the currently playing track from ANY project
+      const currentTrack = getCurrentTrack();
+      if (currentTrack && track.url === currentTrack.url) {
+        div.classList.add('active');
+      }
       
       const title = document.createElement('span');
       title.textContent = track.title;
@@ -733,21 +747,27 @@
       div.appendChild(spotifyBtn);
 
       div.addEventListener('click', () => {
-        if (currentTrackIndex !== idx) {
-          currentTrackIndex = idx;
-          loadTrack();
-          playAudio();
-          renderTracks();
-        }
+        // When clicking a track, change to that project and track
+        currentPlayingProjectId = selectedProjectId;
+        currentTrackIndex = idx;
+        loadTrack();
+        playAudio();
+        renderTracks();
       });
 
       tracksContainer.appendChild(div);
     });
   }
 
-  // Load the current track - EXACTLY your original  
+  // Get current track object
+  function getCurrentTrack() {
+    const project = PROJECTS_CONFIG.find(p => p.id === currentPlayingProjectId);
+    return project ? project.tracks[currentTrackIndex] : null;
+  }
+
+  // Load the current track - MODIFIED to use currentPlayingProjectId
   function loadTrack() {
-    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    const project = PROJECTS_CONFIG.find(p => p.id === currentPlayingProjectId);
     const track = project.tracks[currentTrackIndex];
     audio.src = track.url;
     nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
@@ -755,6 +775,7 @@
     spotifyLink.href = track.spotifyId ? project.spotifyPrefix + track.spotifyId : '#';
     vinyl.src = trackCoverFromUrl(track.url);
     updatePlayPauseIcon();
+    renderTracks(); // Update track highlighting
   }
 
   // Helper to get cover image for vinyl: uses project cover by default
@@ -763,7 +784,7 @@
     return project ? project.cover : vinyl.src;
   }
 
-  // Play audio - EXACTLY your original
+  // Play audio
   function playAudio() {
     audio.play();
     isPlaying = true;
@@ -793,11 +814,11 @@
     feather.replace();
   }
 
-  // Next track logic
+  // Next track logic - MODIFIED to use currentPlayingProjectId
   function nextTrack() {
-    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    const project = PROJECTS_CONFIG.find(p => p.id === currentPlayingProjectId);
     if (isShuffle) {
-      currentTrackIndex = getRandomTrackIndex();
+      currentTrackIndex = getRandomTrackIndex(currentPlayingProjectId);
     } else {
       currentTrackIndex++;
       if (currentTrackIndex >= project.tracks.length) {
@@ -812,14 +833,13 @@
     }
     loadTrack();
     playAudio();
-    renderTracks();
   }
 
-  // Previous track logic
+  // Previous track logic - MODIFIED to use currentPlayingProjectId
   function prevTrack() {
-    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    const project = PROJECTS_CONFIG.find(p => p.id === currentPlayingProjectId);
     if (isShuffle) {
-      currentTrackIndex = getRandomTrackIndex();
+      currentTrackIndex = getRandomTrackIndex(currentPlayingProjectId);
     } else {
       currentTrackIndex--;
       if (currentTrackIndex < 0) {
@@ -834,7 +854,6 @@
     }
     loadTrack();
     playAudio();
-    renderTracks();
   }
 
   // Shuffle toggle
@@ -959,7 +978,7 @@
     ambientPanel.style.display = 'none';
   });
 
-  // Volume slider changes (simplified)
+  // Volume slider changes
   volumeSlider.addEventListener('input', (e) => {
     audio.volume = e.target.value;
     audio.muted = false;
@@ -987,11 +1006,6 @@
   shuffleBtn.addEventListener('click', toggleShuffle);
   repeatBtn.addEventListener('click', toggleRepeat);
 
-  // Initialize everything
-  initSimpleVisualizer();
-  renderProjects();
-  renderTracks();
-  loadTrack();
 
 </script>
 
