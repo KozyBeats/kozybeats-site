@@ -3,328 +3,226 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kozybeats Radio</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Roboto&display=swap" rel="stylesheet" />
+<title>Kozybeats Lofi Player</title>
 <style>
-  /* === COLORS & FONTS === */
-  :root {
-    --bg-color: #f3ede7;
-    --primary-color: #6b4f3d; /* deep warm brown */
-    --secondary-color: #a88c72; /* warm muted tan */
-    --text-color: #4a3a2a;
-    --button-bg: #d4c6b5;
-    --button-hover-bg: #c2b19e;
-    --button-active-bg: #b09c86;
-    --shadow-color: rgba(74, 58, 42, 0.25);
-  }
-
+  /* Reset & basic */
   body, html {
-    margin: 0; padding: 0;
-    height: 100%;
-    font-family: 'Roboto', sans-serif;
-    background: var(--bg-color);
-    overflow-x: hidden;
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f3ede7;
+    color: #222;
   }
-  /* === BACKGROUND VIDEO === */
-  #video-background video {
+  .app-container {
+    position: relative;
+    z-index: 10;
+    background: rgba(243, 237, 231, 0.6);
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.1);
+  }
+  header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  #cover {
+    width: 120px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  }
+  #project-title {
+    font-size: 28px;
+    font-weight: 700;
+  }
+  #now-playing {
+    margin-top: 5px;
+    font-weight: 500;
+    color: #555;
+  }
+  /* Project buttons */
+  #project-buttons {
+    margin: 20px 0;
+    display: flex;
+    gap: 12px;
+  }
+  #project-buttons button {
+    background: #d9ccc0;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  #project-buttons button.active,
+  #project-buttons button:hover {
+    background: #a9917f;
+    color: #fff;
+  }
+  /* Tracklist */
+  #tracklist {
+    max-height: 240px;
+    overflow-y: auto;
+    margin-bottom: 25px;
+  }
+  #tracklist button {
+    width: 100%;
+    padding: 10px 15px;
+    background: #e8ded4;
+    border: none;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.3s ease;
+  }
+  #tracklist button.active,
+  #tracklist button:hover {
+    background: #a9917f;
+    color: white;
+  }
+  /* Controls */
+  #controls {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
+  }
+  #controls button {
+    background: #a9917f;
+    border: none;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 8px rgba(169,145,127,0.8);
+    transition: background 0.3s ease;
+  }
+  #controls button:hover {
+    background: #806b5f;
+  }
+  /* Vinyl */
+  #vinyl-container {
+    margin-left: 25px;
+  }
+  #vinyl {
+    width: 70px;
+    user-select: none;
+    transition: transform 0.1s linear;
+  }
+  /* Background video */
+  #video-background {
     position: fixed;
     top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    object-fit: cover;
-    filter: brightness(0.6) blur(4px);
-    z-index: -4;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    z-index: -5;
   }
-
-  /* === PROJECT BACKGROUND BLUR OVERLAY === */
+  #video-background video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: brightness(0.5) blur(5px);
+  }
+  /* Project background overlay (blurred cover) */
   #project-bg-overlay {
     position: fixed;
     top: 0; left: 0;
-    width: 100vw; height: 100vh;
+    width: 100vw;
+    height: 100vh;
     background-size: cover;
     background-position: center;
-    filter: blur(20px) brightness(0.45);
-    opacity: 0;
-    transition: opacity 1s ease;
-    z-index: -3;
+    filter: blur(30px) brightness(0.3);
+    opacity: 0.7;
+    z-index: -4;
+    transition: background-image 0.5s ease;
   }
-
-  /* === PARTICLES CANVAS === */
+  /* Particle canvas */
   #particles {
     position: fixed;
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     pointer-events: none;
-    z-index: -2;
+    z-index: -3;
   }
-
-  /* === CONTAINER === */
-  .app-container {
-    max-width: 900px;
-    margin: 60px auto 90px;
-    padding: 30px 25px;
-    background: rgba(243, 237, 231, 0.85);
-    border-radius: 18px;
-    box-shadow: 0 8px 20px var(--shadow-color);
-    position: relative;
-    z-index: 10;
-  }
-
-  /* === HEADER === */
-  .header {
-    display: flex;
-    gap: 20px;
-    align-items: center;
-  }
-  .cover {
-    width: 170px;
-    border-radius: 14px;
-    box-shadow: 0 7px 22px var(--shadow-color);
-    user-select: none;
-    flex-shrink: 0;
-  }
-  .info {
-    flex-grow: 1;
-  }
-  .info h1 {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 30px;
-    color: var(--primary-color);
-    margin: 0 0 6px;
-    user-select: none;
-  }
-  .info p {
-    font-size: 16px;
-    color: var(--secondary-color);
-    margin: 0;
-    user-select: none;
-  }
-
-  /* === PROJECT SWITCHER BUTTONS === */
-  .project-switcher {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 25px;
-  }
-  .project-switcher button {
-    background: var(--button-bg);
-    border: none;
-    padding: 9px 20px;
-    border-radius: 10px;
-    color: var(--primary-color);
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    box-shadow: 0 3px 8px var(--shadow-color);
-    transition: background 0.3s, color 0.3s;
-  }
-  .project-switcher button:hover {
-    background: var(--button-hover-bg);
-  }
-  .project-switcher button.active {
-    background: var(--button-active-bg);
-    color: #fff;
-  }
-
-  /* === AUDIO CONTROLS AREA === */
-  .controls {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-    margin-bottom: 25px;
-  }
-
-  #audioPlayer {
-    flex-grow: 1;
-    border-radius: 12px;
-    outline: none;
-    box-shadow: 0 2px 8px var(--shadow-color);
-    filter: drop-shadow(0 0 1px rgba(0,0,0,0.15));
-  }
-
-  /* === CONTROL BUTTONS === */
-  .control-btn {
-    background: var(--button-bg);
-    border: none;
-    padding: 10px 14px;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 3px 9px var(--shadow-color);
-    transition: background 0.3s, transform 0.2s;
-    color: var(--primary-color);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    user-select: none;
-  }
-  .control-btn:hover {
-    background: var(--button-hover-bg);
-    transform: scale(1.12);
-  }
-  .control-btn:active {
-    transform: scale(1);
-  }
-  .control-btn svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-  }
-
-  /* === REPEAT & SHUFFLE === */
-  .toggles {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    font-size: 14px;
-    color: var(--secondary-color);
-    user-select: none;
-  }
-  .toggles label {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    cursor: pointer;
-  }
-  .toggles input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    cursor: pointer;
-    accent-color: var(--primary-color);
-  }
-
-  /* === TRACKLIST === */
-  .tracklist {
-    max-height: 320px;
-    overflow-y: auto;
-    border-top: 1px solid #e0d6c7;
-    padding-top: 18px;
-  }
-  .tracklist button {
-    width: 100%;
-    background: transparent;
-    border: none;
-    text-align: left;
-    padding: 10px 14px;
-    font-size: 16px;
-    font-family: 'Roboto', sans-serif;
-    color: var(--primary-color);
-    border-radius: 10px;
-    margin-bottom: 8px;
-    box-shadow: inset 0 0 0 0 transparent;
-    transition: box-shadow 0.3s ease;
-    cursor: pointer;
-  }
-  .tracklist button:hover {
-    box-shadow: inset 0 0 8px var(--secondary-color);
-    background: #fff7e9;
-  }
-  .tracklist button.active {
-    box-shadow: inset 0 0 12px var(--secondary-color);
-    background: #fff7e9;
-    font-weight: 700;
-  }
-
-  /* === VINYL SPINNER NEXT TO CONTROLS === */
-  #vinyl-container {
-    width: 80px;
-    height: 80px;
-    user-select: none;
-    flex-shrink: 0;
-    box-shadow: 0 3px 8px var(--shadow-color);
-    border-radius: 50%;
-    overflow: hidden;
-    background: #f3ede7;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  #vinyl {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    user-select: none;
-  }
-
 </style>
 </head>
 <body>
 
+<!-- Background video -->
 <div id="video-background">
   <video autoplay muted loop playsinline>
     <source src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
   </video>
 </div>
 
+<!-- Project cover blurred overlay -->
 <div id="project-bg-overlay"></div>
+
+<!-- Particle overlay -->
 <canvas id="particles"></canvas>
 
+<!-- Main app container -->
 <div class="app-container">
-  <div class="project-switcher">
-    <button id="btn-pillowcore" onclick="switchProject('pillowcore')">Pillowcore Radio</button>
-    <button id="btn-evening" onclick="switchProject('evening')">Evening Static</button>
-  </div>
-
-  <div class="header">
-    <img id="cover" class="cover" src="" alt="Cover" draggable="false" />
-    <div class="info">
-      <h1 id="projectTitle"></h1>
-      <p id="nowPlaying">Now Playing: —</p>
+  <header>
+    <img id="cover" src="" alt="Project Cover" />
+    <div>
+      <div id="project-title">Project Title</div>
+      <div id="now-playing">Now Playing: Kozybeats - Track Title</div>
     </div>
+  </header>
+
+  <div id="project-buttons">
+    <button id="btn-pillowcore">Pillowcore Radio</button>
+    <button id="btn-evening">Evening Static</button>
   </div>
 
-  <div class="controls">
-    <button class="control-btn" id="prevBtn" title="Previous Track" aria-label="Previous Track" tabindex="0">
-      <svg viewBox="0 0 24 24"><path d="M6 19h2V5H6v14zm3.5-7L19 5v14l-9.5-7z"/></svg>
-    </button>
-    <button class="control-btn" id="playPauseBtn" title="Play/Pause" aria-label="Play/Pause" tabindex="0">
-      <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-      <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
-    </button>
-    <button class="control-btn" id="nextBtn" title="Next Track" aria-label="Next Track" tabindex="0">
-      <svg viewBox="0 0 24 24"><path d="M16 19h2V5h-2v14zm-3.5-7L5 5v14l7.5-7z"/></svg>
-    </button>
+  <div id="tracklist"></div>
+
+  <div id="controls">
+    <button id="prev-btn" title="Previous">&#9664;</button>
+    <button id="play-pause-btn" title="Play/Pause">&#9654;</button>
+    <button id="next-btn" title="Next">&#9654;&#9654;</button>
+    <button id="shuffle-btn" title="Shuffle">&#128256;</button>
+    <button id="repeat-track-btn" title="Repeat Track">&#128257;</button>
+    <button id="repeat-project-btn" title="Repeat Project">&#128258;</button>
 
     <div id="vinyl-container">
-      <img id="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Spinning Vinyl" draggable="false" />
+      <img id="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Vinyl" />
     </div>
   </div>
-
-  <div class="toggles">
-    <label title="Repeat Track">
-      <input type="checkbox" id="repeatTrack" />
-      🔂
-    </label>
-    <label title="Repeat Project">
-      <input type="checkbox" id="repeatProject" />
-      🔁
-    </label>
-    <label title="Shuffle">
-      <input type="checkbox" id="shuffle" />
-      🔀
-    </label>
-  </div>
-
-  <div class="tracklist" id="tracklist"></div>
 </div>
 
+<audio id="audioPlayer" preload="auto" controls></audio>
+
 <script>
-  // Project data
   const projects = {
     pillowcore: {
       title: "Pillowcore Radio",
       cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png",
       tracks: [
-        { title: "Ceiling Fan Dreams", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3" },
-        { title: "Curtains Closed", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3" },
-        { title: "Dream Archive", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3" },
         { title: "Glow Sink", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3" },
-        { title: "Lavender Shadows", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3" },
-        { title: "Midnight Left on Read", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3" },
-        { title: "Moonlit Linen", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3" },
         { title: "Paper Walls", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3" },
-        { title: "Rain on 4th Street", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3" },
+        { title: "Lavender Shadows", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3" },
         { title: "Snooze Signal", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3" },
+        { title: "Dream Archive", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3" },
         { title: "Warm Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3" },
+        { title: "Curtains Closed", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3" },
+        { title: "Ceiling Fan Dreams", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3" },
         { title: "Whispers in Blue", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3" },
+        { title: "Rain on 4th Street", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3" },
+        { title: "Moonlit Linen", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3" },
+        { title: "Midnight Left on Read", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3" }
       ]
     },
     evening: {
@@ -340,43 +238,40 @@
         { title: "The Fan Still Spins", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/The_Fan_Still_Spins_qba31z.mp3" },
         { title: "When the Floorboard Creaked", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/When_the_Floorboard_Creaked_ljcd2m.mp3" },
         { title: "A Thread Pulled from the Moon", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/A_Thread_Pulled_from_the_Moon_kqjhdq.mp3" },
-        { title: "Between the Glow and the Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3" },
+        { title: "Between the Glow and the Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3" }
       ]
     }
   };
 
-  // DOM elements
-  const coverEl = document.getElementById('cover');
-  const projectTitleEl = document.getElementById('projectTitle');
-  const nowPlayingEl = document.getElementById('nowPlaying');
-  const audioPlayer = document.getElementById('audioPlayer');
-  const tracklistEl = document.getElementById('tracklist');
-  const repeatTrackEl = document.getElementById('repeatTrack');
-  const repeatProjectEl = document.getElementById('repeatProject');
-  const shuffleEl = document.getElementById('shuffle');
-  const videoBg = document.querySelector('#video-background video');
-  const projectBgOverlay = document.getElementById('project-bg-overlay');
-  const vinyl = document.getElementById('vinyl');
   const btnPillowcore = document.getElementById('btn-pillowcore');
   const btnEvening = document.getElementById('btn-evening');
-  const playPauseBtn = document.getElementById('playPauseBtn');
-  const playIcon = document.getElementById('playIcon');
-  const pauseIcon = document.getElementById('pauseIcon');
-  const nextBtn = document.getElementById('nextBtn');
-  const prevBtn = document.getElementById('prevBtn');
+  const coverEl = document.getElementById('cover');
+  const projectTitleEl = document.getElementById('project-title');
+  const nowPlayingEl = document.getElementById('now-playing');
+  const tracklistEl = document.getElementById('tracklist');
+  const audioPlayer = document.getElementById('audioPlayer');
+  const playPauseBtn = document.getElementById('play-pause-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const shuffleBtn = document.getElementById('shuffle-btn');
+  const repeatTrackBtn = document.getElementById('repeat-track-btn');
+  const repeatProjectBtn = document.getElementById('repeat-project-btn');
+  const vinyl = document.getElementById('vinyl');
+  const projectBgOverlay = document.getElementById('project-bg-overlay');
 
   let currentProject = 'pillowcore';
   let currentTrackIndex = 0;
   let isPlaying = false;
-  let vinylRotation = 0;
   let vinylSpinning = false;
+  let vinylRotation = 0;
 
-  // Particle system setup
+  // Particle canvas setup
   const canvas = document.getElementById('particles');
   const ctx = canvas.getContext('2d');
+  const PARTICLE_COUNT = 70;
   let particles = [];
-  const PARTICLE_COUNT = 100;
 
+  // Resize canvas
   function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -452,23 +347,15 @@
       btn.textContent = track.title;
       btn.className = i === currentTrackIndex && isPlaying ? 'active' : '';
       btn.onclick = () => {
-        if (currentProject !== playingProject) {
-          // We allow playing a track from another project without switching currentProject?
-          switchProject(currentProject);
-        }
         playTrack(i);
       };
       tracklistEl.appendChild(btn);
     });
   }
 
-  // Variables to track currently playing project & track
-  let playingProject = currentProject;
-
-  // Play track by index, from current project (or from any project)
+  // Play track by index, from current project
   function playTrack(index) {
     currentTrackIndex = index;
-    playingProject = currentProject;
     audioPlayer.src = projects[currentProject].tracks[currentTrackIndex].url;
     audioPlayer.play();
     isPlaying = true;
@@ -478,146 +365,130 @@
 
   // Update UI elements when playing/paused or track changes
   function updateUIPlaying() {
-    // Update header
     projectTitleEl.textContent = projects[currentProject].title;
     nowPlayingEl.textContent = `Now Playing: Kozybeats - ${projects[currentProject].tracks[currentTrackIndex].title}`;
 
-    // Update cover and background overlay only if project changed (to not flicker)
     coverEl.src = projects[currentProject].cover;
     projectBgOverlay.style.backgroundImage = `url(${projects[currentProject].cover})`;
     projectBgOverlay.style.opacity = 1;
 
-    // Update active track button styles
     [...tracklistEl.children].forEach((btn, i) => {
       btn.classList.toggle('active', i === currentTrackIndex && isPlaying);
     });
 
-    // Update play/pause button icon
     if (isPlaying) {
-      playIcon.style.display = 'none';
-      pauseIcon.style.display = 'block';
+      playPauseBtn.innerHTML = '&#10074;&#10074;'; // Pause icon
+      startVinylSpin();
     } else {
-      playIcon.style.display = 'block';
-      pauseIcon.style.display = 'none';
+      playPauseBtn.innerHTML = '&#9654;'; // Play icon
+      stopVinylSpin();
     }
   }
 
-  // Switch project and update UI, but DO NOT stop playing track
+  // Switch project and update UI, load first track but don't auto-play
   function switchProject(projKey) {
     if (!projects[projKey]) return;
     currentProject = projKey;
 
-    // Update project buttons active states
     btnPillowcore.classList.toggle('active', projKey === 'pillowcore');
     btnEvening.classList.toggle('active', projKey === 'evening');
 
-    // Rebuild tracklist for new project
     buildTracklist();
 
-    // Update cover & background overlay to new project only if not playing a track outside new project
-    if (playingProject !== currentProject) {
-      coverEl.src = projects[currentProject].cover;
-      projectBgOverlay.style.backgroundImage = `url(${projects[currentProject].cover})`;
-      projectBgOverlay.style.opacity = 1;
-      projectTitleEl.textContent = projects[currentProject].title;
-
-      // If current playing track is NOT from new project, we keep it playing
-      // so just update nowPlaying text with correct playing track from other project
-      if (playingProject !== currentProject) {
-        nowPlayingEl.textContent = `Now Playing: Kozybeats - ${projects[playingProject].tracks[currentTrackIndex].title}`;
-      }
-    }
-
+    currentTrackIndex = 0;
+    audioPlayer.src = projects[currentProject].tracks[currentTrackIndex].url;
+    audioPlayer.load();
+    isPlaying = false;
     updateUIPlaying();
   }
 
-  // Playback control handlers
-  playPauseBtn.addEventListener('click', () => {
+  // Play/pause toggle
+  playPauseBtn.onclick = () => {
     if (isPlaying) {
       audioPlayer.pause();
-      isPlaying = false;
-      stopVinylSpin();
     } else {
       audioPlayer.play();
-      isPlaying = true;
-      startVinylSpin();
     }
-    updateUIPlaying();
-  });
+  };
 
-  nextBtn.addEventListener('click', () => {
-    playNextTrack();
-  });
-  prevBtn.addEventListener('click', () => {
-    playPreviousTrack();
-  });
-
-  function playNextTrack() {
-    let tracks = projects[currentProject].tracks;
-    if (shuffleEl.checked) {
-      // Pick random track index different from current
-      let rand;
-      do {
-        rand = Math.floor(Math.random() * tracks.length);
-      } while (rand === currentTrackIndex && tracks.length > 1);
-      currentTrackIndex = rand;
-    } else {
-      currentTrackIndex++;
-      if (currentTrackIndex >= tracks.length) {
-        if (repeatProjectEl.checked) currentTrackIndex = 0;
-        else {
-          currentTrackIndex = tracks.length - 1;
-          audioPlayer.pause();
-          isPlaying = false;
-          stopVinylSpin();
-          updateUIPlaying();
-          return;
-        }
-      }
-    }
-    playTrack(currentTrackIndex);
-  }
-  function playPreviousTrack() {
-    let tracks = projects[currentProject].tracks;
+  // Prev track
+  prevBtn.onclick = () => {
     currentTrackIndex--;
-    if (currentTrackIndex < 0) currentTrackIndex = tracks.length - 1;
+    if (currentTrackIndex < 0) currentTrackIndex = projects[currentProject].tracks.length - 1;
     playTrack(currentTrackIndex);
-  }
+  };
 
-  // Audio ended event to auto play next or repeat track/project
+  // Next track
+  nextBtn.onclick = () => {
+    currentTrackIndex++;
+    if (currentTrackIndex >= projects[currentProject].tracks.length) currentTrackIndex = 0;
+    playTrack(currentTrackIndex);
+  };
+
+  // Shuffle toggle (basic)
+  let shuffle = false;
+  shuffleBtn.onclick = () => {
+    shuffle = !shuffle;
+    shuffleBtn.style.background = shuffle ? '#806b5f' : '#a9917f';
+  };
+
+  // Repeat track toggle
+  let repeatTrack = false;
+  repeatTrackBtn.onclick = () => {
+    repeatTrack = !repeatTrack;
+    repeatTrackBtn.style.background = repeatTrack ? '#806b5f' : '#a9917f';
+  };
+
+  // Repeat project toggle
+  let repeatProject = false;
+  repeatProjectBtn.onclick = () => {
+    repeatProject = !repeatProject;
+    repeatProjectBtn.style.background = repeatProject ? '#806b5f' : '#a9917f';
+  };
+
+  // On track end
   audioPlayer.addEventListener('ended', () => {
-    if (repeatTrackEl.checked) {
+    if (repeatTrack) {
       audioPlayer.currentTime = 0;
       audioPlayer.play();
+    } else if (shuffle) {
+      currentTrackIndex = Math.floor(Math.random() * projects[currentProject].tracks.length);
+      playTrack(currentTrackIndex);
     } else {
-      playNextTrack();
+      currentTrackIndex++;
+      if (currentTrackIndex >= projects[currentProject].tracks.length) {
+        if (repeatProject) {
+          currentTrackIndex = 0;
+          playTrack(currentTrackIndex);
+        } else {
+          isPlaying = false;
+          updateUIPlaying();
+        }
+      } else {
+        playTrack(currentTrackIndex);
+      }
     }
   });
 
-  // Sync vinyl spin state with playback
   audioPlayer.addEventListener('play', () => {
     isPlaying = true;
-    startVinylSpin();
     updateUIPlaying();
   });
+
   audioPlayer.addEventListener('pause', () => {
     isPlaying = false;
-    stopVinylSpin();
     updateUIPlaying();
   });
 
-  // Initialize app UI
-  function init() {
-    switchProject(currentProject);
-    buildTracklist();
-    updateUIPlaying();
-    initParticles();
-    animateParticles();
-  }
-  init();
-</script>
+  // Project buttons events
+  btnPillowcore.onclick = () => switchProject('pillowcore');
+  btnEvening.onclick = () => switchProject('evening');
 
-<audio id="audioPlayer" preload="auto"></audio>
+  // Initialize particles and UI
+  initParticles();
+  animateParticles();
+  switchProject('pillowcore');
+</script>
 
 </body>
 </html>
