@@ -22,14 +22,23 @@
     color: #5a3e1a;
   }
 
-  /* Base background image (cozy) */
-  #base-background {
+  /* Video background container */
+  #video-background {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: url('https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227922/download_1_qtmkfq.jpg') no-repeat center center fixed;
-    background-size: cover;
-    filter: brightness(0.6);
+    overflow: hidden;
     z-index: 0;
+  }
+  #video-background video {
+    position: absolute;
+    top: 50%; left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    filter: brightness(0.6) blur(3px);
+    object-fit: cover;
     pointer-events: none;
   }
 
@@ -240,11 +249,21 @@
 </head>
 <body>
 
-  <div id="base-background"></div>
+  <!-- Video background -->
+  <div id="video-background" aria-hidden="true">
+    <video autoplay muted loop playsinline>
+      <source src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <!-- Dynamic cover blur background overlay -->
   <div id="dynamic-bg"></div>
+
+  <!-- Particles -->
   <div id="particles"></div>
 
-  <main id="main-content" role="main" aria-label="Pillowcore Radio Music Player">
+  <main id="main-content" role="main" aria-label="Music Player">
 
     <section id="left-side" aria-label="Album cover and spinning vinyl">
       <div id="vinyl-container">
@@ -261,7 +280,7 @@
     </section>
 
     <section id="right-side" aria-label="Music player and tracklist">
-      <h2>Kozybeats - Pillowcore Radio 🎧</h2>
+      <h2 id="pageHeader">Kozybeats - Pillowcore Radio 🎧</h2>
 
       <p id="nowPlaying">Now Playing: —</p>
 
@@ -294,8 +313,9 @@
   const tracklist = document.getElementById('tracklist');
   const cover = document.getElementById('cover');
   const dynamicBg = document.getElementById('dynamic-bg');
+  const pageHeader = document.getElementById('pageHeader');
 
-  // Start with tracklist hidden
+  // Tracklist visibility toggle
   let isTracklistVisible = false;
 
   cover.addEventListener('click', () => {
@@ -306,7 +326,8 @@
 
   function playTrack(url, title) {
     audioPlayer.src = url;
-    nowPlaying.textContent = `Now Playing: ${title}`;
+    nowPlaying.textContent = `Now Playing: Kozybeats - ${title}`;
+    pageHeader.textContent = `Kozybeats - ${title} 🎧`;
     audioPlayer.play();
 
     // Update dynamic background to a blurred version of cover
@@ -314,10 +335,7 @@
     dynamicBg.style.opacity = 1;
   }
 
-  // Optionally, auto play first track on load:
-  // playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', 'Ceiling Fan Dreams');
-
-  // Particle effect code - same as before:
+  // Particle effect code:
   const particlesContainer = document.getElementById('particles');
   const particleCount = 40;
   const particles = [];
