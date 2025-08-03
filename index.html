@@ -630,6 +630,7 @@
   let dataArray;
   let source;
   let bars = [];
+  let isVisualizerConnected = false;
 
   // Ambient sound audio elements with new sounds
   const ambientSounds = {
@@ -646,13 +647,12 @@
     sound.volume = 0;
   });
 
-  // State variables
+  // State variables (back to your original)
   let currentProjectId = PROJECTS_CONFIG[0].id;
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isShuffle = false;
   let isRepeat = false;
-  let userPreferences = {};
 
   // Initialize audio visualizer
   function initVisualizer() {
@@ -663,17 +663,14 @@
       visualizer.appendChild(bar);
       bars.push(bar);
     }
-
-    // Initialize Web Audio API when audio starts playing
-    audio.addEventListener('play', initWebAudio, { once: false });
     
     // Start animation loop
     animateVisualizer();
   }
 
-  // Initialize Web Audio API
-  function initWebAudio() {
-    if (audioContext) return; // Already initialized
+  // Try to connect Web Audio API (non-blocking)
+  function connectWebAudio() {
+    if (isVisualizerConnected) return;
     
     try {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -686,64 +683,47 @@
       source.connect(analyser);
       analyser.connect(audioContext.destination);
       
-      console.log('Web Audio API initialized');
+      isVisualizerConnected = true;
+      console.log('Visualizer connected');
     } catch (error) {
-      console.log('Web Audio API not supported:', error);
+      console.log('Visualizer unavailable:', error);
     }
   }
 
   // Animate visualizer bars
   function animateVisualizer() {
-    if (analyser && isPlaying) {
-      analyser.getByteFrequencyData(dataArray);
-      
-      for (let i = 0; i < bars.length; i++) {
-        const barHeight = (dataArray[i] / 255) * 80;
-        bars[i].style.height = Math.max(2, barHeight) + 'px';
+    if (analyser && isPlaying && isVisualizerConnected) {
+      try {
+        analyser.getByteFrequencyData(dataArray);
+        
+        for (let i = 0; i < bars.length; i++) {
+          const barHeight = (dataArray[i] / 255) * 80;
+          bars[i].style.height = Math.max(2, barHeight) + 'px';
+        }
+      } catch (error) {
+        // Fallback to fake animation
+        fakeBars();
       }
     } else {
-      // Default animation when not playing or no audio data
-      for (let i = 0; i < bars.length; i++) {
-        bars[i].style.height = '2px';
+      // Default state or fake animation when playing without Web Audio
+      if (isPlaying) {
+        fakeBars();
+      } else {
+        for (let i = 0; i < bars.length; i++) {
+          bars[i].style.height = '2px';
+        }
       }
     }
     
     requestAnimationFrame(animateVisualizer);
   }
 
-  // Load user preferences
-  function loadPreferences() {
-    const saved = {};
-    try {
-      // Since we can't use localStorage, we'll use default values
-      userPreferences = {
-        volume: 0.6,
-        ambientLevels: {
-          rain: 0,
-          vinylCrackle: 0,
-          fireplace: 0,
-          coffeeShop: 0,
-          ocean: 0
-        }
-      };
-    } catch (error) {
-      userPreferences = {
-        volume: 0.6,
-        ambientLevels: {
-          rain: 0,
-          vinylCrackle: 0,
-          fireplace: 0,
-          coffeeShop: 0,
-          ocean: 0
-        }
-      };
+  // Fake visualizer animation for when Web Audio API isn't available
+  function fakeBars() {
+    for (let i = 0; i < bars.length; i++) {
+      const randomHeight = Math.random() * 40 + 10;
+      bars[i].style.height = randomHeight + 'px';
     }
-  }
-
-  // Save user preferences
-  function savePreferences() {
-    // In a real environment, you would save to localStorage here
-    // localStorage.setItem('kozybeats-preferences', JSON.stringify(userPreferences));
   }
 
   // Shuffle helper
@@ -751,7 +731,7 @@
     return Math.floor(Math.random() * PROJECTS_CONFIG.find(p => p.id === currentProjectId).tracks.length);
   }
 
-  // Initialize volume
+  // Initialize volume (back to your original)
   audio.volume = 0.6;
 
   // Render projects sidebar
@@ -833,46 +813,27 @@
     });
   }
 
-  // Load the current track with crossfade effect
+  // Load the current track (back to your original working version)
   function loadTrack() {
     const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
     const track = project.tracks[currentTrackIndex];
-    
-    // Simple load without crossfade to avoid audio issues
     audio.src = track.url;
-    audio.load(); // Ensure the audio loads properly
-    
     nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
     spotifyLink.style.display = track.spotifyId ? 'inline-block' : 'none';
     spotifyLink.href = track.spotifyId ? project.spotifyPrefix + track.spotifyId : '#';
     vinyl.src = project.cover;
     updatePlayPauseIcon();
-    
-    // Visual feedback
-    document.body.style.boxShadow = 'inset 0 0 100px rgba(156, 119, 75, 0.1)';
-    setTimeout(() => {
-      document.body.style.boxShadow = 'none';
-    }, 500);
   }
 
-  // Play audio
+  // Play audio (back to your original working version)
   function playAudio() {
-    const playPromise = audio.play();
+    audio.play();
+    isPlaying = true;
+    updatePlayPauseIcon();
     
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        isPlaying = true;
-        updatePlayPauseIcon();
-        
-        // Resume audio context if suspended
-        if (audioContext && audioContext.state === 'suspended') {
-          audioContext.resume();
-        }
-      }).catch(error => {
-        console.log('Playback failed:', error);
-        isPlaying = false;
-        updatePlayPauseIcon();
-      });
+    // Try to connect visualizer after first user interaction
+    if (!isVisualizerConnected) {
+      connectWebAudio();
     }
   }
 
@@ -1049,22 +1010,19 @@
     ocean: document.getElementById('oceanVol')
   };
 
-  // Set up ambient sound controls
+  // Set up ambient sound controls (simplified)
   Object.keys(ambientSliders).forEach(soundName => {
     const slider = ambientSliders[soundName];
     const sound = ambientSounds[soundName];
     
     slider.addEventListener('input', () => {
       sound.volume = slider.value;
-      userPreferences.ambientLevels[soundName] = slider.value;
       
       if (slider.value > 0) {
         sound.play().catch(e => console.log('Audio play failed:', e));
       } else {
         sound.pause();
       }
-      
-      savePreferences();
     });
   });
 
@@ -1077,13 +1035,11 @@
     ambientPanel.style.display = 'none';
   });
 
-  // Volume slider changes
+  // Volume slider changes (simplified)
   volumeSlider.addEventListener('input', (e) => {
     audio.volume = e.target.value;
-    userPreferences.volume = e.target.value;
     audio.muted = false;
     updateVolumeIcon();
-    savePreferences();
   });
 
   muteBtn.addEventListener('click', toggleMute);
@@ -1108,20 +1064,10 @@
   repeatBtn.addEventListener('click', toggleRepeat);
 
   // Initialize everything
-  loadPreferences();
   initVisualizer();
   renderProjects();
   renderTracks();
   loadTrack();
-
-  // Apply saved preferences
-  audio.volume = userPreferences.volume;
-  volumeSlider.value = userPreferences.volume;
-  Object.keys(userPreferences.ambientLevels).forEach(soundName => {
-    if (ambientSliders[soundName]) {
-      ambientSliders[soundName].value = userPreferences.ambientLevels[soundName];
-    }
-  });
 
 </script>
 
