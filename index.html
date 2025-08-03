@@ -161,19 +161,24 @@
       transform: translateX(8px);
     }
     .track .spotify-mini {
-      background: rgba(29, 185, 84, 0.8);
+      background: rgba(29, 185, 84, 0.9);
       color: white;
       border: none;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.7rem;
-      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.6rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
+      min-width: 20px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .track .spotify-mini:hover {
       background: #1DB954;
-      transform: scale(1.05);
+      transform: scale(1.1);
     }
 
     /* Main player area */
@@ -329,45 +334,49 @@
       height: 24px;
     }
 
-    /* Progress bar */
+    /* Enhanced Progress bar */
     .progress-container {
       width: 100%;
-      margin-top: 12px;
+      margin-top: 15px;
       user-select: none;
+      padding: 5px 0; /* Extra clickable area */
     }
     input[type=range] {
       -webkit-appearance: none;
       width: 100%;
       background: transparent;
       cursor: pointer;
-      height: 10px;
-      border-radius: 5px;
+      height: 14px; /* Bigger for easier clicking */
+      border-radius: 7px;
+      padding: 2px 0; /* More clickable area */
     }
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       background: linear-gradient(135deg, #dab36b, #9c774b);
       cursor: pointer;
       border-radius: 50%;
-      border: none;
-      margin-top: -5px;
-      box-shadow: 0 0 10px rgba(218, 179, 107, 0.6);
+      border: 2px solid rgba(255,255,255,0.3);
+      margin-top: -6px;
+      box-shadow: 0 0 12px rgba(218, 179, 107, 0.7);
       transition: all 0.3s ease;
     }
     input[type=range]::-webkit-slider-thumb:hover {
-      transform: scale(1.2);
-      box-shadow: 0 0 15px rgba(218, 179, 107, 0.8);
+      transform: scale(1.3);
+      box-shadow: 0 0 18px rgba(218, 179, 107, 0.9);
+      border-color: rgba(255,255,255,0.6);
     }
     input[type=range]::-webkit-slider-runnable-track {
-      height: 10px;
+      height: 14px;
       background: linear-gradient(90deg, #9c774b 0%, #3c2f1d 100%);
-      border-radius: 5px;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+      border-radius: 7px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.4);
     }
     input[type=range]:focus {
       outline: none;
+      box-shadow: 0 0 0 3px rgba(218, 179, 107, 0.3);
     }
 
     /* Time display */
@@ -640,6 +649,9 @@
   feather.replace();
 
   // ===== EASY PROJECT CONFIGURATION =====
+  // 🎵 ADD YOUR NEW PROJECTS HERE! Just update this array with your Cloudinary URLs
+  // 🚀 RESERVED SLOTS: 500 potential new songs across all projects
+  
   const PROJECTS_CONFIG = [
     {
       id: 'pillowcore',
@@ -659,6 +671,8 @@
         { title: 'Rain on 4th Street', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3', spotifyId: '5ayVG1cbBOcDJkuSxrT63w' },
         { title: 'Moonlit Linen', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3', spotifyId: '6TE46h3nViLpz1qjNQqGqI' },
         { title: 'Midnight Left on Read', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3', spotifyId: '7kVrLvbdOfXdQeEKpWLjTx' }
+        // 🎵 ADD MORE PILLOWCORE TRACKS HERE (up to ~200 more slots available)
+        // { title: 'New Track Name', url: 'YOUR_CLOUDINARY_URL', spotifyId: 'SPOTIFY_ID' },
       ]
     },
     {
@@ -677,8 +691,20 @@
         { title: 'When the Floorboard Creaked', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/When_the_Floorboard_Creaked_ljcd2m.mp3', spotifyId: '6zZlCGrM4NjGYMaMHu6yeG' },
         { title: 'A Thread Pulled from the Moon', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/A_Thread_Pulled_from_the_Moon_kqjhdq.mp3', spotifyId: '2uHbJoODkV2JusPJW7SBL9' },
         { title: 'Between the Glow and the Silence', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3', spotifyId: '5vMcmcNnNKki4QQ2tyTLPq' }
+        // 🎵 ADD MORE EVENING STATIC TRACKS HERE (up to ~200 more slots available)
+        // { title: 'New Track Name', url: 'YOUR_CLOUDINARY_URL', spotifyId: 'SPOTIFY_ID' },
       ]
     }
+    // 🚀 ADD COMPLETELY NEW PROJECTS HERE! (up to ~100 more projects possible)
+    // {
+    //   id: 'newProjectId',
+    //   name: 'New Project Name',
+    //   cover: 'YOUR_CLOUDINARY_COVER_URL',
+    //   spotifyPrefix: 'https://open.spotify.com/track/',
+    //   tracks: [
+    //     { title: 'Track Name', url: 'YOUR_CLOUDINARY_AUDIO_URL', spotifyId: 'SPOTIFY_ID_OR_NULL' }
+    //   ]
+    // }
   ];
 
   // Elements
@@ -869,7 +895,7 @@
         const spotifyBtn = document.createElement('button');
         spotifyBtn.classList.add('spotify-mini');
         spotifyBtn.title = 'Open in Spotify';
-        spotifyBtn.textContent = '♫';
+        spotifyBtn.textContent = '♪';
         spotifyBtn.addEventListener('click', (e) => {
           e.stopPropagation();
           window.open(project.spotifyPrefix + track.spotifyId, '_blank');
@@ -960,51 +986,154 @@
     feather.replace();
   }
 
-  // Enhanced navigation
+  // Enhanced navigation with auto-progression through projects
   function nextTrack() {
-    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
-    if (!project.tracks.length) return;
+    const currentProject = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    if (!currentProject.tracks.length) return;
     
     if (isShuffle) {
       currentTrackIndex = getRandomTrackIndex();
     } else {
       currentTrackIndex++;
-      if (currentTrackIndex >= project.tracks.length) {
+      
+      // If we've reached the end of current project
+      if (currentTrackIndex >= currentProject.tracks.length) {
         if (isRepeat) {
+          // If repeat is on, restart current project
           currentTrackIndex = 0;
         } else {
-          currentTrackIndex = project.tracks.length - 1;
-          pauseAudio();
-          return;
+          // Auto-progress to next project
+          const currentProjectIndex = PROJECTS_CONFIG.findIndex(p => p.id === currentProjectId);
+          const nextProjectIndex = (currentProjectIndex + 1) % PROJECTS_CONFIG.length;
+          
+          if (nextProjectIndex !== currentProjectIndex) {
+            // Switch to next project
+            currentProjectId = PROJECTS_CONFIG[nextProjectIndex].id;
+            currentTrackIndex = 0;
+            renderProjects();
+            renderTracks();
+            
+            // Show project switch notification
+            showProjectSwitchNotification(PROJECTS_CONFIG[nextProjectIndex].name);
+          } else {
+            // We're at the last project and repeat is off
+            currentTrackIndex = currentProject.tracks.length - 1;
+            pauseAudio();
+            return;
+          }
         }
       }
     }
+    
     loadTrack();
     if (isPlaying) playAudio();
     renderTracks();
   }
 
   function prevTrack() {
-    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
-    if (!project.tracks.length) return;
+    const currentProject = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    if (!currentProject.tracks.length) return;
     
     if (isShuffle) {
       currentTrackIndex = getRandomTrackIndex();
     } else {
       currentTrackIndex--;
+      
+      // If we've gone before the start of current project
       if (currentTrackIndex < 0) {
         if (isRepeat) {
-          currentTrackIndex = project.tracks.length - 1;
+          // If repeat is on, go to last track of current project
+          currentTrackIndex = currentProject.tracks.length - 1;
         } else {
-          currentTrackIndex = 0;
-          pauseAudio();
-          return;
+          // Auto-progress to previous project
+          const currentProjectIndex = PROJECTS_CONFIG.findIndex(p => p.id === currentProjectId);
+          const prevProjectIndex = currentProjectIndex === 0 ? PROJECTS_CONFIG.length - 1 : currentProjectIndex - 1;
+          
+          if (prevProjectIndex !== currentProjectIndex) {
+            // Switch to previous project
+            currentProjectId = PROJECTS_CONFIG[prevProjectIndex].id;
+            const prevProject = PROJECTS_CONFIG[prevProjectIndex];
+            currentTrackIndex = prevProject.tracks.length - 1;
+            renderProjects();
+            renderTracks();
+            
+            // Show project switch notification
+            showProjectSwitchNotification(prevProject.name);
+          } else {
+            // We're at the first project
+            currentTrackIndex = 0;
+            pauseAudio();
+            return;
+          }
         }
       }
     }
+    
     loadTrack();
     if (isPlaying) playAudio();
     renderTracks();
+  }
+
+  // Project switch notification
+  function showProjectSwitchNotification(projectName) {
+    // Remove existing notification
+    const existingNotif = document.querySelector('.project-switch-notification');
+    if (existingNotif) existingNotif.remove();
+    
+    const notification = document.createElement('div');
+    notification.className = 'project-switch-notification';
+    notification.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <i data-feather="music" style="width: 20px; height: 20px;"></i>
+        <span>Now playing: <strong>${projectName}</strong></span>
+      </div>
+    `;
+    
+    notification.style.cssText = `
+      position: fixed;
+      top: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, rgba(156, 119, 75, 0.95), rgba(218, 179, 107, 0.95));
+      color: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      box-shadow: 0 8px 25px rgba(156, 119, 75, 0.4);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 1000;
+      animation: slideInFade 0.5s ease-out;
+      user-select: none;
+    `;
+    
+    // Add slide-in animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideInFade {
+        0% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+        100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      }
+      @keyframes slideOutFade {
+        0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+        100% { opacity: 0; transform: translateX(-50%) translateY(-20px); }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(notification);
+    feather.replace();
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.style.animation = 'slideOutFade 0.3s ease-in forwards';
+        setTimeout(() => {
+          if (notification.parentNode) notification.remove();
+        }, 300);
+      }
+    }, 3000);
   }
 
   // Enhanced button states
@@ -1179,17 +1308,20 @@
     volumeSlider.style.background = `linear-gradient(90deg, #9c774b ${percent}%, #3c2f1d ${percent}%)`;
   });
 
-  // Enhanced audio event listeners
+  // Enhanced audio event listeners with auto-progression
   audio.addEventListener('timeupdate', updateProgress);
   audio.addEventListener('loadedmetadata', () => {
     updateProgress();
     setLoadingState(false);
   });
   audio.addEventListener('ended', () => {
+    // Auto-progression logic
     if (isRepeat && !isShuffle) {
+      // If repeat is on and not shuffling, replay current track
       audio.currentTime = 0;
       playAudio();
     } else {
+      // Otherwise, go to next track (which handles project progression)
       nextTrack();
     }
   });
