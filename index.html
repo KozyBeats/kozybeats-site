@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kozybeats – Lofi Station</title>
+  <script src="https://unpkg.com/feather-icons"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
@@ -67,12 +68,21 @@
       100% { transform: rotate(360deg); }
     }
     .controls button {
-      background: none;
+      background: #1a1a1a;
       border: none;
       color: white;
-      font-size: 20px;
+      font-size: 16px;
       margin: 0 6px;
       cursor: pointer;
+      padding: 10px;
+      border-radius: 8px;
+      transition: background 0.2s;
+    }
+    .controls button:hover {
+      background: #333;
+    }
+    .controls i {
+      vertical-align: middle;
     }
     .spotify {
       margin-top: 5px;
@@ -122,11 +132,11 @@
           <a id="spotifyLink" class="spotify" href="#" target="_blank" style="display:none;">Open in Spotify</a>
         </div>
         <div class="controls">
-          <button id="prev">⏮️</button>
-          <button id="playPause">⏯️</button>
-          <button id="next">⏭️</button>
-          <button id="shuffle">🔀</button>
-          <button id="repeat">🔁</button>
+          <button id="prev"><i data-feather="skip-back"></i></button>
+          <button id="playPause"><i data-feather="play"></i></button>
+          <button id="next"><i data-feather="skip-forward"></i></button>
+          <button id="shuffle"><i data-feather="shuffle"></i></button>
+          <button id="repeat"><i data-feather="repeat"></i></button>
         </div>
       </div>
       <audio id="audio" preload="auto"></audio>
@@ -135,40 +145,7 @@
   </div>
 
   <script>
-    const projects = {{
-      "Pillowcore Radio": {{
-        cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png",
-        tracks: [
-          {{ name: "Ceiling Fan Dreams", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3" }},
-          {{ name: "Curtains Closed", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3" }},
-          {{ name: "Dream Archive", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3" }},
-          {{ name: "Glow Sink", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3" }},
-          {{ name: "Lavender Shadows", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3" }},
-          {{ name: "Midnight Left on Read", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3" }},
-          {{ name: "Moonlit Linen", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3" }},
-          {{ name: "Paper Walls", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3" }},
-          {{ name: "Rain on 4th Street", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3" }},
-          {{ name: "Snooze Signal", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3" }},
-          {{ name: "Warm Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3" }},
-          {{ name: "Whispers in Blue", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3" }}
-        ]
-      }},
-      "Evening Static": {{
-        cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229102/056f89b5bdd7b2944636c4e480196abe_1_bhyub6.jpg",
-        tracks: [
-          {{ name: "Curtains Breathing Slow", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Curtains_Breathing_Slow_si8vdi.mp3" }},
-          {{ name: "Heard My Name in the Hiss", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Heard_My_Name_in_the_Hiss_yi1jfb.mp3" }},
-          {{ name: "Stayed Just Long Enough", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229136/Stayed_Just_Long_Enough_wlkxsb.mp3" }},
-          {{ name: "Memories on the Window Glass", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229137/Memories_on_the_Window_Glass_uw4vxm.mp3" }},
-          {{ name: "TV Snow in My Mind", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229138/TV_Snow_in_My_Mind_oxtsqi.mp3" }},
-          {{ name: "Pages Left Open", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/Pages_Left_Open_r4bxvz.mp3" }},
-          {{ name: "The Fan Still Spins", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/The_Fan_Still_Spins_qba31z.mp3" }},
-          {{ name: "When the Floorboard Creaked", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/When_the_Floorboard_Creaked_ljcd2m.mp3" }},
-          {{ name: "A Thread Pulled from the Moon", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/A_Thread_Pulled_from_the_Moon_kqjhdq.mp3" }},
-          {{ name: "Between the Glow and the Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3" }}
-        ]
-      }}
-    }};
+    feather.replace();
 
     const audio = document.getElementById('audio');
     const nowPlaying = document.getElementById('nowPlaying');
@@ -182,33 +159,49 @@
     let isShuffling = false;
     let isRepeating = false;
 
+    const projects = {
+      "Pillowcore Radio": {
+        cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png",
+        tracks: [
+          { name: "Ceiling Fan Dreams", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3" },
+          { name: "Curtains Closed", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3" },
+          { name: "Dream Archive", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3" }
+        ]
+      },
+      "Evening Static": {
+        cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229102/056f89b5bdd7b2944636c4e480196abe_1_bhyub6.jpg",
+        tracks: [
+          { name: "Curtains Breathing Slow", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Curtains_Breathing_Slow_si8vdi.mp3" },
+          { name: "Heard My Name in the Hiss", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Heard_My_Name_in_the_Hiss_yi1jfb.mp3" }
+        ]
+      }
+    };
+
     function loadProjects() {
       projectList.innerHTML = '';
       for (const [title, data] of Object.entries(projects)) {
         const img = document.createElement('img');
         img.src = data.cover;
         img.className = 'project-cover';
-        img.onclick = () => {{
+        img.onclick = () => {
           currentProject = title;
           updateTrackList();
           vinyl.src = data.cover;
-        }};
+        };
         projectList.appendChild(img);
       }
     }
 
     function updateTrackList() {
       trackList.innerHTML = '';
-      projects[currentProject].tracks.forEach((track, i) => {{
+      projects[currentProject].tracks.forEach((track, i) => {
         const btn = document.createElement('div');
         btn.className = 'track';
         btn.textContent = track.name;
-        btn.onclick = () => {{
-          playTrack(i);
-        }};
+        btn.onclick = () => playTrack(i);
         if (i === currentTrackIndex) btn.classList.add('active');
         trackList.appendChild(btn);
-      }});
+      });
     }
 
     function playTrack(index) {
@@ -216,36 +209,38 @@
       const track = project.tracks[index];
       audio.src = track.url;
       nowPlaying.textContent = `Now Playing: Kozybeats - ${track.name}`;
-      spotifyLink.style.display = 'none';
       audio.play();
       currentTrackIndex = index;
       updateTrackList();
     }
 
-    document.getElementById('playPause').onclick = () => {{
-      if (audio.paused) audio.play();
-      else audio.pause();
-    }};
-    document.getElementById('next').onclick = () => {{
-      nextTrack();
-    }};
-    document.getElementById('prev').onclick = () => {{
+    document.getElementById('playPause').onclick = () => {
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    };
+
+    document.getElementById('next').onclick = () => nextTrack();
+    document.getElementById('prev').onclick = () => {
       currentTrackIndex = Math.max(0, currentTrackIndex - 1);
       playTrack(currentTrackIndex);
-    }};
-    document.getElementById('shuffle').onclick = () => {{
+    };
+    document.getElementById('shuffle').onclick = () => {
       isShuffling = !isShuffling;
       alert('Shuffle: ' + (isShuffling ? 'On' : 'Off'));
-    }};
-    document.getElementById('repeat').onclick = () => {{
+    };
+    document.getElementById('repeat').onclick = () => {
       isRepeating = !isRepeating;
       alert('Repeat: ' + (isRepeating ? 'On' : 'Off'));
-    }};
-    audio.onended = () => {{
+    };
+    audio.onended = () => {
       if (isRepeating) playTrack(currentTrackIndex);
       else nextTrack();
-    }};
-    function nextTrack() {{
+    };
+
+    function nextTrack() {
       const tracks = projects[currentProject].tracks;
       if (isShuffling) {
         const random = Math.floor(Math.random() * tracks.length);
@@ -256,7 +251,6 @@
       }
     }
 
-    // Init
     loadProjects();
     updateTrackList();
     playTrack(currentTrackIndex);
