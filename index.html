@@ -9,48 +9,58 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins&display=swap" rel="stylesheet" />
 
   <style>
-    /* Reset & base */
+    /* Reset */
+    * {
+      box-sizing: border-box;
+    }
     body, html {
       margin: 0; padding: 0; height: 100%;
       font-family: 'Poppins', sans-serif;
-      background: url('https://i.imgur.com/j0g9zcb.gif') no-repeat center center fixed;
-      background-size: cover;
       overflow: hidden;
+      background: #f6f0e8;
       position: relative;
-      filter: blur(2px);
-    }
-    /* Blur overlay */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(250, 240, 230, 0.3);
-      pointer-events: none;
-      filter: none;
-      z-index: 0;
+      color: #5a3e1a;
     }
 
-    /* Container for player + visuals, unblurred */
-    #main-content {
+    /* Background image with blur behind everything */
+    #background {
       position: fixed;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      z-index: 10;
-      width: 360px;
-      background: #fff8f0cc; /* soft warm white, semi-transparent */
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('https://i.imgur.com/j0g9zcb.gif') no-repeat center center fixed;
+      background-size: cover;
+      filter: blur(6px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Particle container over background but behind main content */
+    #particles {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Main content container */
+    #main-content {
+      position: relative;
+      z-index: 2;
+      max-width: 360px;
+      margin: 50px auto 80px auto;
+      background: #fff8f0;
       border-radius: 20px;
       padding: 20px;
       box-shadow: 0 0 20px rgba(150, 100, 50, 0.25);
-      backdrop-filter: none;
-      color: #5a3e1a;
       user-select: none;
+      text-align: center;
     }
 
+    /* Fonts */
     h2 {
       font-family: 'Montserrat', sans-serif;
       font-weight: 600;
-      margin-bottom: 15px;
       font-size: 28px;
+      margin-bottom: 15px;
       color: #6a4f3a;
       user-select: text;
     }
@@ -60,8 +70,17 @@
       width: 100%;
       border-radius: 16px;
       margin-bottom: 15px;
-      user-select: none;
       box-shadow: 0 0 10px rgba(150, 100, 50, 0.15);
+      user-select: none;
+    }
+
+    /* Now playing */
+    #nowPlaying {
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #6a4f3a;
+      user-select: text;
     }
 
     /* Audio player */
@@ -93,25 +112,17 @@
       background: #a98b63;
     }
 
-    /* Now Playing text */
-    #nowPlaying {
-      font-weight: 600;
-      margin-bottom: 15px;
-      color: #6a4f3a;
-      font-family: 'Montserrat', sans-serif;
-      user-select: text;
-    }
-
-    /* Spinning vinyl container */
+    /* Vinyl container */
     #vinyl-container {
       width: 150px;
       height: 150px;
       margin: 0 auto 25px auto;
       position: relative;
       user-select: none;
+      z-index: 3;
     }
 
-    /* Vinyl circle */
+    /* Vinyl disc */
     #vinyl {
       width: 150px;
       height: 150px;
@@ -121,6 +132,7 @@
       box-shadow: inset 0 0 30px #3c2a0e;
       animation: spin 20s linear infinite;
       position: relative;
+      margin: 0 auto;
     }
 
     /* Vinyl center label */
@@ -137,19 +149,9 @@
       border: 3px solid #a98b63;
     }
 
-    /* Spin animation */
     @keyframes spin {
       from { transform: rotate(0deg);}
       to { transform: rotate(360deg);}
-    }
-
-    /* Particle container */
-    #particles {
-      pointer-events: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      z-index: 5;
-      overflow: hidden;
     }
 
     /* Particle style */
@@ -158,17 +160,23 @@
       background: rgba(170, 140, 90, 0.3);
       border-radius: 50%;
       opacity: 0.7;
-      animation-timing-function: linear;
       filter: blur(1px);
       will-change: transform;
+      animation-timing-function: linear;
     }
   </style>
 </head>
 <body>
 
+  <div id="background"></div>
+
   <div id="particles"></div>
 
   <div id="main-content" role="main" aria-label="Music player and tracks">
+
+    <div id="vinyl-container">
+      <div id="vinyl"></div>
+    </div>
 
     <img id="cover" src="https://dl.dropboxusercontent.com/s/keokbqixjjupv7v1bkx71/pillow-radio.png" alt="Pillowcore album cover by Kozybeats" />
 
@@ -194,10 +202,6 @@
     </div>
   </div>
 
-  <div id="vinyl-container">
-    <div id="vinyl"></div>
-  </div>
-
   <script>
     // Audio player logic
     const audioPlayer = document.getElementById('audioPlayer');
@@ -209,7 +213,7 @@
       audioPlayer.play();
     }
 
-    // Particles code
+    // Particles
     const particlesContainer = document.getElementById('particles');
     const particleCount = 40;
     const particles = [];
@@ -261,19 +265,7 @@
       requestAnimationFrame(animate);
     }
     animate();
-
-    // Vinyl container positioning (center above player)
-    const vinylContainer = document.getElementById('vinyl-container');
-    const mainContent = document.getElementById('main-content');
-    function positionVinyl() {
-      const rect = mainContent.getBoundingClientRect();
-      vinylContainer.style.position = 'fixed';
-      vinylContainer.style.top = (rect.top - 180) + 'px';
-      vinylContainer.style.left = (rect.left + rect.width / 2 - 75) + 'px';
-      vinylContainer.style.zIndex = '10';
-    }
-    window.addEventListener('resize', positionVinyl);
-    window.addEventListener('load', positionVinyl);
   </script>
+
 </body>
 </html>
