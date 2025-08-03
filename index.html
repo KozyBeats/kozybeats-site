@@ -151,6 +151,37 @@
       padding-bottom: 15px;
     }
 
+    /* Audio Visualizer */
+    .visualizer-container {
+      background: rgba(0, 0, 0, 0.4);
+      border-radius: 16px;
+      padding: 20px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .visualizer {
+      display: flex;
+      align-items: end;
+      justify-content: center;
+      gap: 3px;
+      height: 80px;
+      width: 100%;
+    }
+    
+    .visualizer-bar {
+      background: linear-gradient(180deg, #dab36b 0%, #9c774b 100%);
+      border-radius: 2px;
+      width: 4px;
+      min-height: 2px;
+      transition: height 0.1s ease;
+      box-shadow: 0 0 4px rgba(156, 119, 75, 0.5);
+    }
+
     /* Player controls */
     .player {
       background: rgba(0, 0, 0, 0.6);
@@ -348,7 +379,7 @@
       position: fixed;
       bottom: 110px;
       right: 20px;
-      width: 280px;
+      width: 300px;
       background: rgba(0,0,0,0.85);
       border-radius: 14px;
       padding: 16px;
@@ -402,6 +433,19 @@
     .tracklist::-webkit-scrollbar-thumb {
       background: #9c774b;
     }
+
+    /* Keyboard shortcuts info */
+    .shortcuts {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(0,0,0,0.7);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: #888;
+      user-select: none;
+    }
   </style>
 </head>
 <body>
@@ -422,6 +466,11 @@
 
     <!-- Center: Player -->
     <section class="main">
+      <!-- Audio Visualizer -->
+      <div class="visualizer-container">
+        <div class="visualizer" id="visualizer"></div>
+      </div>
+
       <div class="player">
         <img id="vinyl" class="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Vinyl cover" />
         <div class="info-buttons">
@@ -440,21 +489,21 @@
 
         <div style="display:flex; align-items:center; gap:12px;">
           <div class="controls">
-            <button id="prev" title="Previous Track" aria-label="Previous Track"><i data-feather="skip-back"></i></button>
-            <button id="playPause" title="Play/Pause" aria-label="Play/Pause"><i data-feather="play"></i></button>
-            <button id="next" title="Next Track" aria-label="Next Track"><i data-feather="skip-forward"></i></button>
-            <button id="shuffle" title="Shuffle" aria-label="Shuffle"><i data-feather="shuffle"></i></button>
-            <button id="repeat" title="Repeat" aria-label="Repeat"><i data-feather="repeat"></i></button>
+            <button id="prev" title="Previous Track (←)" aria-label="Previous Track"><i data-feather="skip-back"></i></button>
+            <button id="playPause" title="Play/Pause (Space)" aria-label="Play/Pause"><i data-feather="play"></i></button>
+            <button id="next" title="Next Track (→)" aria-label="Next Track"><i data-feather="skip-forward"></i></button>
+            <button id="shuffle" title="Shuffle (S)" aria-label="Shuffle"><i data-feather="shuffle"></i></button>
+            <button id="repeat" title="Repeat (R)" aria-label="Repeat"><i data-feather="repeat"></i></button>
           </div>
 
           <div class="volume-container" title="Volume Control" aria-label="Volume Control">
-            <button id="muteBtn" title="Mute/Unmute" aria-label="Mute/Unmute" style="all: unset; cursor: pointer; color: white;">
+            <button id="muteBtn" title="Mute/Unmute (M)" aria-label="Mute/Unmute" style="all: unset; cursor: pointer; color: white;">
               <i data-feather="volume-2" id="volumeIcon"></i>
             </button>
             <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.6" />
           </div>
 
-          <button class="ambient-button" id="ambientBtn" title="Toggle Ambient Sounds" aria-label="Toggle Ambient Sounds">
+          <button class="ambient-button" id="ambientBtn" title="Toggle Ambient Sounds (A)" aria-label="Toggle Ambient Sounds">
             <i data-feather="wind"></i> Ambience
           </button>
         </div>
@@ -475,48 +524,32 @@
       <label for="vinylCrackleVol">Vinyl Crackle</label>
       <input type="range" id="vinylCrackleVol" min="0" max="1" step="0.01" value="0" />
     </div>
+    <div class="ambient-sound">
+      <label for="fireplaceVol">Fireplace</label>
+      <input type="range" id="fireplaceVol" min="0" max="1" step="0.01" value="0" />
+    </div>
+    <div class="ambient-sound">
+      <label for="coffeeShopVol">Coffee Shop</label>
+      <input type="range" id="coffeeShopVol" min="0" max="1" step="0.01" value="0" />
+    </div>
+    <div class="ambient-sound">
+      <label for="oceanVol">Ocean Waves</label>
+      <input type="range" id="oceanVol" min="0" max="1" step="0.01" value="0" />
+    </div>
     <button id="ambientCloseBtn" style="margin-top:10px; padding:8px; border:none; border-radius:8px; background:#9c774b; color:#fff; cursor:pointer; font-weight:bold;">Close</button>
+  </div>
+
+  <!-- Keyboard shortcuts info -->
+  <div class="shortcuts">
+    Space: Play/Pause • ←/→: Prev/Next • S: Shuffle • R: Repeat • M: Mute • A: Ambience
   </div>
 
 <script>
   feather.replace();
 
-  // Elements
-  const projectsContainer = document.getElementById('projects');
-  const tracksContainer = document.getElementById('tracks');
-  const nowPlaying = document.getElementById('nowPlaying');
-  const spotifyLink = document.getElementById('spotifyLink');
-  const vinyl = document.getElementById('vinyl');
-  const audio = document.getElementById('audio');
-  const playPauseBtn = document.getElementById('playPause');
-  const progress = document.getElementById('progress');
-  const currentTimeEl = document.getElementById('currentTime');
-  const durationEl = document.getElementById('duration');
-  const prevBtn = document.getElementById('prev');
-  const nextBtn = document.getElementById('next');
-  const shuffleBtn = document.getElementById('shuffle');
-  const repeatBtn = document.getElementById('repeat');
-  const muteBtn = document.getElementById('muteBtn');
-  const volumeSlider = document.getElementById('volumeSlider');
-  const volumeIcon = document.getElementById('volumeIcon');
-  const ambientBtn = document.getElementById('ambientBtn');
-  const ambientPanel = document.getElementById('ambientPanel');
-  const ambientCloseBtn = document.getElementById('ambientCloseBtn');
-  const rainVolSlider = document.getElementById('rainVol');
-  const vinylCrackleVolSlider = document.getElementById('vinylCrackleVol');
-
-  // Ambient sound audio elements
-  const ambientSounds = {
-    rain: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"),
-    vinylCrackle: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233867/ambient_vinyl_crackle.mp3")
-  };
-  ambientSounds.rain.loop = true;
-  ambientSounds.vinylCrackle.loop = true;
-  ambientSounds.rain.volume = 0;
-  ambientSounds.vinylCrackle.volume = 0;
-
-  // Projects & Tracks Data
-  const projects = [
+  // ===== EASY PROJECT CONFIGURATION =====
+  // Add your new projects here! Just update this array with your Cloudinary URLs
+  const PROJECTS_CONFIG = [
     {
       id: 'pillowcore',
       name: 'Pillowcore Radio',
@@ -555,17 +588,151 @@
         { title: 'Between the Glow and the Silence', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3', spotifyId: '5vMcmcNnNKki4QQ2tyTLPq' }
       ]
     }
+    // ADD NEW PROJECTS HERE! Just copy the structure above and change the URLs/info
+    // Example:
+    // {
+    //   id: 'newProject',
+    //   name: 'New Project Name',
+    //   cover: 'YOUR_CLOUDINARY_COVER_URL',
+    //   spotifyPrefix: 'https://open.spotify.com/track/',
+    //   tracks: [
+    //     { title: 'Track Name', url: 'YOUR_CLOUDINARY_AUDIO_URL', spotifyId: 'SPOTIFY_ID' }
+    //   ]
+    // }
   ];
 
-  let currentProjectId = projects[0].id;
+  // Elements
+  const projectsContainer = document.getElementById('projects');
+  const tracksContainer = document.getElementById('tracks');
+  const nowPlaying = document.getElementById('nowPlaying');
+  const spotifyLink = document.getElementById('spotifyLink');
+  const vinyl = document.getElementById('vinyl');
+  const audio = document.getElementById('audio');
+  const playPauseBtn = document.getElementById('playPause');
+  const progress = document.getElementById('progress');
+  const currentTimeEl = document.getElementById('currentTime');
+  const durationEl = document.getElementById('duration');
+  const prevBtn = document.getElementById('prev');
+  const nextBtn = document.getElementById('next');
+  const shuffleBtn = document.getElementById('shuffle');
+  const repeatBtn = document.getElementById('repeat');
+  const muteBtn = document.getElementById('muteBtn');
+  const volumeSlider = document.getElementById('volumeSlider');
+  const volumeIcon = document.getElementById('volumeIcon');
+  const ambientBtn = document.getElementById('ambientBtn');
+  const ambientPanel = document.getElementById('ambientPanel');
+  const ambientCloseBtn = document.getElementById('ambientCloseBtn');
+
+  // Audio Visualizer
+  const visualizer = document.getElementById('visualizer');
+  let audioContext;
+  let analyser;
+  let dataArray;
+  let source;
+  let bars = [];
+
+  // Ambient sound audio elements with new sounds
+  const ambientSounds = {
+    rain: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"),
+    vinylCrackle: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233867/ambient_vinyl_crackle.mp3"),
+    fireplace: new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"), // Replace with your fireplace URL
+    coffeeShop: new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"), // Replace with your coffee shop URL
+    ocean: new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.wav") // Replace with your ocean waves URL
+  };
+
+  // Set up ambient sounds
+  Object.values(ambientSounds).forEach(sound => {
+    sound.loop = true;
+    sound.volume = 0;
+  });
+
+  // State variables
+  let currentProjectId = PROJECTS_CONFIG[0].id;
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isShuffle = false;
   let isRepeat = false;
+  let userPreferences = {};
+
+  // Initialize audio visualizer
+  function initVisualizer() {
+    // Create bars for visualizer
+    for (let i = 0; i < 64; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'visualizer-bar';
+      visualizer.appendChild(bar);
+      bars.push(bar);
+    }
+
+    // Initialize Web Audio API
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioContext.createAnalyser();
+      analyser.fftSize = 128;
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      
+      source = audioContext.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioContext.destination);
+      
+      animateVisualizer();
+    } catch (error) {
+      console.log('Web Audio API not supported');
+    }
+  }
+
+  // Animate visualizer bars
+  function animateVisualizer() {
+    if (!analyser) return;
+    
+    analyser.getByteFrequencyData(dataArray);
+    
+    for (let i = 0; i < bars.length; i++) {
+      const barHeight = (dataArray[i] / 255) * 80;
+      bars[i].style.height = Math.max(2, barHeight) + 'px';
+    }
+    
+    requestAnimationFrame(animateVisualizer);
+  }
+
+  // Load user preferences
+  function loadPreferences() {
+    const saved = {};
+    try {
+      // Since we can't use localStorage, we'll use default values
+      userPreferences = {
+        volume: 0.6,
+        ambientLevels: {
+          rain: 0,
+          vinylCrackle: 0,
+          fireplace: 0,
+          coffeeShop: 0,
+          ocean: 0
+        }
+      };
+    } catch (error) {
+      userPreferences = {
+        volume: 0.6,
+        ambientLevels: {
+          rain: 0,
+          vinylCrackle: 0,
+          fireplace: 0,
+          coffeeShop: 0,
+          ocean: 0
+        }
+      };
+    }
+  }
+
+  // Save user preferences
+  function savePreferences() {
+    // In a real environment, you would save to localStorage here
+    // localStorage.setItem('kozybeats-preferences', JSON.stringify(userPreferences));
+  }
 
   // Shuffle helper
   function getRandomTrackIndex() {
-    return Math.floor(Math.random() * projects.find(p => p.id === currentProjectId).tracks.length);
+    return Math.floor(Math.random() * PROJECTS_CONFIG.find(p => p.id === currentProjectId).tracks.length);
   }
 
   // Initialize volume
@@ -574,7 +741,7 @@
   // Render projects sidebar
   function renderProjects() {
     projectsContainer.innerHTML = '';
-    projects.forEach(project => {
+    PROJECTS_CONFIG.forEach(project => {
       const div = document.createElement('div');
       div.classList.add('project-item');
       if (project.id === currentProjectId) div.classList.add('active');
@@ -596,6 +763,7 @@
           currentTrackIndex = 0;
           renderProjects();
           renderTracks();
+          loadTrack();
         }
       });
 
@@ -605,14 +773,17 @@
 
   // Render tracklist for current project
   function renderTracks() {
-    const project = projects.find(p => p.id === currentProjectId);
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
     tracksContainer.innerHTML = '';
     project.tracks.forEach((track, idx) => {
       const div = document.createElement('div');
       div.classList.add('track');
       if (idx === currentTrackIndex) div.classList.add('active');
-      div.textContent = track.title;
-      div.title = track.title;
+      
+      const title = document.createElement('span');
+      title.textContent = track.title;
+      title.style.flex = '1';
+      div.appendChild(title);
 
       // Add spotify button
       const spotifyBtn = document.createElement('button');
@@ -646,27 +817,44 @@
     });
   }
 
-  // Load the current track
+  // Load the current track with crossfade effect
   function loadTrack() {
-    const project = projects.find(p => p.id === currentProjectId);
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
     const track = project.tracks[currentTrackIndex];
-    audio.src = track.url;
+    
+    // Crossfade effect
+    if (isPlaying) {
+      const fadeOut = setInterval(() => {
+        if (audio.volume > 0.1) {
+          audio.volume -= 0.1;
+        } else {
+          clearInterval(fadeOut);
+          audio.src = track.url;
+          audio.volume = userPreferences.volume;
+        }
+      }, 50);
+    } else {
+      audio.src = track.url;
+    }
+    
     nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
     spotifyLink.style.display = track.spotifyId ? 'inline-block' : 'none';
     spotifyLink.href = track.spotifyId ? project.spotifyPrefix + track.spotifyId : '#';
-    vinyl.src = track.url ? trackCoverFromUrl(track.url) : project.cover;
+    vinyl.src = project.cover;
     updatePlayPauseIcon();
-  }
-
-  // Helper to get cover image for vinyl: uses project cover by default
-  // For now, since no separate covers per song, use project cover
-  function trackCoverFromUrl(url) {
-    const project = projects.find(p => p.tracks.some(t => t.url === url));
-    return project ? project.cover : vinyl.src;
+    
+    // Visual feedback
+    document.body.style.boxShadow = 'inset 0 0 100px rgba(156, 119, 75, 0.1)';
+    setTimeout(() => {
+      document.body.style.boxShadow = 'none';
+    }, 500);
   }
 
   // Play audio
   function playAudio() {
+    if (audioContext && audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
     audio.play();
     isPlaying = true;
     updatePlayPauseIcon();
@@ -697,7 +885,7 @@
 
   // Next track logic
   function nextTrack() {
-    const project = projects.find(p => p.id === currentProjectId);
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
     if (isShuffle) {
       currentTrackIndex = getRandomTrackIndex();
     } else {
@@ -719,7 +907,7 @@
 
   // Previous track logic
   function prevTrack() {
-    const project = projects.find(p => p.id === currentProjectId);
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
     if (isShuffle) {
       currentTrackIndex = getRandomTrackIndex();
     } else {
@@ -743,12 +931,14 @@
   function toggleShuffle() {
     isShuffle = !isShuffle;
     shuffleBtn.style.color = isShuffle ? '#dab36b' : 'white';
+    shuffleBtn.style.background = isShuffle ? '#3c2f1d' : '#1a1a1a';
   }
 
   // Repeat toggle
   function toggleRepeat() {
     isRepeat = !isRepeat;
     repeatBtn.style.color = isRepeat ? '#dab36b' : 'white';
+    repeatBtn.style.background = isRepeat ? '#3c2f1d' : '#1a1a1a';
   }
 
   // Update progress bar and time display
@@ -786,6 +976,7 @@
     }
     feather.replace();
   }
+
   function toggleMute() {
     audio.muted = !audio.muted;
     if (audio.muted) {
@@ -796,22 +987,76 @@
     updateVolumeIcon();
   }
 
-  // Ambient sound volume updates
-  rainVolSlider.addEventListener('input', () => {
-    ambientSounds.rain.volume = rainVolSlider.value;
-    if (rainVolSlider.value > 0) ambientSounds.rain.play();
-    else ambientSounds.rain.pause();
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    // Only handle shortcuts if not typing in an input
+    if (e.target.tagName.toLowerCase() === 'input') return;
+    
+    switch (e.code) {
+      case 'Space':
+        e.preventDefault();
+        togglePlayPause();
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        prevTrack();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        nextTrack();
+        break;
+      case 'KeyS':
+        e.preventDefault();
+        toggleShuffle();
+        break;
+      case 'KeyR':
+        e.preventDefault();
+        toggleRepeat();
+        break;
+      case 'KeyM':
+        e.preventDefault();
+        toggleMute();
+        break;
+      case 'KeyA':
+        e.preventDefault();
+        ambientPanel.style.display = ambientPanel.style.display === 'flex' ? 'none' : 'flex';
+        break;
+    }
   });
-  vinylCrackleVolSlider.addEventListener('input', () => {
-    ambientSounds.vinylCrackle.volume = vinylCrackleVolSlider.value;
-    if (vinylCrackleVolSlider.value > 0) ambientSounds.vinylCrackle.play();
-    else ambientSounds.vinylCrackle.pause();
+
+  // Ambient sound controls
+  const ambientSliders = {
+    rain: document.getElementById('rainVol'),
+    vinylCrackle: document.getElementById('vinylCrackleVol'),
+    fireplace: document.getElementById('fireplaceVol'),
+    coffeeShop: document.getElementById('coffeeShopVol'),
+    ocean: document.getElementById('oceanVol')
+  };
+
+  // Set up ambient sound controls
+  Object.keys(ambientSliders).forEach(soundName => {
+    const slider = ambientSliders[soundName];
+    const sound = ambientSounds[soundName];
+    
+    slider.addEventListener('input', () => {
+      sound.volume = slider.value;
+      userPreferences.ambientLevels[soundName] = slider.value;
+      
+      if (slider.value > 0) {
+        sound.play().catch(e => console.log('Audio play failed:', e));
+      } else {
+        sound.pause();
+      }
+      
+      savePreferences();
+    });
   });
 
   // Ambient panel toggle
   ambientBtn.addEventListener('click', () => {
     ambientPanel.style.display = ambientPanel.style.display === 'flex' ? 'none' : 'flex';
   });
+  
   ambientCloseBtn.addEventListener('click', () => {
     ambientPanel.style.display = 'none';
   });
@@ -819,8 +1064,10 @@
   // Volume slider changes
   volumeSlider.addEventListener('input', (e) => {
     audio.volume = e.target.value;
+    userPreferences.volume = e.target.value;
     audio.muted = false;
     updateVolumeIcon();
+    savePreferences();
   });
 
   muteBtn.addEventListener('click', toggleMute);
@@ -844,13 +1091,23 @@
   shuffleBtn.addEventListener('click', toggleShuffle);
   repeatBtn.addEventListener('click', toggleRepeat);
 
-  // Initial render
+  // Initialize everything
+  loadPreferences();
+  initVisualizer();
   renderProjects();
   renderTracks();
   loadTrack();
+
+  // Apply saved preferences
+  audio.volume = userPreferences.volume;
+  volumeSlider.value = userPreferences.volume;
+  Object.keys(userPreferences.ambientLevels).forEach(soundName => {
+    if (ambientSliders[soundName]) {
+      ambientSliders[soundName].value = userPreferences.ambientLevels[soundName];
+    }
+  });
 
 </script>
 
 </body>
 </html>
-
