@@ -5,330 +5,429 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>KozyBeats Lofi Player</title>
 <style>
-  * { box-sizing: border-box; }
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+  * {
+    box-sizing: border-box;
+  }
   body, html {
-    margin: 0; padding: 0;
-    height: 100%;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #1e1e1e;
-    color: #ddd;
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Poppins', sans-serif;
+    background: #1f1b27;
+    color: #e7e3e8;
     overflow: hidden;
+    user-select: none;
   }
-  a { color: inherit; text-decoration: none; }
-  button {
-    cursor: pointer;
-    background: none;
-    border: none;
-    color: #ddd;
-    font-size: 1.2rem;
-    padding: 6px 10px;
-    border-radius: 6px;
-    transition: background 0.2s;
-  }
-  button:hover { background: rgba(255, 184, 108, 0.3); }
-  button:disabled { opacity: 0.3; cursor: not-allowed; }
-  h2, h3 {
-    margin: 10px 0 8px 0;
-    font-weight: 600;
-    color: #ffb86c;
-  }
-  #app {
-    display: grid;
-    grid-template-columns: 250px 1fr 350px;
-    grid-template-rows: 1fr 90px;
-    grid-template-areas:
-      "projects main tracks"
-      "controls controls controls";
-    height: 100vh;
-    position: relative;
-  }
-  #projects {
-    grid-area: projects;
-    background: rgba(30,30,30,0.85);
-    overflow-y: auto;
-    padding: 15px 10px 20px 10px;
-    border-right: 1px solid #333;
-  }
-  #projects h2 { text-align: center; }
-  .project-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-    cursor: pointer;
-    padding: 6px 6px;
-    border-radius: 8px;
-    transition: background 0.3s;
-  }
-  .project-item:hover { background: rgba(255, 184, 108, 0.15); }
-  .project-item.active { background: rgba(255, 184, 108, 0.4); }
-  .project-item img {
-    width: 48px;
-    height: 48px;
-    border-radius: 6px;
+
+  /* Background Video */
+  #bg-video {
+    position: fixed;
+    top:0; left:0; width:100%; height:100%;
     object-fit: cover;
-    margin-right: 12px;
-    flex-shrink: 0;
-  }
-  .project-item span { font-weight: 600; font-size: 1rem; }
-  #track-list-container {
-    grid-area: tracks;
-    background: rgba(30,30,30,0.85);
-    overflow-y: auto;
-    padding: 15px 20px 20px 20px;
-    border-left: 1px solid #333;
-  }
-  #track-list-container h3 {
-    text-align: center;
-    color: #ffb86c;
-    margin-bottom: 15px;
-  }
-  #track-list {
-    max-height: calc(100vh - 100px);
-    overflow-y: auto;
-  }
-  .track-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 10px;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.05);
-    transition: background 0.3s;
-    cursor: pointer;
-  }
-  .track-item.playing { background: rgba(255, 184, 108, 0.3); }
-  .track-item:hover { background: rgba(255, 184, 108, 0.15); }
-  .track-info {
-    display: flex;
-    flex-direction: column;
-    max-width: 70%;
-  }
-  .track-title {
-    font-weight: 600;
-    font-size: 1rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .track-duration {
-    font-size: 0.8rem;
-    color: #bbb;
-    margin-top: 2px;
-  }
-  #main {
-    grid-area: main;
-    position: relative;
-    overflow: hidden;
-  }
-  #background-video {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    object-fit: cover;
-    filter: blur(10px) brightness(0.5);
+    filter: brightness(0.6) saturate(0.8);
     z-index: 0;
   }
-  #particles-canvas {
-    position: absolute;
+  
+  /* Soft drifting particles */
+  #particles {
+    position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     pointer-events: none;
     z-index: 1;
   }
-  #vinyl-container {
-    position: absolute;
-    bottom: 130px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 150px;
-    height: 150px;
-    z-index: 5;
-    user-select: none;
+
+  /* Layout containers */
+  #app {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    position: relative;
+    z-index: 2;
+    backdrop-filter: blur(20px);
   }
-  #vinyl {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    box-shadow:
-      0 0 15px rgba(255, 184, 108, 0.6),
-      inset 0 0 10px rgba(255, 184, 108, 0.8);
-    animation: spin 15s linear infinite;
+  /* Left sidebar: Projects */
+  #sidebar-left {
+    width: 280px;
+    background: rgba(32, 29, 40, 0.45); /* glass effect */
+    backdrop-filter: saturate(180%) blur(18px);
+    padding: 20px;
+    overflow-y: auto;
   }
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+  #sidebar-left h2 {
+    margin: 0 0 12px 0;
+    font-weight: 600;
+    font-size: 1.25rem;
+    letter-spacing: 0.05em;
   }
-  #controls {
-    grid-area: controls;
-    background: rgba(30,30,30,0.95);
-    border-top: 1px solid #333;
+  .project-item {
     display: flex;
     align-items: center;
-    padding: 0 20px;
     gap: 12px;
+    margin-bottom: 16px;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
   }
-  #now-playing-info {
-    color: #ffb86c;
-    font-weight: 600;
-    min-width: 220px;
+  .project-item:hover, .project-item.active {
+    background-color: rgba(255 255 255 / 0.12);
+  }
+  .project-item img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 6px;
+    flex-shrink: 0;
+  }
+  .project-name {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #eee;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  #progress-container {
-    flex-grow: 1;
+
+  /* Right sidebar: Tracks */
+  #sidebar-right {
+    width: 340px;
+    background: rgba(32, 29, 40, 0.45);
+    backdrop-filter: saturate(180%) blur(18px);
+    padding: 20px;
+    overflow-y: auto;
+  }
+  #sidebar-right h3 {
+    margin: 0 0 12px 0;
+    font-weight: 600;
+    font-size: 1.15rem;
+  }
+  .track-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .track-item {
+    background: rgba(255 255 255 / 0.05);
+    margin-bottom: 10px;
+    border-radius: 14px;
+    padding: 10px 12px;
     display: flex;
     align-items: center;
-    gap: 6px;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
   }
-  #current-time, #duration {
+  .track-item:hover, .track-item.active {
+    background-color: rgba(255 255 255 / 0.15);
+  }
+  .track-title {
+    font-weight: 500;
+    font-size: 1rem;
+    color: #ddd;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 170px;
+  }
+  .track-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .track-duration {
     font-size: 0.85rem;
-    color: #aaa;
-    width: 45px;
+    color: #bbb;
+    min-width: 48px;
+    text-align: right;
+  }
+  .btn-spotify {
+    background: #1DB954;
+    border-radius: 50%;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.25s ease;
+  }
+  .btn-spotify:hover {
+    background-color: #1ed760cc;
+  }
+  .btn-spotify svg {
+    fill: white;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Main player area */
+  #main-player {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 40px 40px 40px;
+    position: relative;
+  }
+  #vinyl-container {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: 0 0 25px rgba(255 255 255 / 0.15);
+    margin-bottom: 24px;
+  }
+  #vinyl {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    pointer-events: none;
+    transition: transform 0.3s linear;
+    transform-origin: center center;
+  }
+  #vinyl.spinning {
+    animation: spin 6s linear infinite;
+  }
+  @keyframes spin {
+    0% {transform: rotate(0deg);}
+    100% {transform: rotate(360deg);}
+  }
+  #audio-visualizer {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 48px;
+    background: linear-gradient(90deg, #6c6f7b, #8a8e9a);
+    opacity: 0.6;
+    border-radius: 0 0 50% 50% / 100% 100% 0 0;
+  }
+
+  #now-playing-info {
     text-align: center;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 6px;
+  }
+  #now-playing-artist {
+    font-weight: 400;
+    font-size: 1rem;
+    color: #bbb;
+    margin-bottom: 20px;
+  }
+
+  /* Controls below vinyl */
+  #controls {
+    display: flex;
+    align-items: center;
+    gap: 24px;
     user-select: none;
   }
-  #progress-bar {
+  button.control-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #eee;
+    font-size: 24px;
+    padding: 6px 8px;
+    transition: color 0.3s ease;
+  }
+  button.control-btn:hover {
+    color: #1DB954;
+  }
+  /* Progress bar container */
+  #progress-container {
+    width: 380px;
+    margin: 18px auto 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #progress {
     flex-grow: 1;
-    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
     height: 6px;
     border-radius: 3px;
-    background: #444;
+    background: #555;
     cursor: pointer;
   }
-  #progress-bar::-webkit-slider-thumb {
+  #progress::-webkit-slider-thumb {
+    -webkit-appearance: none;
     appearance: none;
     width: 14px;
     height: 14px;
     border-radius: 50%;
-    background: #ffb86c;
+    background: #1DB954;
     cursor: pointer;
-    margin-top: -4px;
-    transition: background 0.2s;
+    transition: background-color 0.3s ease;
   }
-  #progress-bar:hover::-webkit-slider-thumb {
-    background: #ffca28;
+  #progress::-webkit-slider-thumb:hover {
+    background-color: #1ed760;
   }
-  .control-button {
-    font-size: 1.6rem;
-    color: #ffb86c;
-    background: none;
-    border: none;
-    cursor: pointer;
-    transition: color 0.2s;
-    user-select: none;
+  #current-time, #duration {
+    font-size: 0.85rem;
+    color: #bbb;
+    min-width: 40px;
   }
-  .control-button:hover { color: #ffc107; }
+
+  /* Volume control */
   #volume-container {
+    margin-top: 14px;
     display: flex;
     align-items: center;
-    gap: 6px;
-    color: #ffb86c;
+    gap: 12px;
+    justify-content: center;
   }
-  #volume-slider { width: 100px; }
-  #btn-ambience-toggle {
-    font-size: 1.5rem;
-    color: #ffb86c;
+  #volume-slider {
+    width: 150px;
     cursor: pointer;
-    background: none;
-    border: none;
   }
-  #ambience-container {
-    position: absolute;
-    bottom: 95px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(30,30,30,0.9);
-    border-radius: 12px;
-    padding: 10px 18px;
-    display: none;
-    z-index: 20;
-    width: 320px;
-    max-height: 180px;
+  #mute-btn {
+    cursor: pointer;
+    font-size: 20px;
+    color: #eee;
+    border: none;
+    background: transparent;
+    transition: color 0.3s ease;
+  }
+  #mute-btn:hover {
+    color: #1DB954;
+  }
+
+  /* Ambience toggle */
+  #ambience-toggle {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: rgba(32,29,40,0.6);
+    border-radius: 40px;
+    padding: 12px 20px;
+    cursor: pointer;
+    color: #ddd;
+    font-weight: 600;
+    user-select: none;
+    box-shadow: 0 0 10px rgba(0,0,0,0.6);
+    z-index: 15;
+    transition: background 0.25s ease;
+  }
+  #ambience-toggle:hover {
+    background: rgba(32,29,40,0.85);
+  }
+
+  /* Ambience panel */
+  #ambience-panel {
+    position: fixed;
+    bottom: 70px;
+    right: 24px;
+    background: rgba(32,29,40,0.75);
+    backdrop-filter: saturate(180%) blur(15px);
+    border-radius: 14px;
+    padding: 20px;
+    width: 280px;
+    max-height: 320px;
     overflow-y: auto;
+    box-shadow: 0 0 25px rgba(0,0,0,0.6);
+    display: none;
+    z-index: 15;
   }
   .ambience-sound {
     display: flex;
     align-items: center;
-    gap: 10px;
-    margin-bottom: 8px;
+    gap: 12px;
+    margin-bottom: 16px;
   }
-  .ambience-label {
+  .ambience-sound label {
     flex-grow: 1;
     user-select: none;
   }
-  .ambience-toggle {
-    width: 18px;
-    height: 18px;
-  }
   .ambience-volume {
-    width: 80px;
+    width: 100px;
   }
-  #projects::-webkit-scrollbar,
-  #track-list-container::-webkit-scrollbar,
-  #track-list::-webkit-scrollbar,
-  #ambience-container::-webkit-scrollbar {
+
+  /* Scrollbar style */
+  ::-webkit-scrollbar {
     width: 8px;
   }
-  #projects::-webkit-scrollbar-thumb,
-  #track-list-container::-webkit-scrollbar-thumb,
-  #track-list::-webkit-scrollbar-thumb,
-  #ambience-container::-webkit-scrollbar-thumb {
-    background: rgba(255, 184, 108, 0.3);
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.15);
     border-radius: 4px;
   }
-  @media (max-width: 900px) {
-    #app {
-      grid-template-columns: 1fr;
-      grid-template-rows: auto 90px 300px;
-      grid-template-areas:
-        "main"
-        "controls"
-        "tracks";
-    }
-    #projects { display: none; }
-    #track-list-container {
-      grid-area: tracks;
-      border-left: none;
-      border-top: 1px solid #333;
-    }
-  }
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 </head>
 <body>
+
+<!-- Background Video -->
+<video id="bg-video" autoplay muted loop playsinline src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4"></video>
+
+<!-- Particles Canvas -->
+<canvas id="particles"></canvas>
+
 <div id="app">
-  <div id="projects"><h2>Projects & Singles</h2></div>
-  <div id="main">
-    <video autoplay muted loop id="background-video" src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4"></video>
-    <canvas id="particles-canvas"></canvas>
+  <!-- Projects sidebar -->
+  <aside id="sidebar-left">
+    <h2>Projects & Singles</h2>
+    <div id="project-list"></div>
+  </aside>
+
+  <!-- Main player area -->
+  <main id="main-player">
     <div id="vinyl-container">
-      <img id="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Vinyl Cover" />
+      <img id="vinyl" src="" alt="Vinyl cover" />
+      <div id="audio-visualizer"></div>
     </div>
-  </div>
-  <div id="track-list-container">
-    <h3 id="track-list-title">Tracks</h3>
-    <div id="track-list"></div>
-  </div>
-  <div id="controls">
-    <div id="now-playing-info">KozyBeats - Nothing Playing</div>
+    <div id="now-playing-info"></div>
+    <div id="now-playing-artist">KozyBeats</div>
+
     <div id="progress-container">
-      <div id="current-time">0:00</div>
-      <input type="range" id="progress-bar" value="0" min="0" max="100" step="0.1" />
-      <div id="duration">0:00</div>
+      <span id="current-time">0:00</span>
+      <input type="range" id="progress" min="0" max="100" value="0" step="0.1" />
+      <span id="duration">0:00</span>
     </div>
-    <button class="control-button" id="btn-prev" title="Previous Track"><i class="fa-solid fa-backward-step"></i></button>
-    <button class="control-button" id="btn-play" title="Play/Pause"><i class="fa-solid fa-play"></i></button>
-    <button class="control-button" id="btn-next" title="Next Track"><i class="fa-solid fa-forward-step"></i></button>
-    <button class="control-button" id="btn-shuffle" title="Shuffle"><i class="fa-solid fa-shuffle"></i></button>
-    <button class="control-button" id="btn-repeat" title="Repeat"><i class="fa-solid fa-repeat"></i></button>
-    <button class="control-button" id="btn-mute" title="Mute/Unmute"><i class="fa-solid fa-volume-high"></i></button>
+
+    <div id="controls">
+      <button id="btn-prev" class="control-btn" aria-label="Previous track" title="Previous track" >
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 19h2V5H6v14zm7-7l6 6V6l-6 6z"/></svg>
+      </button>
+      <button id="btn-play" class="control-btn" aria-label="Play/Pause" title="Play/Pause">
+        <svg id="icon-play" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="icon-pause" style="display:none" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M6 19h4V5H6zm8-14v14h4V5h-4z"/></svg>
+      </button>
+      <button id="btn-next" class="control-btn" aria-label="Next track" title="Next track">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16 5h-2v14h2V5zm-7 7L3 6v12l6-6z"/></svg>
+      </button>
+      <button id="btn-shuffle" class="control-btn" aria-label="Shuffle" title="Shuffle">
+        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16.59 7.41L15.17 6l-4.24 4.24-4.24-4.24-1.41 1.41L9.17 12l-4.25 4.24 1.41 1.41L12.93 13l4.24 4.24 1.41-1.41L15.17 12l4.24-4.24z"/></svg>
+      </button>
+      <button id="btn-repeat" class="control-btn" aria-label="Repeat" title="Repeat">
+        <svg id="repeat-icon" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M7 7h10v3l4-4-4-4v3H7a5 5 0 1 0 0 10h2"/></svg>
+      </button>
+      <button id="btn-mute" class="control-btn" aria-label="Mute/Unmute" title="Mute/Unmute">
+        <svg id="icon-volume-on" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+        <svg id="icon-volume-off" style="display:none" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M16.5 12a4.5 4.5 0 0 0-4.5-4.5v9a4.5 4.5 0 0 0 4.5-4.5zm3.6 4.4L18 14.3l-1.1 1.1-1.4-1.4 1.1-1.1-1.1-1.1 1.4-1.4 1.1 1.1 1.1-1.1 1.4 1.4-1.1 1.1 1.1 1.1z"/></svg>
+      </button>
+    </div>
+
     <div id="volume-container">
-      <i class="fa-solid fa-volume-low"></i>
-      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.7" />
+      <input type="range" id="volume-slider" min="0" max="1" step="0.01" value="0.7" aria-label="Volume slider" />
     </div>
-    <button class="control-button" id="btn-ambience-toggle" title="Toggle Ambience Sounds"><i class="fa-solid fa-wind"></i></button>
-  </div>
-  <div id="ambience-container"></div>
+  </main>
+
+  <!-- Right sidebar: Tracks -->
+  <aside id="sidebar-right">
+    <h3>Track List</h3>
+    <ul id="track-list" class="track-list"></ul>
+  </aside>
+</div>
+
+<!-- Ambience toggle button -->
+<div id="ambience-toggle" title="Toggle Ambience Sounds">Ambience</div>
+
+<!-- Ambience panel -->
+<div id="ambience-panel">
+  <!-- Will be dynamically populated -->
 </div>
 
 <script>
@@ -338,462 +437,479 @@
       id: 'pillowcore-radio',
       name: 'Pillowcore Radio',
       cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png',
-      spotify: '', // placeholder for Spotify project link if needed
+      spotifyBaseUrl: 'https://open.spotify.com/artist/YourArtistID', // put your artist or project link here
       tracks: [
-        { title: 'Ceiling Fan Dreams', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', spotify: '', duration: 0 },
-        { title: 'Curtains Closed', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3', spotify: '', duration: 0 },
-        { title: 'Dream Archive', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3', spotify: '', duration: 0 },
-        { title: 'Glow Sink', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3', spotify: '', duration: 0 },
-        { title: 'Lavender Shadows', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3', spotify: '', duration: 0 },
-        { title: 'Midnight Left on Read', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3', spotify: '', duration: 0 },
-        { title: 'Moonlit Linen', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3', spotify: '', duration: 0 },
-        { title: 'Paper Walls', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3', spotify: '', duration: 0 },
-        { title: 'Rain on 4th Street', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3', spotify: '', duration: 0 },
-        { title: 'Snooze Signal', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3', spotify: '', duration: 0 },
-        { title: 'Warm Silence', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3', spotify: '', duration: 0 },
-        { title: 'Whispers in Blue', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3', spotify: '', duration: 0 },
-      ],
+        { title: 'Glow Sink', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Paper Walls', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Lavender Shadows', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Snooze Signal', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Dream Archive', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Warm Silence', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Curtains Closed', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Ceiling Fan Dreams', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Whispers in Blue', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Rain on 4th Street', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Moonlit Linen', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3', duration: 0, spotifyUrl: '' },
+        { title: 'Midnight Left on Read', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3', duration: 0, spotifyUrl: '' },
+      ]
     },
     {
       id: 'evening-static',
       name: 'Evening Static',
       cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229102/056f89b5bdd7b2944636c4e480196abe_1_bhyub6.jpg',
-      spotify: '', // placeholder
+      spotifyBaseUrl: 'https://open.spotify.com/artist/YourArtistID', // replace this with your actual artist or project link
       tracks: [
-        { title: 'Curtains Breathing Slow', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229902/Curtains_Breathing_Slow_cx3y0g.mp3', spotify: '', duration: 0 },
-        { title: 'Heard My Name in the Hiss', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229902/Heard_My_Name_in_the_Hiss_c1j1u8.mp3', spotify: '', duration: 0 },
-        { title: 'Stayed Just Long Enough', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229902/Stayed_Just_Long_Enough_nkzdsp.mp3', spotify: '', duration: 0 },
-        { title: 'Memories on the Window Glass', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229903/Memories_on_the_Window_Glass_t9zvtt.mp3', spotify: '', duration: 0 },
-        { title: 'TV Snow in My Mind', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229903/TV_Snow_in_My_Mind_v6u8so.mp3', spotify: '', duration: 0 },
-        { title: 'Pages Left Open', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229903/Pages_Left_Open_xtrfcq.mp3', spotify: '', duration: 0 },
-        { title: 'The Fan Still Spins', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229903/The_Fan_Still_Spins_o9jra0.mp3', spotify: '', duration: 0 },
-        { title: 'When the Floorboard Creaked', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229903/When_the_Floorboard_Creaked_fm1jes.mp3', spotify: '', duration: 0 },
-        { title: 'A Thread Pulled from the Moon', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229903/A_Thread_Pulled_from_the_Moon_u1vr4k.mp3', spotify: '', duration: 0 },
-        { title: 'Between the Glow and the Silence', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229903/Between_the_Glow_and_the_Silence_zpwr8z.mp3', spotify: '', duration: 0 },
-      ],
-    },
-    {
-      id: 'singles',
-      name: 'Singles',
-      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229548/Single_Cover_dptsk5.jpg',
-      spotify: '', // placeholder
-      tracks: [
-        { title: 'Cozy Nights', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229601/Cozy_Nights_mxk94m.mp3', spotify: '', duration: 0 },
-        { title: 'Silent Footsteps', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229601/Silent_Footsteps_q8kr6w.mp3', spotify: '', duration: 0 },
-      ],
+        { title: 'Curtains Breathing Slow', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Curtains_Breathing_Slow_si8vdi.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/6hYafXnChMcMf3SNftSfcG?si=ee275fb5a1df4305' },
+        { title: 'Heard My Name in the Hiss', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Heard_My_Name_in_the_Hiss_yi1jfb.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/3AwJ69gZpXeV7d3HRgtTkP?si=c91700c13fc8460f' },
+        { title: 'Stayed Just Long Enough', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229136/Stayed_Just_Long_Enough_wlkxsb.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/6n8hGNpQV7opPFU4TzvZaa?si=36a2e96cda264f8e' },
+        { title: 'Memories on the Window Glass', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229137/Memories_on_the_Window_Glass_uw4vxm.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/3dUyBoA95yXe6D7Y8Waufk?si=065016ab9dc743d1' },
+        { title: 'TV Snow in My Mind', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229138/TV_Snow_in_My_Mind_oxtsqi.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/5270L8Qb71DavNONxlAUMF?si=cf13c4ae91434054' },
+        { title: 'Pages Left Open', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/Pages_Left_Open_r4bxvz.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/13jC0kJU2Kspk9ZFntv5HG?si=bf1b4270b4bb4bb6' },
+        { title: 'The Fan Still Spins', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/The_Fan_Still_Spins_qba31z.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/1JlUfSWui4bgz6EAN8J6h4?si=cbbf61dd682e4a15' },
+        { title: 'When the Floorboard Creaked', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/When_the_Floorboard_Creaked_ljcd2m.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/4rDpfedlNr9iyoj5Ca6lcK?si=8dee0e976aa24e4a' },
+        { title: 'A Thread Pulled from the Moon', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/A_Thread_Pulled_from_the_Moon_kqjhdq.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/5c6Tf14oAoch2EEoMT0rah?si=d383bab1762443f9' },
+        { title: 'Between the Glow and the Silence', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3', duration: 0, spotifyUrl: 'https://open.spotify.com/track/1LGTVcrTiMYHiBE9VIFrMA?si=f723f0d171d841be' },
+      ]
     }
   ];
 
-  // Your ambience sounds (exact ones you sent me):
   const ambienceSounds = [
-    { id: 'rain', name: 'Rain', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236332/Rain_5_ommf7e.wav' },
-    { id: 'vinyl', name: 'Vinyl Crackle', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236422/Vinyl_1_lrn7bh.wav' },
-    { id: 'cafe', name: 'Cafe Ambience', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236698/sandwich-cafe-31183_wnkw8j.mp3' },
-    { id: 'campfire', name: 'Campfire', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236735/campfirefireplace-crackling-268525_bg9ksg.mp3' },
-    { id: 'wind', name: 'Wind', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236875/wind-blowing-sfx-12809_ptsspy.mp3' },
-    { id: 'citynight', name: 'City Night', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236956/015965_city-night-56166_ebsgdp.mp3' },
-    { id: 'typing', name: 'Typing Keyboard', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237017/typing-keyboard-sound-254462_t0ppdc.mp3' },
-    { id: 'outside', name: 'Outside Ambience', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237083/Outside_2_exboxa.wav' },
-    { id: 'beach', name: 'Beach Ambience', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237120/Beach_2_r7t5yw.wav' },
+    { name: 'Rain', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236332/Rain_5_ommf7e.wav' },
+    { name: 'Vinyl Crackle', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236422/Vinyl_1_lrn7bh.wav' },
+    { name: 'Cafe Ambience', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236698/sandwich-cafe-31183_wnkw8j.mp3' },
+    { name: 'Campfire', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236735/campfirefireplace-crackling-268525_bg9ksg.mp3' },
+    { name: 'Wind', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236875/wind-blowing-sfx-12809_ptsspy.mp3' },
+    { name: 'City Night', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754236956/015965_city-night-56166_ebsgdp.mp3' },
+    { name: 'Typing Keyboard', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237017/typing-keyboard-sound-254462_t0ppdc.mp3' },
+    { name: 'Outside 2', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237083/Outside_2_exboxa.wav' },
+    { name: 'Beach 2', src: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754237120/Beach_2_r7t5yw.wav' },
   ];
 
-  // Global state variables
+  // State variables
   let currentProjectIndex = 0;
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isShuffle = false;
-  let repeatMode = 0; // 0: no repeat, 1: repeat track, 2: repeat all
-  let audio = new Audio();
-  let ambienceAudios = {};
-  let ambienceStates = {}; // id: {enabled: bool, volume: float}
-  let ambienceContainer, btnAmbienceToggle;
-  let isAmbienceVisible = false;
-  let shuffleOrder = [];
+  let repeatMode = 'none'; // 'none', 'one', 'all'
+  let ambienceEnabled = false;
+  let ambienceAudioElems = [];
+  let volume = 0.7;
 
   // DOM refs
-  const projectsContainer = document.getElementById('projects');
-  const trackListContainer = document.getElementById('track-list');
-  const trackListTitle = document.getElementById('track-list-title');
-  const nowPlayingInfo = document.getElementById('now-playing-info');
-  const progressBar = document.getElementById('progress-bar');
-  const currentTimeDisplay = document.getElementById('current-time');
-  const durationDisplay = document.getElementById('duration');
+  const projectListEl = document.getElementById('project-list');
+  const trackListEl = document.getElementById('track-list');
+  const vinylEl = document.getElementById('vinyl');
+  const nowPlayingInfoEl = document.getElementById('now-playing-info');
+  const nowPlayingArtistEl = document.getElementById('now-playing-artist');
+  const progressEl = document.getElementById('progress');
+  const currentTimeEl = document.getElementById('current-time');
+  const durationEl = document.getElementById('duration');
   const btnPlay = document.getElementById('btn-play');
+  const iconPlay = document.getElementById('icon-play');
+  const iconPause = document.getElementById('icon-pause');
   const btnPrev = document.getElementById('btn-prev');
   const btnNext = document.getElementById('btn-next');
   const btnShuffle = document.getElementById('btn-shuffle');
   const btnRepeat = document.getElementById('btn-repeat');
+  const repeatIcon = document.getElementById('repeat-icon');
   const btnMute = document.getElementById('btn-mute');
+  const iconVolumeOn = document.getElementById('icon-volume-on');
+  const iconVolumeOff = document.getElementById('icon-volume-off');
   const volumeSlider = document.getElementById('volume-slider');
-  const vinylImage = document.getElementById('vinyl');
-  ambienceContainer = document.getElementById('ambience-container');
-  btnAmbienceToggle = document.getElementById('btn-ambience-toggle');
+  const ambienceToggle = document.getElementById('ambience-toggle');
+  const ambiencePanel = document.getElementById('ambience-panel');
 
-  // Helpers
+  // Create main audio element
+  const audio = new Audio();
+  audio.crossOrigin = "anonymous";
+  audio.volume = volume;
+
+  // Create audio context and analyser for visualizer
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  const analyser = audioCtx.createAnalyser();
+  const sourceNode = audioCtx.createMediaElementSource(audio);
+  sourceNode.connect(analyser);
+  analyser.connect(audioCtx.destination);
+  analyser.fftSize = 256;
+  const bufferLength = analyser.frequencyBinCount;
+  const dataArray = new Uint8Array(bufferLength);
+
+  // Vinyl spinning animation (based on playing state)
+  function updateVinylSpin() {
+    if(isPlaying) vinylEl.classList.add('spinning');
+    else vinylEl.classList.remove('spinning');
+  }
+
+  // Format seconds to mm:ss
   function formatTime(seconds) {
-    if (!seconds || isNaN(seconds)) return '0:00';
-    const m = Math.floor(seconds / 60);
-    const s = Math.floor(seconds % 60);
-    return `${m}:${s < 10 ? '0' : ''}${s}`;
+    const mins = Math.floor(seconds / 60) || 0;
+    const secs = Math.floor(seconds % 60) || 0;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
   }
 
-  // Initialize ambience audio elements
-  function setupAmbience() {
-    ambienceSounds.forEach(sound => {
-      const audioAmb = new Audio(sound.src);
-      audioAmb.loop = true;
-      audioAmb.volume = 0.3;
-      ambienceAudios[sound.id] = audioAmb;
-      ambienceStates[sound.id] = { enabled: false, volume: 0.3 };
-    });
-  }
-
-  // Render ambience controls UI
-  function renderAmbienceControls() {
-    ambienceContainer.innerHTML = '';
-    ambienceSounds.forEach(sound => {
-      const div = document.createElement('div');
-      div.classList.add('ambience-sound');
-      div.innerHTML = `
-        <label class="ambience-label" for="ambience-toggle-${sound.id}">${sound.name}</label>
-        <input type="checkbox" id="ambience-toggle-${sound.id}" class="ambience-toggle" />
-        <input type="range" id="ambience-volume-${sound.id}" class="ambience-volume" min="0" max="1" step="0.01" value="0.3" />
-      `;
-      ambienceContainer.appendChild(div);
-
-      // Checkbox toggle
-      const toggle = div.querySelector(`#ambience-toggle-${sound.id}`);
-      toggle.checked = ambienceStates[sound.id].enabled;
-      toggle.addEventListener('change', e => {
-        ambienceStates[sound.id].enabled = e.target.checked;
-        if (e.target.checked) {
-          ambienceAudios[sound.id].play();
-        } else {
-          ambienceAudios[sound.id].pause();
-        }
-      });
-
-      // Volume slider
-      const volSlider = div.querySelector(`#ambience-volume-${sound.id}`);
-      volSlider.value = ambienceStates[sound.id].volume;
-      volSlider.addEventListener('input', e => {
-        const val = parseFloat(e.target.value);
-        ambienceStates[sound.id].volume = val;
-        ambienceAudios[sound.id].volume = val;
-      });
-    });
-  }
-
-  // Render projects in left sidebar
+  // Populate project list
   function renderProjects() {
-    projectsContainer.innerHTML = '<h2>Projects & Singles</h2>';
-    projects.forEach((project, idx) => {
+    projectListEl.innerHTML = '';
+    projects.forEach((p, i) => {
       const div = document.createElement('div');
-      div.className = 'project-item' + (idx === currentProjectIndex ? ' active' : '');
-      div.dataset.index = idx;
-      div.innerHTML = `<img src="${project.cover}" alt="${project.name}"/><span>${project.name}</span>`;
+      div.classList.add('project-item');
+      if(i === currentProjectIndex) div.classList.add('active');
+      div.dataset.index = i;
+      div.innerHTML = `
+        <img src="${p.cover}" alt="${p.name} cover" />
+        <div class="project-name">${p.name}</div>
+      `;
       div.addEventListener('click', () => {
-        if (currentProjectIndex !== idx) {
-          currentProjectIndex = idx;
+        if(currentProjectIndex !== i) {
+          currentProjectIndex = i;
           currentTrackIndex = 0;
-          loadTrack();
           renderProjects();
-          renderTracks();
-          playAudio();
+          renderTrackList();
+          loadTrack();
         }
       });
-      projectsContainer.appendChild(div);
+      projectListEl.appendChild(div);
     });
   }
 
-  // Render tracks for current project
-  function renderTracks() {
-    const project = projects[currentProjectIndex];
-    trackListTitle.textContent = `Tracks - ${project.name}`;
-    trackListContainer.scrollTop = 0;
-    trackListContainer.querySelector('#track-list')?.remove();
-    const list = document.createElement('div');
-    list.id = 'track-list';
-
-    project.tracks.forEach((track, idx) => {
-      const item = document.createElement('div');
-      item.className = 'track-item' + (idx === currentTrackIndex ? ' playing' : '');
-      item.dataset.index = idx;
-      item.innerHTML = `
-        <div class="track-info">
-          <div class="track-title">${track.title}</div>
-          <div class="track-duration">${track.duration > 0 ? formatTime(track.duration) : ''}</div>
+  // Populate track list for current project
+  function renderTrackList() {
+    trackListEl.innerHTML = '';
+    const tracks = projects[currentProjectIndex].tracks;
+    tracks.forEach((track, i) => {
+      const li = document.createElement('li');
+      li.classList.add('track-item');
+      if(i === currentTrackIndex) li.classList.add('active');
+      li.dataset.index = i;
+      li.innerHTML = `
+        <div class="track-title">${track.title}</div>
+        <div class="track-controls">
+          <div class="track-duration" id="duration-${i}">--:--</div>
+          <div class="btn-spotify" title="Open on Spotify" data-index="${i}">
+            <svg viewBox="0 0 168 168" width="14" height="14" fill="white">
+              <path d="M84,0C37.7,0,0,37.7,0,84s37.7,84,84,84s84-37.7,84-84S130.3,0,84,0z M121.7,121.5
+              c-2.4,3.8-7.4,5-11.2,2.6c-30.5-18.6-69.1-22.8-114.8-16.5c-4.6,0.6-9.2-2.6-9.7-7.4c-0.5-4.9,2.6-9.5,7.3-10
+              c47.1-5.6,90.8-1.8,123.2,19.3C123.1,111.1,125.3,117.7,121.7,121.5z"/>
+            </svg>
+          </div>
         </div>
       `;
-      item.addEventListener('click', () => {
-        if (currentTrackIndex !== idx) {
-          currentTrackIndex = idx;
+
+      // Clicking the track plays it
+      li.querySelector('.track-title').addEventListener('click', () => {
+        if(currentTrackIndex !== i) {
+          currentTrackIndex = i;
+          renderTrackList();
           loadTrack();
           playAudio();
-          renderTracks();
         }
       });
-      list.appendChild(item);
+
+      // Spotify button link
+      li.querySelector('.btn-spotify').addEventListener('click', e => {
+        e.stopPropagation();
+        const spotifyUrl = projects[currentProjectIndex].tracks[i].spotifyUrl || '';
+        if(spotifyUrl) window.open(spotifyUrl, '_blank');
+        else alert('Spotify link not available for this track yet.');
+      });
+
+      trackListEl.appendChild(li);
     });
-    trackListContainer.appendChild(list);
   }
 
-  // Load track audio source
+  // Load current track into audio element and update UI
   function loadTrack() {
     const track = projects[currentProjectIndex].tracks[currentTrackIndex];
     audio.src = track.src;
-    nowPlayingInfo.textContent = `KozyBeats - ${track.title}`;
-    // Update vinyl cover to current track cover (same as project cover as you said)
-    vinylImage.src = projects[currentProjectIndex].cover;
-    audio.load();
+    nowPlayingInfoEl.textContent = `${projects[currentProjectIndex].name} - ${track.title}`;
+    vinylEl.src = projects[currentProjectIndex].cover;
+    updateVinylSpin();
+    resetProgress();
   }
 
-  // Play audio and update play button icon
+  // Play audio and update UI states
   function playAudio() {
+    if(audioCtx.state === 'suspended') audioCtx.resume();
     audio.play();
     isPlaying = true;
-    btnPlay.innerHTML = '<i class="fa-solid fa-pause"></i>';
+    updateVinylSpin();
+    togglePlayPauseIcon();
   }
 
-  // Pause audio and update play button icon
+  // Pause audio and update UI states
   function pauseAudio() {
     audio.pause();
     isPlaying = false;
-    btnPlay.innerHTML = '<i class="fa-solid fa-play"></i>';
+    updateVinylSpin();
+    togglePlayPauseIcon();
+  }
+
+  // Toggle play/pause icons
+  function togglePlayPauseIcon() {
+    if(isPlaying) {
+      iconPlay.style.display = 'none';
+      iconPause.style.display = 'block';
+    } else {
+      iconPlay.style.display = 'block';
+      iconPause.style.display = 'none';
+    }
+  }
+
+  // Reset progress UI
+  function resetProgress() {
+    progressEl.value = 0;
+    currentTimeEl.textContent = '0:00';
+    durationEl.textContent = '--:--';
+  }
+
+  // Update progress bar and current time as audio plays
+  function updateProgress() {
+    if(audio.duration) {
+      const currentPercent = (audio.currentTime / audio.duration) * 100;
+      progressEl.value = currentPercent;
+      currentTimeEl.textContent = formatTime(audio.currentTime);
+      durationEl.textContent = formatTime(audio.duration);
+    }
+  }
+
+  // Seek audio when user interacts with progress bar
+  function setProgress(e) {
+    if(audio.duration) {
+      const seekPercent = e.target.value;
+      audio.currentTime = (seekPercent / 100) * audio.duration;
+    }
+  }
+
+  // Play previous track
+  function playPrevTrack() {
+    if (isShuffle) {
+      currentTrackIndex = Math.floor(Math.random() * projects[currentProjectIndex].tracks.length);
+    } else {
+      currentTrackIndex--;
+      if (currentTrackIndex < 0) {
+        if (repeatMode === 'all') currentTrackIndex = projects[currentProjectIndex].tracks.length - 1;
+        else currentTrackIndex = 0;
+      }
+    }
+    renderTrackList();
+    loadTrack();
+    playAudio();
   }
 
   // Play next track
   function playNextTrack() {
     if (isShuffle) {
-      // shuffle next
-      currentTrackIndex = (currentTrackIndex + 1) % projects[currentProjectIndex].tracks.length;
+      currentTrackIndex = Math.floor(Math.random() * projects[currentProjectIndex].tracks.length);
     } else {
       currentTrackIndex++;
       if (currentTrackIndex >= projects[currentProjectIndex].tracks.length) {
-        if (repeatMode === 2) {
+        if (repeatMode === 'all') {
           currentTrackIndex = 0;
         } else {
-          // move to next project
-          currentProjectIndex = (currentProjectIndex + 1) % projects.length;
-          currentTrackIndex = 0;
+          currentTrackIndex = projects[currentProjectIndex].tracks.length - 1;
+          pauseAudio();
+          return;
         }
       }
     }
+    renderTrackList();
     loadTrack();
     playAudio();
-    renderTracks();
-    renderProjects();
   }
 
-  // Play previous track
-  function playPrevTrack() {
-    currentTrackIndex--;
-    if (currentTrackIndex < 0) {
-      currentProjectIndex = (currentProjectIndex - 1 + projects.length) % projects.length;
-      currentTrackIndex = projects[currentProjectIndex].tracks.length - 1;
-    }
-    loadTrack();
-    playAudio();
-    renderTracks();
-    renderProjects();
-  }
-
-  // Toggle shuffle
+  // Shuffle toggle
   function toggleShuffle() {
     isShuffle = !isShuffle;
-    btnShuffle.style.color = isShuffle ? '#ffc107' : '#ffb86c';
+    btnShuffle.style.color = isShuffle ? '#1DB954' : '#eee';
   }
 
-  // Toggle repeat mode
+  // Repeat toggle cycle none -> one -> all -> none
   function toggleRepeat() {
-    repeatMode = (repeatMode + 1) % 3;
-    switch (repeatMode) {
-      case 0: btnRepeat.style.color = '#ffb86c'; break;
-      case 1: btnRepeat.style.color = '#ffc107'; break;
-      case 2: btnRepeat.style.color = '#ff6f00'; break;
+    if (repeatMode === 'none') {
+      repeatMode = 'one';
+      repeatIcon.style.fill = '#1DB954';
+      repeatIcon.style.stroke = 'none';
+      repeatIcon.style.opacity = '1';
+    } else if (repeatMode === 'one') {
+      repeatMode = 'all';
+      repeatIcon.style.fill = 'none';
+      repeatIcon.style.stroke = '#1DB954';
+      repeatIcon.style.strokeWidth = '2';
+      repeatIcon.style.opacity = '1';
+    } else {
+      repeatMode = 'none';
+      repeatIcon.style.fill = '#eee';
+      repeatIcon.style.stroke = 'none';
+      repeatIcon.style.opacity = '0.7';
     }
   }
+
+  // When track ends, handle repeat or next
+  audio.addEventListener('ended', () => {
+    if(repeatMode === 'one') {
+      audio.currentTime = 0;
+      playAudio();
+    } else {
+      // Check if last track in project
+      if(currentTrackIndex === projects[currentProjectIndex].tracks.length - 1) {
+        // Move to next project or stop
+        if(currentProjectIndex === projects.length - 1) {
+          if(repeatMode === 'all') {
+            currentProjectIndex = 0;
+            currentTrackIndex = 0;
+            renderProjects();
+            renderTrackList();
+            loadTrack();
+            playAudio();
+          } else {
+            pauseAudio();
+          }
+        } else {
+          currentProjectIndex++;
+          currentTrackIndex = 0;
+          renderProjects();
+          renderTrackList();
+          loadTrack();
+          playAudio();
+        }
+      } else {
+        playNextTrack();
+      }
+    }
+  });
 
   // Toggle mute
   function toggleMute() {
     audio.muted = !audio.muted;
     if(audio.muted) {
-      btnMute.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+      iconVolumeOn.style.display = 'none';
+      iconVolumeOff.style.display = 'block';
     } else {
-      btnMute.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+      iconVolumeOn.style.display = 'block';
+      iconVolumeOff.style.display = 'none';
     }
   }
 
-  // Update volume
-  function updateVolume(value) {
-    audio.volume = value;
-    if (audio.volume === 0) {
-      btnMute.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+  // Volume slider change
+  volumeSlider.addEventListener('input', e => {
+    audio.volume = e.target.value;
+    if(audio.volume === 0) {
+      audio.muted = true;
+      iconVolumeOn.style.display = 'none';
+      iconVolumeOff.style.display = 'block';
     } else {
-      btnMute.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
+      audio.muted = false;
+      iconVolumeOn.style.display = 'block';
+      iconVolumeOff.style.display = 'none';
     }
-  }
+  });
 
-  // Update progress bar and time displays
-  function updateProgress() {
-    const current = audio.currentTime;
-    const duration = audio.duration || 0;
-    if(!isNaN(current) && !isNaN(duration) && duration > 0){
-      const percent = (current / duration) * 100;
-      progressBar.value = percent;
-      currentTimeDisplay.textContent = formatTime(current);
-      durationDisplay.textContent = formatTime(duration);
-    }
-  }
+  // Attach events to controls
+  btnPlay.addEventListener('click', () => {
+    if(isPlaying) pauseAudio();
+    else playAudio();
+  });
+  btnPrev.addEventListener('click', playPrevTrack);
+  btnNext.addEventListener('click', playNextTrack);
+  btnShuffle.addEventListener('click', toggleShuffle);
+  btnRepeat.addEventListener('click', toggleRepeat);
+  btnMute.addEventListener('click', toggleMute);
+  progressEl.addEventListener('input', setProgress);
+  audio.addEventListener('timeupdate', updateProgress);
 
-  // Seek audio
-  function seekAudio(value) {
-    if(audio.duration){
-      audio.currentTime = (value / 100) * audio.duration;
-    }
-  }
+  // Ambient sounds setup
+  function createAmbienceControls() {
+    ambiencePanel.innerHTML = '';
+    ambienceSounds.forEach((sound, i) => {
+      const div = document.createElement('div');
+      div.classList.add('ambience-sound');
+      div.innerHTML = `
+        <input type="checkbox" id="ambience-${i}" />
+        <label for="ambience-${i}">${sound.name}</label>
+        <input type="range" min="0" max="1" step="0.01" value="0.4" class="ambience-volume" id="ambience-vol-${i}" />
+      `;
+      ambiencePanel.appendChild(div);
 
-  // Setup ambience toggle button and container
-  function setupAmbienceUI() {
-    btnAmbienceToggle.addEventListener('click', () => {
-      isAmbienceVisible = !isAmbienceVisible;
-      ambienceContainer.style.display = isAmbienceVisible ? 'block' : 'none';
-    });
-    renderAmbienceControls();
-  }
+      const audioElem = new Audio(sound.src);
+      audioElem.loop = true;
+      audioElem.volume = 0.4;
+      ambienceAudioElems.push(audioElem);
 
-  // Vinyl spinning animation toggle
-  function updateVinylSpin() {
-    if (isPlaying) {
-      vinylImage.style.animationPlayState = 'running';
-    } else {
-      vinylImage.style.animationPlayState = 'paused';
-    }
-  }
-
-  // Particle background (simple drifting dots)
-  function setupParticles() {
-    const canvas = document.getElementById('particles-canvas');
-    const ctx = canvas.getContext('2d');
-    let width, height;
-    let particles = [];
-
-    function init() {
-      resize();
-      particles = [];
-      for (let i = 0; i < 80; i++) {
-        particles.push({
-          x: Math.random() * width,
-          y: Math.random() * height,
-          r: 1 + Math.random() * 2,
-          d: Math.random() * 100,
-          speedX: 0.2 + Math.random() * 0.3,
-          speedY: 0.1 + Math.random() * 0.2
-        });
-      }
-      animate();
-    }
-    function resize() {
-      width = window.innerWidth * 0.7;
-      height = window.innerHeight;
-      canvas.width = width;
-      canvas.height = height;
-    }
-    function animate() {
-      ctx.clearRect(0, 0, width, height);
-      ctx.fillStyle = 'rgba(255, 184, 108, 0.2)';
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2, false);
-        ctx.fill();
-        p.x += p.speedX;
-        p.y += p.speedY;
-        if(p.x > width) p.x = 0;
-        if(p.y > height) p.y = 0;
+      // Checkbox change
+      div.querySelector(`#ambience-${i}`).addEventListener('change', e => {
+        if(e.target.checked) {
+          audioElem.play();
+        } else {
+          audioElem.pause();
+          audioElem.currentTime = 0;
+        }
       });
-      requestAnimationFrame(animate);
+
+      // Volume slider change
+      div.querySelector(`#ambience-vol-${i}`).addEventListener('input', e => {
+        audioElem.volume = e.target.value;
+      });
+    });
+  }
+
+  ambienceToggle.addEventListener('click', () => {
+    ambienceEnabled = !ambienceEnabled;
+    ambiencePanel.style.display = ambienceEnabled ? 'block' : 'none';
+  });
+
+  // Particle animation
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let width, height;
+  let particles = [];
+  const PARTICLE_COUNT = 60;
+
+  function initParticles() {
+    width = canvas.width = window.innerWidth;
+    height = canvas.height = window.innerHeight;
+    particles = [];
+    for(let i = 0; i < PARTICLE_COUNT; i++) {
+      particles.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        radius: 1 + Math.random()*1.5,
+        speedX: (Math.random() - 0.5) * 0.3,
+        speedY: (Math.random() - 0.5) * 0.3,
+        alpha: 0.1 + Math.random() * 0.15,
+      });
     }
-    window.addEventListener('resize', resize);
-    init();
   }
 
-  // Initialize everything
-  function init() {
-    setupAmbience();
-    renderProjects();
-    renderTracks();
-    setupAmbienceUI();
+  function drawParticles() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(255,255,255,${p.alpha})`;
+      ctx.shadowBlur = 5;
+      ctx.shadowColor = 'rgba(255,255,255,0.25)';
+      ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+      ctx.fill();
 
-    // Load first track to initialize durations properly after metadata loads
-    loadTrack();
+      p.x += p.speedX;
+      p.y += p.speedY;
 
-    // Event listeners
-    btnPlay.addEventListener('click', () => {
-      if (isPlaying) {
-        pauseAudio();
-      } else {
-        playAudio();
-      }
-      updateVinylSpin();
+      if(p.x < 0) p.x = width;
+      else if(p.x > width) p.x = 0;
+
+      if(p.y < 0) p.y = height;
+      else if(p.y > height) p.y = 0;
     });
-
-    btnNext.addEventListener('click', () => {
-      playNextTrack();
-      updateVinylSpin();
-    });
-
-    btnPrev.addEventListener('click', () => {
-      playPrevTrack();
-      updateVinylSpin();
-    });
-
-    btnShuffle.addEventListener('click', () => {
-      toggleShuffle();
-    });
-
-    btnRepeat.addEventListener('click', () => {
-      toggleRepeat();
-    });
-
-    btnMute.addEventListener('click', () => {
-      toggleMute();
-    });
-
-    volumeSlider.addEventListener('input', e => {
-      updateVolume(parseFloat(e.target.value));
-    });
-
-    progressBar.addEventListener('input', e => {
-      seekAudio(parseFloat(e.target.value));
-    });
-
-    audio.addEventListener('timeupdate', updateProgress);
-
-    audio.addEventListener('ended', () => {
-      if (repeatMode === 1) {
-        // repeat current track
-        audio.currentTime = 0;
-        playAudio();
-      } else {
-        playNextTrack();
-      }
-      updateVinylSpin();
-    });
-
-    audio.addEventListener('loadedmetadata', () => {
-      projects[currentProjectIndex].tracks[currentTrackIndex].duration = audio.duration;
-      renderTracks();
-      updateProgress();
-    });
-
-    updateVolume(volumeSlider.value);
-    updateVinylSpin();
-    setupParticles();
+    requestAnimationFrame(drawParticles);
   }
+  window.addEventListener('resize', initParticles);
+  initParticles();
+  drawParticles();
 
-  // Run init
-  init();
-
+  // Initialize
+  renderProjects();
+  renderTrackList();
+  loadTrack();
+  createAmbienceControls();
 })();
 </script>
 </body>
