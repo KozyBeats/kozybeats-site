@@ -41,39 +41,6 @@
       pointer-events: none;
     }
 
-    /* Floating particles */
-    .particles {
-      position: fixed;
-      width: 100vw;
-      height: 100vh;
-      z-index: -1;
-      pointer-events: none;
-    }
-    .particle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: rgba(218, 179, 107, 0.3);
-      border-radius: 50%;
-      animation: float 20s linear infinite;
-    }
-    @keyframes float {
-      0% {
-        transform: translateY(100vh) translateX(0);
-        opacity: 0;
-      }
-      10% {
-        opacity: 1;
-      }
-      90% {
-        opacity: 1;
-      }
-      100% {
-        transform: translateY(-100px) translateX(100px);
-        opacity: 0;
-      }
-    }
-
     /* Container */
     .container {
       display: flex;
@@ -94,6 +61,8 @@
       gap: 15px;
       scrollbar-width: thin;
       scrollbar-color: #666 transparent;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .sidebar::-webkit-scrollbar {
       width: 8px;
@@ -101,17 +70,6 @@
     .sidebar::-webkit-scrollbar-thumb {
       background: #666;
       border-radius: 4px;
-    }
-
-    /* Section headers */
-    .section-header {
-      font-size: 1.3rem;
-      font-weight: 700;
-      color: #dab36b;
-      margin-bottom: 10px;
-      text-align: center;
-      border-bottom: 2px solid rgba(218, 179, 107, 0.3);
-      padding-bottom: 8px;
     }
 
     /* Each project item */
@@ -122,13 +80,18 @@
       cursor: pointer;
       transition: all 0.3s ease;
       border-radius: 8px;
-      padding: 6px;
-      position: relative;
+      padding: 8px;
+      border: 1px solid transparent;
     }
-    .project-item:hover, .project-item.active {
+    .project-item:hover {
       background: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 15px rgba(218, 179, 107, 0.4);
       transform: translateY(-2px);
+      border-color: rgba(218, 179, 107, 0.3);
+    }
+    .project-item.active {
+      background: rgba(156, 119, 75, 0.2);
+      border-color: #9c774b;
+      box-shadow: 0 0 15px rgba(156, 119, 75, 0.3);
     }
     .project-item img {
       width: 48px;
@@ -137,56 +100,16 @@
       object-fit: cover;
       flex-shrink: 0;
       box-shadow: 0 0 8px rgba(0,0,0,0.6);
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease;
     }
     .project-item:hover img {
-      box-shadow: 0 0 15px rgba(218, 179, 107, 0.6);
+      transform: scale(1.05);
     }
     .project-item span {
       font-size: 1.1rem;
       font-weight: 600;
       white-space: nowrap;
       user-select: none;
-    }
-
-    /* Singles section */
-    .singles-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .single-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      border-radius: 8px;
-      padding: 8px;
-    }
-    .single-item:hover {
-      background: rgba(255, 255, 255, 0.15);
-      box-shadow: 0 0 15px rgba(218, 179, 107, 0.4);
-      transform: translateY(-2px);
-    }
-    .single-item img {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      object-fit: cover;
-      box-shadow: 0 0 8px rgba(0,0,0,0.6);
-      transition: all 0.3s ease;
-    }
-    .single-item:hover img {
-      box-shadow: 0 0 15px rgba(218, 179, 107, 0.6);
-    }
-    .single-item span {
-      font-size: 0.8rem;
-      font-weight: 500;
-      text-align: center;
-      margin-top: 5px;
-      line-height: 1.2;
     }
 
     /* Tracklist */
@@ -201,18 +124,20 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .tracklist::-webkit-scrollbar {
       width: 8px;
     }
     .tracklist::-webkit-scrollbar-thumb {
-      background: #666;
+      background: #9c774b;
       border-radius: 4px;
     }
 
     .track {
       background: rgba(255,255,255,0.08);
-      padding: 10px 14px;
+      padding: 12px 16px;
       border-radius: 10px;
       cursor: pointer;
       user-select: none;
@@ -221,49 +146,34 @@
       justify-content: space-between;
       align-items: center;
       font-weight: 500;
-      position: relative;
+      border: 1px solid transparent;
     }
     .track:hover {
       background: rgba(255,255,255,0.18);
-      box-shadow: 0 0 10px rgba(218, 179, 107, 0.3);
-      transform: translateY(-1px);
+      transform: translateX(5px);
+      border-color: rgba(218, 179, 107, 0.3);
     }
     .track.active {
-      background: #9c774b;
+      background: linear-gradient(135deg, #9c774b, #dab36b);
       color: #fff;
-      box-shadow: 0 0 10px #9c774b;
+      box-shadow: 0 0 15px rgba(156, 119, 75, 0.5);
       font-weight: 700;
+      transform: translateX(8px);
     }
-
-    .track-info {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .track-title {
-      font-weight: 600;
-    }
-    .track-type {
-      font-size: 0.75rem;
-      opacity: 0.7;
-      color: #dab36b;
-    }
-
-    .spotify-btn {
-      background: rgba(29, 185, 84, 0.2);
-      color: #1DB954;
+    .track .spotify-mini {
+      background: rgba(29, 185, 84, 0.8);
+      color: white;
       border: none;
       padding: 4px 8px;
       border-radius: 6px;
-      font-size: 0.8rem;
-      font-weight: 600;
+      font-size: 0.7rem;
+      font-weight: 700;
       cursor: pointer;
       transition: all 0.3s ease;
     }
-    .spotify-btn:hover {
-      background: rgba(29, 185, 84, 0.4);
-      box-shadow: 0 0 8px rgba(29, 185, 84, 0.5);
+    .track .spotify-mini:hover {
+      background: #1DB954;
+      transform: scale(1.05);
     }
 
     /* Main player area */
@@ -281,12 +191,14 @@
       background: rgba(0, 0, 0, 0.4);
       border-radius: 16px;
       padding: 20px;
-      height: 120px;
+      height: 140px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
       overflow: hidden;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(156, 119, 75, 0.2);
     }
     
     .visualizer {
@@ -294,7 +206,7 @@
       align-items: end;
       justify-content: center;
       gap: 3px;
-      height: 80px;
+      height: 100px;
       width: 100%;
     }
     
@@ -303,20 +215,22 @@
       border-radius: 2px;
       width: 4px;
       min-height: 2px;
-      transition: height 0.1s ease;
-      box-shadow: 0 0 4px rgba(156, 119, 75, 0.5);
+      transition: height 0.15s ease-out;
+      box-shadow: 0 0 6px rgba(156, 119, 75, 0.5);
     }
 
     /* Player controls */
     .player {
       background: rgba(0, 0, 0, 0.6);
       border-radius: 16px;
-      padding: 20px 30px;
+      padding: 25px 35px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 25px;
-      box-shadow: 0 0 20px rgba(156, 119, 75, 0.4);
+      gap: 30px;
+      box-shadow: 0 0 25px rgba(156, 119, 75, 0.4);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(156, 119, 75, 0.3);
     }
 
     /* Vinyl */
@@ -325,15 +239,16 @@
       height: 100px;
       border-radius: 50%;
       box-shadow: 0 0 30px rgba(156, 119, 75, 0.7);
-      animation: spin 7s linear infinite;
+      animation: spin 8s linear infinite;
       object-fit: cover;
       flex-shrink: 0;
       background: #222;
       transition: all 0.3s ease;
+      border: 3px solid rgba(156, 119, 75, 0.5);
     }
-    .vinyl:hover {
-      box-shadow: 0 0 40px rgba(156, 119, 75, 0.9);
-      transform: scale(1.05);
+    .vinyl.paused {
+      animation-play-state: paused;
+      filter: grayscale(0.3);
     }
 
     @keyframes spin {
@@ -346,29 +261,32 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 12px;
     }
     .now-playing {
-      font-size: 1.2rem;
+      font-size: 1.3rem;
       font-weight: 700;
       user-select: none;
+      color: #dab36b;
+      text-shadow: 0 0 10px rgba(218, 179, 107, 0.3);
     }
     .spotify-link {
       display: inline-block;
       font-size: 0.9rem;
-      color: #1DB954;
-      background: rgba(29, 185, 84, 0.2);
-      padding: 6px 14px;
+      color: white;
+      background: linear-gradient(135deg, #1DB954, #1ed760);
+      padding: 8px 16px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: 700;
       width: fit-content;
       user-select: none;
       transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
     }
     .spotify-link:hover {
-      background: rgba(29, 185, 84, 0.4);
-      box-shadow: 0 0 10px rgba(29, 185, 84, 0.5);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(29, 185, 84, 0.5);
     }
 
     /* Controls */
@@ -382,28 +300,29 @@
       all: unset;
       cursor: pointer;
       color: white;
-      background: #1a1a1a;
-      padding: 10px 14px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+      padding: 12px 16px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
       display: flex;
       align-items: center;
       justify-content: center;
       transition: all 0.3s ease;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .controls button:hover {
-      background: #3c2f1d;
+      background: linear-gradient(135deg, #3c2f1d, #4d3b26);
       color: #dab36b;
-      box-shadow: 0 0 15px rgba(218, 179, 107, 0.4);
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(156, 119, 75, 0.3);
     }
     .controls button:focus {
       outline: none;
-      box-shadow: 0 0 8px 2px #dab36b;
+      box-shadow: 0 0 0 3px rgba(218, 179, 107, 0.5);
     }
     .controls button.active {
-      background: #3c2f1d;
-      color: #dab36b;
+      background: linear-gradient(135deg, #9c774b, #dab36b);
+      color: white;
     }
     .controls i {
       width: 24px;
@@ -413,7 +332,7 @@
     /* Progress bar */
     .progress-container {
       width: 100%;
-      margin-top: 8px;
+      margin-top: 12px;
       user-select: none;
     }
     input[type=range] {
@@ -421,29 +340,31 @@
       width: 100%;
       background: transparent;
       cursor: pointer;
-      height: 8px;
+      height: 10px;
+      border-radius: 5px;
     }
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 16px;
-      height: 16px;
-      background: #dab36b;
+      width: 18px;
+      height: 18px;
+      background: linear-gradient(135deg, #dab36b, #9c774b);
       cursor: pointer;
       border-radius: 50%;
       border: none;
-      margin-top: -4px;
-      box-shadow: 0 0 5px #dab36b;
+      margin-top: -5px;
+      box-shadow: 0 0 10px rgba(218, 179, 107, 0.6);
       transition: all 0.3s ease;
     }
     input[type=range]::-webkit-slider-thumb:hover {
-      box-shadow: 0 0 10px #dab36b;
       transform: scale(1.2);
+      box-shadow: 0 0 15px rgba(218, 179, 107, 0.8);
     }
     input[type=range]::-webkit-slider-runnable-track {
-      height: 8px;
-      background: #3c2f1d;
-      border-radius: 4px;
+      height: 10px;
+      background: linear-gradient(90deg, #9c774b 0%, #3c2f1d 100%);
+      border-radius: 5px;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
     }
     input[type=range]:focus {
       outline: none;
@@ -454,18 +375,19 @@
       font-size: 0.9rem;
       font-variant-numeric: tabular-nums;
       color: #dab36b;
-      margin-top: 4px;
+      margin-top: 6px;
       user-select: none;
       display: flex;
       justify-content: space-between;
+      font-weight: 600;
     }
 
     /* Volume controls */
     .volume-container {
       display: flex;
       align-items: center;
-      gap: 12px;
-      margin-left: 20px;
+      gap: 15px;
+      margin-left: 25px;
       user-select: none;
     }
     .volume-slider {
@@ -473,7 +395,7 @@
       -webkit-appearance: none;
       height: 8px;
       border-radius: 4px;
-      background: #3c2f1d;
+      background: linear-gradient(90deg, #3c2f1d, #9c774b);
       cursor: pointer;
     }
     .volume-slider::-webkit-slider-thumb {
@@ -481,162 +403,149 @@
       appearance: none;
       width: 16px;
       height: 16px;
-      background: #dab36b;
+      background: linear-gradient(135deg, #dab36b, #9c774b);
       cursor: pointer;
       border-radius: 50%;
       border: none;
       margin-top: -4px;
-      box-shadow: 0 0 5px #dab36b;
+      box-shadow: 0 0 8px rgba(218, 179, 107, 0.6);
       transition: all 0.3s ease;
     }
     .volume-slider::-webkit-slider-thumb:hover {
-      box-shadow: 0 0 10px #dab36b;
-      transform: scale(1.2);
-    }
-    .volume-slider::-webkit-slider-runnable-track {
-      height: 8px;
-      background: #3c2f1d;
-      border-radius: 4px;
+      transform: scale(1.1);
     }
 
     /* Ambient button */
     .ambient-button {
       all: unset;
       cursor: pointer;
-      background: #1a1a1a;
-      padding: 10px 14px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+      background: linear-gradient(135deg, #1a1a1a, #2a2a2a);
+      padding: 12px 18px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
       color: #dab36b;
       font-weight: 700;
       user-select: none;
       transition: all 0.3s ease;
-      margin-left: 15px;
+      margin-left: 20px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
     }
     .ambient-button:hover {
-      background: #3c2f1d;
+      background: linear-gradient(135deg, #3c2f1d, #4d3b26);
       color: #fff;
-      box-shadow: 0 0 15px rgba(218, 179, 107, 0.4);
       transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(156, 119, 75, 0.3);
+    }
+    .ambient-button.active {
+      background: linear-gradient(135deg, #9c774b, #dab36b);
+      color: white;
     }
 
     /* Ambient panel */
     #ambientPanel {
       position: fixed;
-      bottom: 110px;
-      right: 20px;
-      width: 350px;
-      background: rgba(0,0,0,0.85);
-      border-radius: 14px;
-      padding: 16px;
+      bottom: 120px;
+      right: 25px;
+      width: 320px;
+      background: rgba(0,0,0,0.9);
+      border-radius: 16px;
+      padding: 20px;
       display: none;
       flex-direction: column;
-      gap: 12px;
+      gap: 15px;
       color: #dab36b;
-      box-shadow: 0 0 15px #dab36b;
+      box-shadow: 0 0 25px rgba(156, 119, 75, 0.4);
       user-select: none;
       z-index: 10;
-      max-height: 400px;
-      overflow-y: auto;
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(156, 119, 75, 0.3);
     }
     #ambientPanel h3 {
-      margin-bottom: 8px;
+      margin-bottom: 10px;
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       text-align: center;
+      color: white;
     }
     .ambient-sound {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
-      padding: 8px;
-      border-radius: 8px;
+      gap: 15px;
+      padding: 10px;
       background: rgba(255,255,255,0.05);
-      transition: all 0.3s ease;
-    }
-    .ambient-sound:hover {
-      background: rgba(255,255,255,0.1);
+      border-radius: 10px;
     }
     .ambient-sound label {
       flex: 1;
       cursor: pointer;
       user-select: none;
-      font-weight: 500;
+      font-weight: 600;
     }
     .ambient-sound input[type=range] {
       flex-shrink: 0;
-      width: 100px;
+      width: 120px;
       -webkit-appearance: none;
-      height: 6px;
-      border-radius: 3px;
+      height: 8px;
+      border-radius: 4px;
       background: #3c2f1d;
       cursor: pointer;
     }
     .ambient-sound input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 14px;
-      background: #dab36b;
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #dab36b, #9c774b);
       border-radius: 50%;
       border: none;
       margin-top: -4px;
-      box-shadow: 0 0 5px #dab36b;
-      transition: all 0.3s ease;
-    }
-    .ambient-sound input[type=range]::-webkit-slider-thumb:hover {
-      box-shadow: 0 0 10px #dab36b;
-      transform: scale(1.1);
+      box-shadow: 0 0 8px rgba(218, 179, 107, 0.6);
     }
 
-    .ambient-close-btn {
-      margin-top: 10px;
-      padding: 8px;
-      border: none;
-      border-radius: 8px;
-      background: #9c774b;
-      color: #fff;
-      cursor: pointer;
-      font-weight: bold;
-      transition: all 0.3s ease;
-    }
-    .ambient-close-btn:hover {
-      background: #dab36b;
-      box-shadow: 0 0 10px rgba(218, 179, 107, 0.5);
+    /* Loading states */
+    .loading {
+      opacity: 0.7;
+      pointer-events: none;
     }
 
-    /* Scrollbar for tracklist */
-    .tracklist::-webkit-scrollbar-thumb {
-      background: #9c774b;
-    }
-
-    /* Keyboard shortcuts info */
+    /* Shortcuts panel */
     .shortcuts {
       position: fixed;
       bottom: 20px;
       left: 20px;
-      background: rgba(0,0,0,0.7);
-      padding: 8px 12px;
-      border-radius: 8px;
+      background: rgba(0,0,0,0.8);
+      padding: 12px 16px;
+      border-radius: 10px;
       font-size: 0.8rem;
       color: #888;
       user-select: none;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
-    /* Glow effects */
-    .glow {
-      animation: glow 2s ease-in-out infinite alternate;
-    }
-    @keyframes glow {
-      from {
-        box-shadow: 0 0 10px rgba(218, 179, 107, 0.5);
+    /* Responsive design */
+    @media (max-width: 1200px) {
+      .sidebar, .tracklist {
+        width: 25%;
       }
-      to {
-        box-shadow: 0 0 20px rgba(218, 179, 107, 0.8);
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+        overflow-y: auto;
+      }
+      .sidebar, .tracklist {
+        width: 100%;
+        height: 200px;
+      }
+      body {
+        overflow: auto;
       }
     }
   </style>
@@ -649,25 +558,13 @@
   </video>
 
   <div class="overlay"></div>
-  
-  <!-- Floating particles -->
-  <div class="particles" id="particles"></div>
 
   <div class="container">
-    <!-- Left: Projects & Singles -->
-    <aside class="sidebar" id="projects">
-      <div class="section-header">Projects</div>
-      <div id="projectsList"></div>
-      
-      <div class="section-header" style="margin-top: 20px;">Singles</div>
-      <div class="singles-grid" id="singlesList"></div>
-    </aside>
+    <!-- Left: Projects -->
+    <aside class="sidebar" id="projects"></aside>
 
     <!-- Right: Tracklist -->
-    <aside class="tracklist" id="tracks">
-      <div class="section-header" id="tracklistHeader">Select a Project</div>
-      <div id="tracksList"></div>
-    </aside>
+    <aside class="tracklist" id="tracks"></aside>
 
     <!-- Center: Player -->
     <section class="main">
@@ -680,7 +577,9 @@
         <img id="vinyl" class="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Vinyl cover" />
         <div class="info-buttons">
           <div class="now-playing" id="nowPlaying">Select a track to start playing</div>
-          <a href="#" id="spotifyLink" class="spotify-link" target="_blank" style="display:none;">Search on Spotify</a>
+          <a href="#" id="spotifyLink" class="spotify-link" target="_blank" style="display:none;">
+            🎵 Open in Spotify
+          </a>
 
           <!-- Progress bar and time -->
           <div class="progress-container">
@@ -692,7 +591,7 @@
           </div>
         </div>
 
-        <div style="display:flex; align-items:center; gap:12px;">
+        <div style="display:flex; align-items:center; gap:15px;">
           <div class="controls">
             <button id="prev" title="Previous Track (←)" aria-label="Previous Track"><i data-feather="skip-back"></i></button>
             <button id="playPause" title="Play/Pause (Space)" aria-label="Play/Pause"><i data-feather="play"></i></button>
@@ -702,7 +601,7 @@
           </div>
 
           <div class="volume-container" title="Volume Control" aria-label="Volume Control">
-            <button id="muteBtn" title="Mute/Unmute (M)" aria-label="Mute/Unmute" style="all: unset; cursor: pointer; color: white;">
+            <button id="muteBtn" title="Mute/Unmute (M)" aria-label="Mute/Unmute" style="all: unset; cursor: pointer; color: white; padding: 8px;">
               <i data-feather="volume-2" id="volumeIcon"></i>
             </button>
             <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.6" />
@@ -720,7 +619,7 @@
 
   <!-- Ambient Sounds Panel -->
   <div id="ambientPanel" aria-hidden="true" role="region" aria-label="Ambient Sounds Panel">
-    <h3>Ambient Sounds</h3>
+    <h3>🌧️ Ambient Sounds</h3>
     <div class="ambient-sound">
       <label for="rainVol">Rain</label>
       <input type="range" id="rainVol" min="0" max="1" step="0.01" value="0" />
@@ -729,43 +628,18 @@
       <label for="vinylCrackleVol">Vinyl Crackle</label>
       <input type="range" id="vinylCrackleVol" min="0" max="1" step="0.01" value="0" />
     </div>
-    <div class="ambient-sound">
-      <label for="windVol">Wind</label>
-      <input type="range" id="windVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <div class="ambient-sound">
-      <label for="fireVol">Fireplace</label>
-      <input type="range" id="fireVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <div class="ambient-sound">
-      <label for="cityVol">City Ambience</label>
-      <input type="range" id="cityVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <div class="ambient-sound">
-      <label for="typingVol">Typing</label>
-      <input type="range" id="typingVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <div class="ambient-sound">
-      <label for="beachVol">Beach Waves</label>
-      <input type="range" id="beachVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <div class="ambient-sound">
-      <label for="cafeVol">Coffee Shop</label>
-      <input type="range" id="cafeVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <button class="ambient-close-btn" id="ambientCloseBtn">Close</button>
+    <button id="ambientCloseBtn" style="margin-top:15px; padding:10px; border:none; border-radius:10px; background:linear-gradient(135deg, #9c774b, #dab36b); color:#fff; cursor:pointer; font-weight:bold; transition: all 0.3s ease;">✨ Close</button>
   </div>
 
   <!-- Keyboard shortcuts info -->
   <div class="shortcuts">
-    Space: Play/Pause • ←/→: Prev/Next • S: Shuffle • R: Repeat • M: Mute • A: Ambience
+    ⌨️ Space: Play/Pause • ←/→: Prev/Next • S: Shuffle • R: Repeat • M: Mute • A: Ambience
   </div>
 
 <script>
   feather.replace();
 
   // ===== EASY PROJECT CONFIGURATION =====
-  // Add your new projects here! Just update this array with your Cloudinary URLs
   const PROJECTS_CONFIG = [
     {
       id: 'pillowcore',
@@ -805,50 +679,11 @@
         { title: 'Between the Glow and the Silence', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3', spotifyId: '5vMcmcNnNKki4QQ2tyTLPq' }
       ]
     }
-    // ADD NEW PROJECTS HERE! Just copy the structure above and change the URLs/info
-    // Example:
-    // {
-    //   id: 'newProject',
-    //   name: 'New Project Name',
-    //   cover: 'YOUR_CLOUDINARY_COVER_URL',
-    //   spotifyPrefix: 'https://open.spotify.com/track/',
-    //   tracks: [
-    //     { title: 'Track Name', url: 'YOUR_CLOUDINARY_AUDIO_URL', spotifyId: 'SPOTIFY_ID' }
-    //   ]
-    // }
-  ];
-
-  // Singles configuration - separate from projects
-  const SINGLES_CONFIG = [
-    { 
-      id: 'single1', 
-      title: 'Midnight Coffee', 
-      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png', 
-      url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3', 
-      spotifyId: 'example123'
-    },
-    { 
-      id: 'single2', 
-      title: 'Neon Dreams', 
-      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229102/056f89b5bdd7b2944636c4e480196abe_1_bhyub6.jpg', 
-      url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Curtains_Breathing_Slow_si8vdi.mp3', 
-      spotifyId: 'example456'
-    }
-    // ADD NEW SINGLES HERE! 
-    // { 
-    //   id: 'singleX', 
-    //   title: 'Single Name', 
-    //   cover: 'YOUR_CLOUDINARY_COVER_URL', 
-    //   url: 'YOUR_CLOUDINARY_AUDIO_URL', 
-    //   spotifyId: 'SPOTIFY_ID' 
-    // }
   ];
 
   // Elements
-  const projectsList = document.getElementById('projectsList');
-  const singlesList = document.getElementById('singlesList');
-  const tracksList = document.getElementById('tracksList');
-  const tracklistHeader = document.getElementById('tracklistHeader');
+  const projectsContainer = document.getElementById('projects');
+  const tracksContainer = document.getElementById('tracks');
   const nowPlaying = document.getElementById('nowPlaying');
   const spotifyLink = document.getElementById('spotifyLink');
   const vinyl = document.getElementById('vinyl');
@@ -868,82 +703,116 @@
   const ambientPanel = document.getElementById('ambientPanel');
   const ambientCloseBtn = document.getElementById('ambientCloseBtn');
 
-  // Simple visualizer
+  // Enhanced visualizer
   const visualizer = document.getElementById('visualizer');
   let bars = [];
+  let animationId;
 
-  // Ambient sound audio elements with placeholder URLs (you can replace with real ambient sounds)
+  // Ambient sound audio elements
   const ambientSounds = {
     rain: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"),
-    vinylCrackle: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233867/ambient_vinyl_crackle.mp3"),
-    wind: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"), // placeholder
-    fire: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"), // placeholder
-    city: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"), // placeholder
-    typing: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"), // placeholder
-    beach: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"), // placeholder
-    cafe: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3") // placeholder
+    vinylCrackle: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233867/ambient_vinyl_crackle.mp3")
   };
-
-  // Set all ambient sounds to loop and start at 0 volume
+  
+  // Setup ambient sounds
   Object.values(ambientSounds).forEach(sound => {
     sound.loop = true;
     sound.volume = 0;
+    sound.preload = 'auto';
   });
 
   // State variables
-  let currentProjectId = null;
-  let currentTrackIndex = 0;
-  let currentTracks = []; // Current playlist (project tracks or singles)
+  let currentProjectId = PROJECTS_CONFIG[0].id;
+  let currentTrackIndex = -1; // Start with no track selected
   let isPlaying = false;
   let isShuffle = false;
   let isRepeat = false;
-  let wasPlayingBeforeSeek = false;
+  let isLoading = false;
+  let previousVolume = 0.6;
 
-  // Create floating particles
-  function createParticles() {
-    const particlesContainer = document.getElementById('particles');
-    for (let i = 0; i < 20; i++) {
-      const particle = document.createElement('div');
-      particle.classList.add('particle');
-      particle.style.left = Math.random() * 100 + 'vw';
-      particle.style.animationDelay = Math.random() * 20 + 's';
-      particle.style.animationDuration = (15 + Math.random() * 10) + 's';
-      particlesContainer.appendChild(particle);
-    }
-  }
-
-  // Create simple fake visualizer
-  function initSimpleVisualizer() {
-    for (let i = 0; i < 64; i++) {
+  // Enhanced visualizer creation
+  function initEnhancedVisualizer() {
+    visualizer.innerHTML = '';
+    bars = [];
+    
+    for (let i = 0; i < 80; i++) {
       const bar = document.createElement('div');
       bar.className = 'visualizer-bar';
       visualizer.appendChild(bar);
       bars.push(bar);
     }
-    animateSimpleVisualizer();
+    animateEnhancedVisualizer();
   }
 
-  // Simple visualizer animation
-  function animateSimpleVisualizer() {
-    if (isPlaying) {
-      for (let i = 0; i < bars.length; i++) {
-        const randomHeight = Math.random() * 60 + 10;
-        bars[i].style.height = randomHeight + 'px';
-      }
+  // Enhanced visualizer animation with more realistic patterns
+  function animateEnhancedVisualizer() {
+    if (isPlaying && !isLoading) {
+      bars.forEach((bar, i) => {
+        // Create wave-like patterns that respond to audio position
+        const time = Date.now() * 0.005;
+        const frequency = Math.sin(time + i * 0.1) * 0.5 + 0.5;
+        const amplitude = Math.sin(time * 0.7 + i * 0.05) * 0.3 + 0.7;
+        const randomFactor = Math.random() * 0.4 + 0.6;
+        
+        let height = frequency * amplitude * randomFactor * 80 + 5;
+        
+        // Add some bass-like behavior to center bars
+        if (i > 30 && i < 50) {
+          height *= 1.2 + Math.sin(time * 0.3) * 0.3;
+        }
+        
+        bar.style.height = Math.max(2, height) + 'px';
+        
+        // Subtle color variations
+        const intensity = height / 80;
+        if (intensity > 0.7) {
+          bar.style.boxShadow = `0 0 ${8 + intensity * 4}px rgba(156, 119, 75, ${0.5 + intensity * 0.3})`;
+        } else {
+          bar.style.boxShadow = '0 0 6px rgba(156, 119, 75, 0.5)';
+        }
+      });
     } else {
-      for (let i = 0; i < bars.length; i++) {
-        bars[i].style.height = '2px';
-      }
+      bars.forEach(bar => {
+        bar.style.height = '2px';
+        bar.style.boxShadow = '0 0 6px rgba(156, 119, 75, 0.3)';
+      });
     }
-    requestAnimationFrame(animateSimpleVisualizer);
+    animationId = requestAnimationFrame(animateEnhancedVisualizer);
   }
 
-  // Initialize volume
-  audio.volume = 0.6;
+  // Utility functions
+  function getRandomTrackIndex() {
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * project.tracks.length);
+    } while (randomIndex === currentTrackIndex && project.tracks.length > 1);
+    return randomIndex;
+  }
 
-  // Render projects sidebar
+  function setLoadingState(loading) {
+    isLoading = loading;
+    if (loading) {
+      nowPlaying.textContent = 'Loading...';
+      playPauseBtn.classList.add('loading');
+    } else {
+      playPauseBtn.classList.remove('loading');
+    }
+  }
+
+  // Initialize audio
+  audio.volume = 0.6;
+  audio.addEventListener('loadstart', () => setLoadingState(true));
+  audio.addEventListener('canplay', () => setLoadingState(false));
+  audio.addEventListener('error', () => {
+    setLoadingState(false);
+    nowPlaying.textContent = 'Error loading track';
+    console.error('Audio loading error');
+  });
+
+  // Render projects sidebar with enhanced styling
   function renderProjects() {
-    projectsList.innerHTML = '';
+    projectsContainer.innerHTML = '';
     PROJECTS_CONFIG.forEach(project => {
       const div = document.createElement('div');
       div.classList.add('project-item');
@@ -953,6 +822,7 @@
       const img = document.createElement('img');
       img.src = project.cover;
       img.alt = project.name + ' Cover';
+      img.loading = 'lazy';
 
       const span = document.createElement('span');
       span.textContent = project.name;
@@ -961,229 +831,162 @@
       div.appendChild(span);
 
       div.addEventListener('click', () => {
-        currentProjectId = project.id;
-        currentTracks = project.tracks;
-        currentTrackIndex = 0;
-        renderProjects();
-        renderTracks();
-        // Don't automatically load/play - let user click a track
+        if (currentProjectId !== project.id) {
+          currentProjectId = project.id;
+          currentTrackIndex = -1; // Reset track selection
+          renderProjects();
+          renderTracks();
+          // Don't auto-load first track, let user choose
+          nowPlaying.textContent = 'Select a track to start playing';
+          spotifyLink.style.display = 'none';
+          pauseAudio();
+        }
       });
 
-      projectsList.appendChild(div);
+      projectsContainer.appendChild(div);
     });
   }
 
-  // Render singles grid
-  function renderSingles() {
-    singlesList.innerHTML = '';
-    SINGLES_CONFIG.forEach((single, index) => {
-      const div = document.createElement('div');
-      div.classList.add('single-item');
-      div.dataset.singleIndex = index;
-
-      const img = document.createElement('img');
-      img.src = single.cover;
-      img.alt = single.title + ' Cover';
-
-      const span = document.createElement('span');
-      span.textContent = single.title;
-
-      div.appendChild(img);
-      div.appendChild(span);
-
-      div.addEventListener('click', () => {
-        // Play single immediately
-        currentProjectId = null; // Clear project selection
-        currentTracks = [single];
-        currentTrackIndex = 0;
-        loadTrack();
-        playAudio();
-        renderProjects();
-        renderTracks();
-      });
-
-      singlesList.appendChild(div);
-    });
-  }
-
-  // Render tracklist for current project
+  // Enhanced track rendering
   function renderTracks() {
-    if (!currentTracks.length) {
-      tracklistHeader.textContent = 'Select a Project';
-      tracksList.innerHTML = '<div style="text-align: center; opacity: 0.6; margin-top: 20px;">Choose a project or single to see tracks</div>';
-      return;
-    }
-
-    const projectName = currentProjectId ? 
-      PROJECTS_CONFIG.find(p => p.id === currentProjectId)?.name || 'Playlist' : 
-      'Now Playing';
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    tracksContainer.innerHTML = '';
     
-    tracklistHeader.textContent = projectName;
-    
-    tracksList.innerHTML = '';
-    currentTracks.forEach((track, idx) => {
+    project.tracks.forEach((track, idx) => {
       const div = document.createElement('div');
       div.classList.add('track');
-      if (idx === currentTrackIndex && audio.src && audio.src.includes(track.url.split('/').pop())) {
-        div.classList.add('active');
-      }
+      if (idx === currentTrackIndex) div.classList.add('active');
       
-      const trackInfo = document.createElement('div');
-      trackInfo.classList.add('track-info');
-      
-      const title = document.createElement('div');
-      title.classList.add('track-title');
+      const title = document.createElement('span');
       title.textContent = track.title;
-      
-      const type = document.createElement('div');
-      type.classList.add('track-type');
-      type.textContent = currentProjectId ? 'Album Track' : 'Single';
-      
-      trackInfo.appendChild(title);
-      trackInfo.appendChild(type);
-      div.appendChild(trackInfo);
+      title.style.flex = '1';
+      title.style.overflow = 'hidden';
+      title.style.textOverflow = 'ellipsis';
+      div.appendChild(title);
 
-      // Add spotify button
-      const spotifyBtn = document.createElement('button');
-      spotifyBtn.classList.add('spotify-btn');
-      spotifyBtn.title = 'Search on Spotify';
-      spotifyBtn.textContent = 'Spotify';
-      spotifyBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const searchQuery = encodeURIComponent(`KozyBeats - ${track.title}`);
-        window.open(`https://open.spotify.com/search/${searchQuery}`, '_blank');
-      });
-
-      div.appendChild(spotifyBtn);
+      // Enhanced Spotify button
+      if (track.spotifyId) {
+        const spotifyBtn = document.createElement('button');
+        spotifyBtn.classList.add('spotify-mini');
+        spotifyBtn.title = 'Open in Spotify';
+        spotifyBtn.textContent = '♫';
+        spotifyBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.open(project.spotifyPrefix + track.spotifyId, '_blank');
+        });
+        div.appendChild(spotifyBtn);
+      }
 
       div.addEventListener('click', () => {
-        currentTrackIndex = idx;
-        loadTrack();
-        playAudio();
-        renderTracks();
+        if (currentTrackIndex !== idx) {
+          currentTrackIndex = idx;
+          loadTrack();
+          playAudio();
+          renderTracks();
+        } else if (isPlaying) {
+          pauseAudio();
+        } else {
+          playAudio();
+        }
       });
 
-      tracksList.appendChild(div);
+      tracksContainer.appendChild(div);
     });
   }
 
-  // Load the current track
+  // Enhanced track loading
   function loadTrack() {
-    if (!currentTracks.length) return;
+    if (currentTrackIndex === -1) return;
     
-    const track = currentTracks[currentTrackIndex];
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    const track = project.tracks[currentTrackIndex];
+    
+    setLoadingState(true);
     audio.src = track.url;
-    nowPlaying.textContent = `Now Playing: KozyBeats - ${track.title}`;
+    nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
     
     // Update Spotify link
-    const searchQuery = encodeURIComponent(`KozyBeats - ${track.title}`);
-    spotifyLink.href = `https://open.spotify.com/search/${searchQuery}`;
-    spotifyLink.style.display = 'inline-block';
-    
-    // Update vinyl with track cover (use project cover or single cover)
-    if (!currentProjectId && track.cover) {
-      // Single track
-      vinyl.src = track.cover;
-    } else if (currentProjectId) {
-      // Project track
-      const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
-      vinyl.src = project ? project.cover : 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png';
+    if (track.spotifyId) {
+      spotifyLink.style.display = 'inline-block';
+      spotifyLink.href = project.spotifyPrefix + track.spotifyId;
+    } else {
+      spotifyLink.style.display = 'none';
     }
     
+    // Update vinyl cover
+    vinyl.src = project.cover;
     updatePlayPauseIcon();
   }
 
-  // Play audio
+  // Enhanced audio controls
   function playAudio() {
-    if (!audio.src) return;
-    audio.play().catch(e => console.log('Play failed:', e));
-    isPlaying = true;
-    updatePlayPauseIcon();
+    if (currentTrackIndex === -1) {
+      // If no track selected, select first track
+      currentTrackIndex = 0;
+      loadTrack();
+    }
+    
+    const playPromise = audio.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        isPlaying = true;
+        vinyl.classList.remove('paused');
+        updatePlayPauseIcon();
+        setLoadingState(false);
+      }).catch(error => {
+        console.error('Playback failed:', error);
+        setLoadingState(false);
+      });
+    }
   }
 
-  // Pause audio
   function pauseAudio() {
     audio.pause();
     isPlaying = false;
+    vinyl.classList.add('paused');
     updatePlayPauseIcon();
   }
 
-  // Toggle play/pause
   function togglePlayPause() {
-    if (!audio.src && currentTracks.length) {
-      loadTrack();
-      playAudio();
-      return;
-    }
-    
+    if (isLoading) return;
     if (isPlaying) pauseAudio();
     else playAudio();
   }
 
-  // Update play/pause button icon
+  // Enhanced icon updates
   function updatePlayPauseIcon() {
     const iconName = isPlaying ? 'pause' : 'play';
     playPauseBtn.innerHTML = `<i data-feather="${iconName}"></i>`;
     feather.replace();
   }
 
-  // Shuffle helper
-  function getRandomTrackIndex() {
-    if (currentTracks.length <= 1) return 0;
-    let randomIndex;
-    do {
-      randomIndex = Math.floor(Math.random() * currentTracks.length);
-    } while (randomIndex === currentTrackIndex);
-    return randomIndex;
-  }
-
-  // Next track logic
+  // Enhanced navigation
   function nextTrack() {
-    if (!currentTracks.length) return;
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    if (!project.tracks.length) return;
     
     if (isShuffle) {
       currentTrackIndex = getRandomTrackIndex();
     } else {
       currentTrackIndex++;
-      if (currentTrackIndex >= currentTracks.length) {
+      if (currentTrackIndex >= project.tracks.length) {
         if (isRepeat) {
           currentTrackIndex = 0;
         } else {
-          // Move to next project if available
-          if (currentProjectId) {
-            const currentProjectIdx = PROJECTS_CONFIG.findIndex(p => p.id === currentProjectId);
-            if (currentProjectIdx < PROJECTS_CONFIG.length - 1) {
-              const nextProject = PROJECTS_CONFIG[currentProjectIdx + 1];
-              currentProjectId = nextProject.id;
-              currentTracks = nextProject.tracks;
-              currentTrackIndex = 0;
-              renderProjects();
-            } else {
-              // End of all projects, stop
-              currentTrackIndex = currentTracks.length - 1;
-              pauseAudio();
-              renderTracks();
-              return;
-            }
-          } else {
-            // End of singles/current playlist
-            currentTrackIndex = currentTracks.length - 1;
-            pauseAudio();
-            renderTracks();
-            return;
-          }
+          currentTrackIndex = project.tracks.length - 1;
+          pauseAudio();
+          return;
         }
       }
     }
-    
     loadTrack();
-    playAudio();
+    if (isPlaying) playAudio();
     renderTracks();
   }
 
-  // Previous track logic
   function prevTrack() {
-    if (!currentTracks.length) return;
+    const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
+    if (!project.tracks.length) return;
     
     if (isShuffle) {
       currentTrackIndex = getRandomTrackIndex();
@@ -1191,78 +994,58 @@
       currentTrackIndex--;
       if (currentTrackIndex < 0) {
         if (isRepeat) {
-          currentTrackIndex = currentTracks.length - 1;
+          currentTrackIndex = project.tracks.length - 1;
         } else {
-          // Move to previous project if available
-          if (currentProjectId) {
-            const currentProjectIdx = PROJECTS_CONFIG.findIndex(p => p.id === currentProjectId);
-            if (currentProjectIdx > 0) {
-              const prevProject = PROJECTS_CONFIG[currentProjectIdx - 1];
-              currentProjectId = prevProject.id;
-              currentTracks = prevProject.tracks;
-              currentTrackIndex = prevProject.tracks.length - 1;
-              renderProjects();
-            } else {
-              // Beginning of all projects, stop
-              currentTrackIndex = 0;
-              pauseAudio();
-              renderTracks();
-              return;
-            }
-          } else {
-            // Beginning of singles/current playlist
-            currentTrackIndex = 0;
-            pauseAudio();
-            renderTracks();
-            return;
-          }
+          currentTrackIndex = 0;
+          pauseAudio();
+          return;
         }
       }
     }
-    
     loadTrack();
-    playAudio();
+    if (isPlaying) playAudio();
     renderTracks();
   }
 
-  // Shuffle toggle
+  // Enhanced button states
   function toggleShuffle() {
     isShuffle = !isShuffle;
     shuffleBtn.classList.toggle('active', isShuffle);
   }
 
-  // Repeat toggle
   function toggleRepeat() {
     isRepeat = !isRepeat;
     repeatBtn.classList.toggle('active', isRepeat);
   }
 
-  // Update progress bar and time display
+  // Enhanced progress handling
   function updateProgress() {
-    if (!audio.duration) return;
+    if (!audio.duration || isNaN(audio.duration)) return;
+    
     const percent = (audio.currentTime / audio.duration) * 100;
     progress.value = percent;
 
     currentTimeEl.textContent = formatTime(audio.currentTime);
     durationEl.textContent = formatTime(audio.duration);
+    
+    // Update progress bar background
+    progress.style.background = `linear-gradient(90deg, #9c774b ${percent}%, #3c2f1d ${percent}%)`;
   }
 
-  // Format seconds as mm:ss
   function formatTime(sec) {
-    if (!sec || isNaN(sec)) return '00:00';
-    const minutes = Math.floor(sec / 60);
-    const seconds = Math.floor(sec % 60);
+    if (isNaN(sec)) return '00:00';
+    const minutes = Math.floor(sec / 60) || 0;
+    const seconds = Math.floor(sec % 60) || 0;
     return `${minutes < 10 ? '0' + minutes : minutes}:${seconds < 10 ? '0' + seconds : seconds}`;
   }
 
-  // Seek audio position
   function setProgress(e) {
-    if (!audio.duration) return;
+    if (!audio.duration || isNaN(audio.duration)) return;
     const seekTime = (progress.value / 100) * audio.duration;
     audio.currentTime = seekTime;
   }
 
-  // Volume control and mute toggle
+  // Enhanced volume controls
   function updateVolumeIcon() {
     let iconName = 'volume-2';
     if (audio.muted || audio.volume === 0) {
@@ -1275,13 +1058,21 @@
   }
 
   function toggleMute() {
-    audio.muted = !audio.muted;
+    if (audio.muted) {
+      audio.muted = false;
+      audio.volume = previousVolume;
+      volumeSlider.value = previousVolume;
+    } else {
+      previousVolume = audio.volume;
+      audio.muted = true;
+      audio.volume = 0;
+      volumeSlider.value = 0;
+    }
     updateVolumeIcon();
   }
 
-  // Keyboard shortcuts
+  // Enhanced keyboard shortcuts
   document.addEventListener('keydown', (e) => {
-    // Only handle shortcuts if not typing in an input
     if (e.target.tagName.toLowerCase() === 'input') return;
     
     switch (e.code) {
@@ -1311,93 +1102,138 @@
         break;
       case 'KeyA':
         e.preventDefault();
-        ambientPanel.style.display = ambientPanel.style.display === 'flex' ? 'none' : 'flex';
+        const isVisible = ambientPanel.style.display === 'flex';
+        ambientPanel.style.display = isVisible ? 'none' : 'flex';
+        ambientBtn.classList.toggle('active', !isVisible);
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        audio.volume = Math.min(1, audio.volume + 0.1);
+        volumeSlider.value = audio.volume;
+        updateVolumeIcon();
+        break;
+      case 'ArrowDown':
+        e.preventDefault();
+        audio.volume = Math.max(0, audio.volume - 0.1);
+        volumeSlider.value = audio.volume;
+        updateVolumeIcon();
         break;
     }
   });
 
-  // Setup ambient sound controls
-  function setupAmbientControls() {
-    Object.keys(ambientSounds).forEach(soundKey => {
-      const slider = document.getElementById(soundKey + 'Vol');
-      if (slider) {
-        slider.addEventListener('input', () => {
-          const volume = parseFloat(slider.value);
-          ambientSounds[soundKey].volume = volume;
-          if (volume > 0) {
-            ambientSounds[soundKey].play().catch(e => console.log('Ambient sound play failed:', e));
-          } else {
-            ambientSounds[soundKey].pause();
-          }
-        });
-      }
-    });
-  }
+  // Enhanced ambient sound controls
+  const rainVolSlider = document.getElementById('rainVol');
+  const vinylCrackleVolSlider = document.getElementById('vinylCrackleVol');
 
-  // Event listeners
+  rainVolSlider.addEventListener('input', () => {
+    const volume = parseFloat(rainVolSlider.value);
+    ambientSounds.rain.volume = volume;
+    if (volume > 0 && ambientSounds.rain.paused) {
+      ambientSounds.rain.play().catch(console.error);
+    } else if (volume === 0) {
+      ambientSounds.rain.pause();
+    }
+  });
+
+  vinylCrackleVolSlider.addEventListener('input', () => {
+    const volume = parseFloat(vinylCrackleVolSlider.value);
+    ambientSounds.vinylCrackle.volume = volume;
+    if (volume > 0 && ambientSounds.vinylCrackle.paused) {
+      ambientSounds.vinylCrackle.play().catch(console.error);
+    } else if (volume === 0) {
+      ambientSounds.vinylCrackle.pause();
+    }
+  });
+
+  // Ambient panel controls
+  ambientBtn.addEventListener('click', () => {
+    const isVisible = ambientPanel.style.display === 'flex';
+    ambientPanel.style.display = isVisible ? 'none' : 'flex';
+    ambientBtn.classList.toggle('active', !isVisible);
+  });
+  
+  ambientCloseBtn.addEventListener('click', () => {
+    ambientPanel.style.display = 'none';
+    ambientBtn.classList.remove('active');
+  });
+
+  // Click outside to close ambient panel
+  document.addEventListener('click', (e) => {
+    if (!ambientPanel.contains(e.target) && !ambientBtn.contains(e.target)) {
+      if (ambientPanel.style.display === 'flex') {
+        ambientPanel.style.display = 'none';
+        ambientBtn.classList.remove('active');
+      }
+    }
+  });
+
+  // Enhanced volume slider
   volumeSlider.addEventListener('input', (e) => {
-    audio.volume = e.target.value;
+    const volume = parseFloat(e.target.value);
+    audio.volume = volume;
     audio.muted = false;
     updateVolumeIcon();
+    
+    // Update slider background
+    const percent = volume * 100;
+    volumeSlider.style.background = `linear-gradient(90deg, #9c774b ${percent}%, #3c2f1d ${percent}%)`;
   });
 
-  muteBtn.addEventListener('click', toggleMute);
-  
-  // Progress bar interaction
-  progress.addEventListener('mousedown', () => {
-    wasPlayingBeforeSeek = isPlaying;
-    if (isPlaying) pauseAudio();
-  });
-  
-  progress.addEventListener('mouseup', () => {
-    if (wasPlayingBeforeSeek) playAudio();
-  });
-  
-  progress.addEventListener('input', setProgress);
-
-  // Audio event listeners
+  // Enhanced audio event listeners
   audio.addEventListener('timeupdate', updateProgress);
+  audio.addEventListener('loadedmetadata', () => {
+    updateProgress();
+    setLoadingState(false);
+  });
   audio.addEventListener('ended', () => {
-    if (isRepeat && currentTracks.length === 1) {
+    if (isRepeat && !isShuffle) {
       audio.currentTime = 0;
       playAudio();
     } else {
       nextTrack();
     }
   });
-
-  audio.addEventListener('loadedmetadata', () => {
-    updateProgress();
+  audio.addEventListener('play', () => {
+    isPlaying = true;
+    vinyl.classList.remove('paused');
+    updatePlayPauseIcon();
+  });
+  audio.addEventListener('pause', () => {
+    isPlaying = false;
+    vinyl.classList.add('paused');
+    updatePlayPauseIcon();
   });
 
-  // Control button listeners
+  // Enhanced progress bar interaction
+  progress.addEventListener('input', setProgress);
+  progress.addEventListener('change', setProgress);
+
+  // Button event listeners
   playPauseBtn.addEventListener('click', togglePlayPause);
   prevBtn.addEventListener('click', prevTrack);
   nextBtn.addEventListener('click', nextTrack);
   shuffleBtn.addEventListener('click', toggleShuffle);
   repeatBtn.addEventListener('click', toggleRepeat);
-
-  // Ambient panel controls
-  ambientBtn.addEventListener('click', () => {
-    ambientPanel.style.display = ambientPanel.style.display === 'flex' ? 'none' : 'flex';
-  });
-  
-  ambientCloseBtn.addEventListener('click', () => {
-    ambientPanel.style.display = 'none';
-  });
-
-  // Click outside to close ambient panel
-  document.addEventListener('click', (e) => {
-    if (!ambientPanel.contains(e.target) && !ambientBtn.contains(e.target)) {
-      ambientPanel.style.display = 'none';
-    }
-  });
+  muteBtn.addEventListener('click', toggleMute);
 
   // Initialize everything
-  createParticles();
-  initSimpleVisualizer();
-  setupAmbientControls();
-  renderProjects();
-  renderSingles();
-  renderTracks();
-  updateVolumeIcon();
+  function init() {
+    initEnhancedVisualizer();
+    renderProjects();
+    renderTracks();
+    updateVolumeIcon();
+    
+    // Initialize volume slider background
+    const percent = audio.volume * 100;
+    volumeSlider.style.background = `linear-gradient(90deg, #9c774b ${percent}%, #3c2f1d ${percent}%)`;
+    
+    console.log('🎵 Kozybeats Player initialized successfully!');
+  }
+
+  // Start the application
+  init();
+
+</script>
+
+</body>
+</html>
