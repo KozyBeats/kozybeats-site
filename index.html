@@ -524,18 +524,6 @@
       <label for="vinylCrackleVol">Vinyl Crackle</label>
       <input type="range" id="vinylCrackleVol" min="0" max="1" step="0.01" value="0" />
     </div>
-    <div class="ambient-sound">
-      <label for="fireplaceVol">Fireplace</label>
-      <input type="range" id="fireplaceVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <div class="ambient-sound">
-      <label for="coffeeShopVol">Coffee Shop</label>
-      <input type="range" id="coffeeShopVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <div class="ambient-sound">
-      <label for="oceanVol">Ocean Waves</label>
-      <input type="range" id="oceanVol" min="0" max="1" step="0.01" value="0" />
-    </div>
     <button id="ambientCloseBtn" style="margin-top:10px; padding:8px; border:none; border-radius:8px; background:#9c774b; color:#fff; cursor:pointer; font-weight:bold;">Close</button>
   </div>
 
@@ -623,107 +611,51 @@
   const ambientPanel = document.getElementById('ambientPanel');
   const ambientCloseBtn = document.getElementById('ambientCloseBtn');
 
-  // Audio Visualizer
+  // Simple visualizer (no Web Audio API)
   const visualizer = document.getElementById('visualizer');
-  let audioContext;
-  let analyser;
-  let dataArray;
-  let source;
   let bars = [];
-  let isVisualizerConnected = false;
 
-  // Ambient sound audio elements with new sounds
+  // Ambient sound audio elements
   const ambientSounds = {
     rain: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233846/ambient_rain_loop.mp3"),
-    vinylCrackle: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233867/ambient_vinyl_crackle.mp3"),
-    fireplace: new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"), // Replace with your fireplace URL
-    coffeeShop: new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.wav"), // Replace with your coffee shop URL
-    ocean: new Audio("https://www.soundjay.com/misc/sounds/bell-ringing-05.wav") // Replace with your ocean waves URL
+    vinylCrackle: new Audio("https://res.cloudinary.com/dvtt0ymce/video/upload/v1754233867/ambient_vinyl_crackle.mp3")
   };
+  ambientSounds.rain.loop = true;
+  ambientSounds.vinylCrackle.loop = true;
+  ambientSounds.rain.volume = 0;
+  ambientSounds.vinylCrackle.volume = 0;
 
-  // Set up ambient sounds
-  Object.values(ambientSounds).forEach(sound => {
-    sound.loop = true;
-    sound.volume = 0;
-  });
-
-  // State variables (back to your original)
+  // State variables - EXACTLY like your original
   let currentProjectId = PROJECTS_CONFIG[0].id;
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isShuffle = false;
   let isRepeat = false;
 
-  // Initialize audio visualizer
-  function initVisualizer() {
-    // Create bars for visualizer
+  // Create simple fake visualizer
+  function initSimpleVisualizer() {
     for (let i = 0; i < 64; i++) {
       const bar = document.createElement('div');
       bar.className = 'visualizer-bar';
       visualizer.appendChild(bar);
       bars.push(bar);
     }
-    
-    // Start animation loop
-    animateVisualizer();
+    animateSimpleVisualizer();
   }
 
-  // Try to connect Web Audio API (non-blocking)
-  function connectWebAudio() {
-    if (isVisualizerConnected) return;
-    
-    try {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = audioContext.createAnalyser();
-      analyser.fftSize = 128;
-      analyser.smoothingTimeConstant = 0.8;
-      dataArray = new Uint8Array(analyser.frequencyBinCount);
-      
-      source = audioContext.createMediaElementSource(audio);
-      source.connect(analyser);
-      analyser.connect(audioContext.destination);
-      
-      isVisualizerConnected = true;
-      console.log('Visualizer connected');
-    } catch (error) {
-      console.log('Visualizer unavailable:', error);
-    }
-  }
-
-  // Animate visualizer bars
-  function animateVisualizer() {
-    if (analyser && isPlaying && isVisualizerConnected) {
-      try {
-        analyser.getByteFrequencyData(dataArray);
-        
-        for (let i = 0; i < bars.length; i++) {
-          const barHeight = (dataArray[i] / 255) * 80;
-          bars[i].style.height = Math.max(2, barHeight) + 'px';
-        }
-      } catch (error) {
-        // Fallback to fake animation
-        fakeBars();
+  // Simple visualizer animation
+  function animateSimpleVisualizer() {
+    if (isPlaying) {
+      for (let i = 0; i < bars.length; i++) {
+        const randomHeight = Math.random() * 60 + 10;
+        bars[i].style.height = randomHeight + 'px';
       }
     } else {
-      // Default state or fake animation when playing without Web Audio
-      if (isPlaying) {
-        fakeBars();
-      } else {
-        for (let i = 0; i < bars.length; i++) {
-          bars[i].style.height = '2px';
-        }
+      for (let i = 0; i < bars.length; i++) {
+        bars[i].style.height = '2px';
       }
     }
-    
-    requestAnimationFrame(animateVisualizer);
-  }
-
-  // Fake visualizer animation for when Web Audio API isn't available
-  function fakeBars() {
-    for (let i = 0; i < bars.length; i++) {
-      const randomHeight = Math.random() * 40 + 10;
-      bars[i].style.height = randomHeight + 'px';
-    }
+    requestAnimationFrame(animateSimpleVisualizer);
   }
 
   // Shuffle helper
@@ -813,7 +745,7 @@
     });
   }
 
-  // Load the current track (back to your original working version)
+  // Load the current track - EXACTLY your original  
   function loadTrack() {
     const project = PROJECTS_CONFIG.find(p => p.id === currentProjectId);
     const track = project.tracks[currentTrackIndex];
@@ -821,20 +753,21 @@
     nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
     spotifyLink.style.display = track.spotifyId ? 'inline-block' : 'none';
     spotifyLink.href = track.spotifyId ? project.spotifyPrefix + track.spotifyId : '#';
-    vinyl.src = project.cover;
+    vinyl.src = trackCoverFromUrl(track.url);
     updatePlayPauseIcon();
   }
 
-  // Play audio (back to your original working version)
+  // Helper to get cover image for vinyl: uses project cover by default
+  function trackCoverFromUrl(url) {
+    const project = PROJECTS_CONFIG.find(p => p.tracks.some(t => t.url === url));
+    return project ? project.cover : vinyl.src;
+  }
+
+  // Play audio - EXACTLY your original
   function playAudio() {
     audio.play();
     isPlaying = true;
     updatePlayPauseIcon();
-    
-    // Try to connect visualizer after first user interaction
-    if (!isVisualizerConnected) {
-      connectWebAudio();
-    }
   }
 
   // Pause audio
@@ -1001,29 +934,20 @@
     }
   });
 
-  // Ambient sound controls
-  const ambientSliders = {
-    rain: document.getElementById('rainVol'),
-    vinylCrackle: document.getElementById('vinylCrackleVol'),
-    fireplace: document.getElementById('fireplaceVol'),
-    coffeeShop: document.getElementById('coffeeShopVol'),
-    ocean: document.getElementById('oceanVol')
-  };
+  // Ambient sound controls - simplified to just rain and vinyl crackle
+  const rainVolSlider = document.getElementById('rainVol');
+  const vinylCrackleVolSlider = document.getElementById('vinylCrackleVol');
 
-  // Set up ambient sound controls (simplified)
-  Object.keys(ambientSliders).forEach(soundName => {
-    const slider = ambientSliders[soundName];
-    const sound = ambientSounds[soundName];
-    
-    slider.addEventListener('input', () => {
-      sound.volume = slider.value;
-      
-      if (slider.value > 0) {
-        sound.play().catch(e => console.log('Audio play failed:', e));
-      } else {
-        sound.pause();
-      }
-    });
+  // Ambient sound volume updates
+  rainVolSlider.addEventListener('input', () => {
+    ambientSounds.rain.volume = rainVolSlider.value;
+    if (rainVolSlider.value > 0) ambientSounds.rain.play();
+    else ambientSounds.rain.pause();
+  });
+  vinylCrackleVolSlider.addEventListener('input', () => {
+    ambientSounds.vinylCrackle.volume = vinylCrackleVolSlider.value;
+    if (vinylCrackleVolSlider.value > 0) ambientSounds.vinylCrackle.play();
+    else ambientSounds.vinylCrackle.pause();
   });
 
   // Ambient panel toggle
@@ -1064,7 +988,7 @@
   repeatBtn.addEventListener('click', toggleRepeat);
 
   // Initialize everything
-  initVisualizer();
+  initSimpleVisualizer();
   renderProjects();
   renderTracks();
   loadTrack();
