@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kozybeats Radio</title>
+  <style>
+    body {
+      background: #1e1e2f url('https://i.imgur.com/j0g9zcb.gif') no-repeat center center fixed;
+      background-size: cover;
+      font-family: sans-serif;
+      color: white;
+      text-align: center;
+      padding-top: 50px;
+    }
+    .player {
+      background: rgba(0,0,0,0.6);
+      padding: 20px;
+      border-radius: 20px;
+      width: 300px;
+      margin: 0 auto;
+    }
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+    .tracklist button {
+      display: block;
+      background: #333;
+      color: white;
+      border: none;
+      margin: 10px auto;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+    }
+    .tracklist button:hover {
+      background: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="player">
+    <h2>Kozybeats Radio 🎧</h2>
+    <p id="nowPlaying">Now Playing: —</p>
+    <audio id="audioPlayer" controls autoplay></audio>
+    <div class="tracklist">
+      <button onclick="playTrack('https://YOUR-MP3-LINK-1.mp3', 'Evening Static')">Evening Static</button>
+      <button onclick="playTrack('https://YOUR-MP3-LINK-2.mp3', 'Room Temperature')">Room Temperature</button>
+      <button onclick="playTrack('https://YOUR-MP3-LINK-3.mp3', 'Coffee Clouds')">Coffee Clouds</button>
+    </div>
+  </div>
+
+  <script>
+    const audioPlayer = document.getElementById('audioPlayer');
+    const nowPlaying = document.getElementById('nowPlaying');
+
+    function playTrack(url, title) {
+      audioPlayer.src = url;
+      nowPlaying.textContent = `Now Playing: ${title}`;
+      audioPlayer.play();
+    }
+  </script>
+</body>
+</html>
