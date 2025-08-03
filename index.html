@@ -4,72 +4,82 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Kozybeats Radio</title>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Roboto&display=swap" rel="stylesheet" />
 <style>
+  /* === COLORS & FONTS === */
   :root {
-    --main-bg: #f6f0e8;
-    --primary-color: #5a3e1a;
-    --highlight: #c9b08c;
-    --button-bg: #c9b08c;
-    --button-hover: #a98b63;
+    --bg-color: #f3ede7;
+    --primary-color: #6b4f3d; /* deep warm brown */
+    --secondary-color: #a88c72; /* warm muted tan */
+    --text-color: #4a3a2a;
+    --button-bg: #d4c6b5;
+    --button-hover-bg: #c2b19e;
+    --button-active-bg: #b09c86;
+    --shadow-color: rgba(74, 58, 42, 0.25);
   }
-  * {
-    box-sizing: border-box;
-  }
+
   body, html {
     margin: 0; padding: 0;
     height: 100%;
-    font-family: 'Poppins', sans-serif;
-    background-color: var(--main-bg);
+    font-family: 'Roboto', sans-serif;
+    background: var(--bg-color);
     overflow-x: hidden;
   }
+  /* === BACKGROUND VIDEO === */
   #video-background video {
     position: fixed;
     top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
+    width: 100vw; height: 100vh;
     object-fit: cover;
-    z-index: -3;
-    filter: brightness(0.6) blur(3px);
-    transition: opacity 1s ease;
+    filter: brightness(0.6) blur(4px);
+    z-index: -4;
   }
+
+  /* === PROJECT BACKGROUND BLUR OVERLAY === */
   #project-bg-overlay {
     position: fixed;
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     background-size: cover;
     background-position: center;
-    filter: blur(15px) brightness(0.5);
+    filter: blur(20px) brightness(0.45);
     opacity: 0;
-    z-index: -2;
     transition: opacity 1s ease;
+    z-index: -3;
   }
+
+  /* === PARTICLES CANVAS === */
   #particles {
     position: fixed;
     top: 0; left: 0;
     width: 100vw; height: 100vh;
     pointer-events: none;
-    z-index: -1;
+    z-index: -2;
   }
+
+  /* === CONTAINER === */
   .app-container {
-    max-width: 1000px;
-    margin: 50px auto 80px;
-    padding: 30px;
-    background-color: rgba(255, 248, 240, 0.85);
-    border-radius: 20px;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 60px auto 90px;
+    padding: 30px 25px;
+    background: rgba(243, 237, 231, 0.85);
+    border-radius: 18px;
+    box-shadow: 0 8px 20px var(--shadow-color);
     position: relative;
-    z-index: 1;
+    z-index: 10;
   }
+
+  /* === HEADER === */
   .header {
     display: flex;
-    align-items: center;
     gap: 20px;
+    align-items: center;
   }
   .cover {
-    width: 180px;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    width: 170px;
+    border-radius: 14px;
+    box-shadow: 0 7px 22px var(--shadow-color);
+    user-select: none;
     flex-shrink: 0;
   }
   .info {
@@ -77,84 +87,163 @@
   }
   .info h1 {
     font-family: 'Montserrat', sans-serif;
-    margin: 0;
-    font-size: 28px;
+    font-size: 30px;
     color: var(--primary-color);
+    margin: 0 0 6px;
     user-select: none;
   }
   .info p {
-    font-size: 18px;
-    color: #7a5f3d;
-    margin-top: 6px;
+    font-size: 16px;
+    color: var(--secondary-color);
+    margin: 0;
     user-select: none;
   }
-  .controls {
-    margin: 20px 0;
-  }
-  audio {
-    width: 100%;
-    outline: none;
-  }
-  .tracklist button {
-    width: 100%;
-    padding: 10px 15px;
-    background: var(--button-bg);
-    color: var(--primary-color);
-    font-family: 'Poppins', sans-serif;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    margin: 5px 0;
-    cursor: pointer;
-    transition: background 0.3s;
-    text-align: left;
-  }
-  .tracklist button:hover,
-  .tracklist button.active {
-    background: var(--button-hover);
-    color: #fff;
-  }
+
+  /* === PROJECT SWITCHER BUTTONS === */
   .project-switcher {
     display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
+    gap: 14px;
+    margin-bottom: 25px;
   }
   .project-switcher button {
     background: var(--button-bg);
     border: none;
-    border-radius: 8px;
-    padding: 8px 18px;
-    cursor: pointer;
-    font-weight: 600;
+    padding: 9px 20px;
+    border-radius: 10px;
     color: var(--primary-color);
-    transition: background 0.3s;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 3px 8px var(--shadow-color);
+    transition: background 0.3s, color 0.3s;
   }
-  .project-switcher button:hover,
+  .project-switcher button:hover {
+    background: var(--button-hover-bg);
+  }
   .project-switcher button.active {
-    background: var(--button-hover);
+    background: var(--button-active-bg);
     color: #fff;
   }
-  .repeat-toggle {
-    margin-top: 10px;
-    font-size: 14px;
-    color: #333;
+
+  /* === AUDIO CONTROLS AREA === */
+  .controls {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 25px;
+  }
+
+  #audioPlayer {
+    flex-grow: 1;
+    border-radius: 12px;
+    outline: none;
+    box-shadow: 0 2px 8px var(--shadow-color);
+    filter: drop-shadow(0 0 1px rgba(0,0,0,0.15));
+  }
+
+  /* === CONTROL BUTTONS === */
+  .control-btn {
+    background: var(--button-bg);
+    border: none;
+    padding: 10px 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 3px 9px var(--shadow-color);
+    transition: background 0.3s, transform 0.2s;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     user-select: none;
   }
-  #vinyl-container {
-    position: fixed;
-    bottom: 40px;
-    right: 40px;
-    width: 100px;
-    height: 100px;
-    z-index: 2;
+  .control-btn:hover {
+    background: var(--button-hover-bg);
+    transform: scale(1.12);
+  }
+  .control-btn:active {
+    transform: scale(1);
+  }
+  .control-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+  }
+
+  /* === REPEAT & SHUFFLE === */
+  .toggles {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 14px;
+    color: var(--secondary-color);
     user-select: none;
+  }
+  .toggles label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+  .toggles input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+    accent-color: var(--primary-color);
+  }
+
+  /* === TRACKLIST === */
+  .tracklist {
+    max-height: 320px;
+    overflow-y: auto;
+    border-top: 1px solid #e0d6c7;
+    padding-top: 18px;
+  }
+  .tracklist button {
+    width: 100%;
+    background: transparent;
+    border: none;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 16px;
+    font-family: 'Roboto', sans-serif;
+    color: var(--primary-color);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    box-shadow: inset 0 0 0 0 transparent;
+    transition: box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  .tracklist button:hover {
+    box-shadow: inset 0 0 8px var(--secondary-color);
+    background: #fff7e9;
+  }
+  .tracklist button.active {
+    box-shadow: inset 0 0 12px var(--secondary-color);
+    background: #fff7e9;
+    font-weight: 700;
+  }
+
+  /* === VINYL SPINNER NEXT TO CONTROLS === */
+  #vinyl-container {
+    width: 80px;
+    height: 80px;
+    user-select: none;
+    flex-shrink: 0;
+    box-shadow: 0 3px 8px var(--shadow-color);
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f3ede7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   #vinyl {
-    width: 100%;
-    height: 100%;
-    transition: transform 0.1s linear;
-    transform-origin: 50% 50%;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    user-select: none;
   }
+
 </style>
 </head>
 <body>
@@ -183,19 +272,38 @@
   </div>
 
   <div class="controls">
-    <audio id="audioPlayer" controls></audio>
-    <div class="repeat-toggle">
-      <label><input type="checkbox" id="repeatTrack" /> Repeat Track</label>
-      &nbsp;&nbsp;&nbsp;
-      <label><input type="checkbox" id="repeatProject" /> Repeat Project</label>
+    <button class="control-btn" id="prevBtn" title="Previous Track" aria-label="Previous Track" tabindex="0">
+      <svg viewBox="0 0 24 24"><path d="M6 19h2V5H6v14zm3.5-7L19 5v14l-9.5-7z"/></svg>
+    </button>
+    <button class="control-btn" id="playPauseBtn" title="Play/Pause" aria-label="Play/Pause" tabindex="0">
+      <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <svg id="pauseIcon" viewBox="0 0 24 24" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+    <button class="control-btn" id="nextBtn" title="Next Track" aria-label="Next Track" tabindex="0">
+      <svg viewBox="0 0 24 24"><path d="M16 19h2V5h-2v14zm-3.5-7L5 5v14l7.5-7z"/></svg>
+    </button>
+
+    <div id="vinyl-container">
+      <img id="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Spinning Vinyl" draggable="false" />
     </div>
   </div>
 
-  <div class="tracklist" id="tracklist"></div>
-</div>
+  <div class="toggles">
+    <label title="Repeat Track">
+      <input type="checkbox" id="repeatTrack" />
+      🔂
+    </label>
+    <label title="Repeat Project">
+      <input type="checkbox" id="repeatProject" />
+      🔁
+    </label>
+    <label title="Shuffle">
+      <input type="checkbox" id="shuffle" />
+      🔀
+    </label>
+  </div>
 
-<div id="vinyl-container" title="Now Playing Vinyl">
-  <img id="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Spinning Vinyl" draggable="false" />
+  <div class="tracklist" id="tracklist"></div>
 </div>
 
 <script>
@@ -237,7 +345,7 @@
     }
   };
 
-  // DOM Elements
+  // DOM elements
   const coverEl = document.getElementById('cover');
   const projectTitleEl = document.getElementById('projectTitle');
   const nowPlayingEl = document.getElementById('nowPlaying');
@@ -245,15 +353,21 @@
   const tracklistEl = document.getElementById('tracklist');
   const repeatTrackEl = document.getElementById('repeatTrack');
   const repeatProjectEl = document.getElementById('repeatProject');
+  const shuffleEl = document.getElementById('shuffle');
   const videoBg = document.querySelector('#video-background video');
   const projectBgOverlay = document.getElementById('project-bg-overlay');
   const vinyl = document.getElementById('vinyl');
-  const vinylContainer = document.getElementById('vinyl-container');
   const btnPillowcore = document.getElementById('btn-pillowcore');
   const btnEvening = document.getElementById('btn-evening');
+  const playPauseBtn = document.getElementById('playPauseBtn');
+  const playIcon = document.getElementById('playIcon');
+  const pauseIcon = document.getElementById('pauseIcon');
+  const nextBtn = document.getElementById('nextBtn');
+  const prevBtn = document.getElementById('prevBtn');
 
   let currentProject = 'pillowcore';
   let currentTrackIndex = 0;
+  let isPlaying = false;
   let vinylRotation = 0;
   let vinylSpinning = false;
 
@@ -272,28 +386,26 @@
 
   class Particle {
     constructor() {
-      this.reset();
-    }
-    reset() {
       this.x = Math.random() * canvas.width;
       this.y = Math.random() * canvas.height;
       this.size = 1 + Math.random() * 2;
       this.speedX = (Math.random() - 0.5) * 0.15;
       this.speedY = (Math.random() - 0.5) * 0.15;
-      this.alpha = 0.1 + Math.random() * 0.15;
+      this.alpha = 0.05 + Math.random() * 0.1;
     }
     update() {
       this.x += this.speedX;
       this.y += this.speedY;
-      if(this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height){
-        this.reset();
-      }
+      if (this.x > canvas.width) this.x = 0;
+      if (this.x < 0) this.x = canvas.width;
+      if (this.y > canvas.height) this.y = 0;
+      if (this.y < 0) this.y = canvas.height;
     }
     draw() {
       ctx.beginPath();
       ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
-      ctx.shadowColor = `rgba(255, 255, 255, 0.5)`;
-      ctx.shadowBlur = 4;
+      ctx.shadowColor = 'rgba(255, 255, 255, 0.15)';
+      ctx.shadowBlur = 3;
       ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
       ctx.fill();
     }
@@ -301,11 +413,10 @@
 
   function initParticles() {
     particles = [];
-    for(let i=0; i<PARTICLE_COUNT; i++){
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
       particles.push(new Particle());
     }
   }
-
   function animateParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     particles.forEach(p => {
@@ -315,138 +426,198 @@
     requestAnimationFrame(animateParticles);
   }
 
-  // Switch project logic
-  function switchProject(name) {
-    if(currentProject === name) return;
-
-    currentProject = name;
-    const project = projects[name];
-
-    // Update UI
-    projectTitleEl.textContent = `Kozybeats - ${project.title}`;
-    coverEl.src = project.cover;
-    nowPlayingEl.textContent = 'Now Playing: —';
-    audioPlayer.src = '';
-    currentTrackIndex = 0;
-
-    // Update background overlay with fade effect
-    projectBgOverlay.style.opacity = 0;
-    setTimeout(() => {
-      projectBgOverlay.style.backgroundImage = `url(${project.cover})`;
-      projectBgOverlay.style.opacity = 1;
-    }, 300);
-
-    // Update tracklist
-    tracklistEl.innerHTML = '';
-    project.tracks.forEach((track, index) => {
-      const btn = document.createElement('button');
-      btn.textContent = track.title;
-      btn.onclick = () => playTrack(index);
-      if(index === 0) btn.classList.add('active');
-      tracklistEl.appendChild(btn);
-    });
-
-    // Highlight active project button
-    btnPillowcore.classList.toggle('active', name === 'pillowcore');
-    btnEvening.classList.toggle('active', name === 'evening');
-
-    stopVinylSpin();
-  }
-
-  // Play track logic
-  function playTrack(index) {
-    const project = projects[currentProject];
-    if(index < 0 || index >= project.tracks.length) return;
-
-    currentTrackIndex = index;
-    const track = project.tracks[index];
-    audioPlayer.src = track.url;
-    audioPlayer.play();
-    nowPlayingEl.textContent = `Now Playing: Kozybeats - ${track.title}`;
-
-    // Update active track highlight
-    [...tracklistEl.children].forEach((btn, i) => {
-      btn.classList.toggle('active', i === index);
-    });
-
-    startVinylSpin();
-  }
-
-  // Audio ended event - autoplay next or repeat logic
-  audioPlayer.addEventListener('ended', () => {
-    if(repeatTrackEl.checked){
-      audioPlayer.currentTime = 0;
-      audioPlayer.play();
-      return;
-    }
-
-    const project = projects[currentProject];
-    currentTrackIndex++;
-    if(currentTrackIndex >= project.tracks.length){
-      if(repeatProjectEl.checked){
-        currentTrackIndex = 0;
-      } else {
-        stopVinylSpin();
-        return;
-      }
-    }
-    playTrack(currentTrackIndex);
-  });
-
-  // Repeat toggles pause/resume vinyl spinning
-  repeatTrackEl.addEventListener('change', () => {
-    if(!audioPlayer.paused) startVinylSpin();
-  });
-  repeatProjectEl.addEventListener('change', () => {
-    if(!audioPlayer.paused) startVinylSpin();
-  });
-
   // Vinyl spin animation
-  let lastTimestamp = 0;
-  function animateVinyl(timestamp){
-    if(!vinylSpinning){
-      vinylRotation = 0;
-      vinyl.style.transform = `rotate(0deg)`;
-      return;
+  function animateVinyl() {
+    if (vinylSpinning) {
+      vinylRotation += 0.8;
+      vinyl.style.transform = `rotate(${vinylRotation}deg)`;
+      requestAnimationFrame(animateVinyl);
     }
-    if(!lastTimestamp) lastTimestamp = timestamp;
-    const delta = timestamp - lastTimestamp;
-    vinylRotation += delta * 0.06; // speed of spin
-    vinyl.style.transform = `rotate(${vinylRotation}deg)`;
-    lastTimestamp = timestamp;
-    requestAnimationFrame(animateVinyl);
   }
-  function startVinylSpin(){
-    if(vinylSpinning) return;
-    vinylSpinning = true;
-    requestAnimationFrame(animateVinyl);
+  function startVinylSpin() {
+    if (!vinylSpinning) {
+      vinylSpinning = true;
+      animateVinyl();
+    }
   }
-  function stopVinylSpin(){
+  function stopVinylSpin() {
     vinylSpinning = false;
   }
 
-  // Pause vinyl spin when audio paused or ended
-  audioPlayer.addEventListener('pause', stopVinylSpin);
-  audioPlayer.addEventListener('play', startVinylSpin);
+  // Build tracklist UI for current project
+  function buildTracklist() {
+    tracklistEl.innerHTML = '';
+    projects[currentProject].tracks.forEach((track, i) => {
+      const btn = document.createElement('button');
+      btn.textContent = track.title;
+      btn.className = i === currentTrackIndex && isPlaying ? 'active' : '';
+      btn.onclick = () => {
+        if (currentProject !== playingProject) {
+          // We allow playing a track from another project without switching currentProject?
+          switchProject(currentProject);
+        }
+        playTrack(i);
+      };
+      tracklistEl.appendChild(btn);
+    });
+  }
 
-  // Initial setup
-  function init() {
-    // Set initial project background overlay and cover
+  // Variables to track currently playing project & track
+  let playingProject = currentProject;
+
+  // Play track by index, from current project (or from any project)
+  function playTrack(index) {
+    currentTrackIndex = index;
+    playingProject = currentProject;
+    audioPlayer.src = projects[currentProject].tracks[currentTrackIndex].url;
+    audioPlayer.play();
+    isPlaying = true;
+    updateUIPlaying();
+    startVinylSpin();
+  }
+
+  // Update UI elements when playing/paused or track changes
+  function updateUIPlaying() {
+    // Update header
+    projectTitleEl.textContent = projects[currentProject].title;
+    nowPlayingEl.textContent = `Now Playing: Kozybeats - ${projects[currentProject].tracks[currentTrackIndex].title}`;
+
+    // Update cover and background overlay only if project changed (to not flicker)
+    coverEl.src = projects[currentProject].cover;
     projectBgOverlay.style.backgroundImage = `url(${projects[currentProject].cover})`;
     projectBgOverlay.style.opacity = 1;
-    coverEl.src = projects[currentProject].cover;
-    projectTitleEl.textContent = `Kozybeats - ${projects[currentProject].title}`;
 
-    // Load tracklist
+    // Update active track button styles
+    [...tracklistEl.children].forEach((btn, i) => {
+      btn.classList.toggle('active', i === currentTrackIndex && isPlaying);
+    });
+
+    // Update play/pause button icon
+    if (isPlaying) {
+      playIcon.style.display = 'none';
+      pauseIcon.style.display = 'block';
+    } else {
+      playIcon.style.display = 'block';
+      pauseIcon.style.display = 'none';
+    }
+  }
+
+  // Switch project and update UI, but DO NOT stop playing track
+  function switchProject(projKey) {
+    if (!projects[projKey]) return;
+    currentProject = projKey;
+
+    // Update project buttons active states
+    btnPillowcore.classList.toggle('active', projKey === 'pillowcore');
+    btnEvening.classList.toggle('active', projKey === 'evening');
+
+    // Rebuild tracklist for new project
+    buildTracklist();
+
+    // Update cover & background overlay to new project only if not playing a track outside new project
+    if (playingProject !== currentProject) {
+      coverEl.src = projects[currentProject].cover;
+      projectBgOverlay.style.backgroundImage = `url(${projects[currentProject].cover})`;
+      projectBgOverlay.style.opacity = 1;
+      projectTitleEl.textContent = projects[currentProject].title;
+
+      // If current playing track is NOT from new project, we keep it playing
+      // so just update nowPlaying text with correct playing track from other project
+      if (playingProject !== currentProject) {
+        nowPlayingEl.textContent = `Now Playing: Kozybeats - ${projects[playingProject].tracks[currentTrackIndex].title}`;
+      }
+    }
+
+    updateUIPlaying();
+  }
+
+  // Playback control handlers
+  playPauseBtn.addEventListener('click', () => {
+    if (isPlaying) {
+      audioPlayer.pause();
+      isPlaying = false;
+      stopVinylSpin();
+    } else {
+      audioPlayer.play();
+      isPlaying = true;
+      startVinylSpin();
+    }
+    updateUIPlaying();
+  });
+
+  nextBtn.addEventListener('click', () => {
+    playNextTrack();
+  });
+  prevBtn.addEventListener('click', () => {
+    playPreviousTrack();
+  });
+
+  function playNextTrack() {
+    let tracks = projects[currentProject].tracks;
+    if (shuffleEl.checked) {
+      // Pick random track index different from current
+      let rand;
+      do {
+        rand = Math.floor(Math.random() * tracks.length);
+      } while (rand === currentTrackIndex && tracks.length > 1);
+      currentTrackIndex = rand;
+    } else {
+      currentTrackIndex++;
+      if (currentTrackIndex >= tracks.length) {
+        if (repeatProjectEl.checked) currentTrackIndex = 0;
+        else {
+          currentTrackIndex = tracks.length - 1;
+          audioPlayer.pause();
+          isPlaying = false;
+          stopVinylSpin();
+          updateUIPlaying();
+          return;
+        }
+      }
+    }
+    playTrack(currentTrackIndex);
+  }
+  function playPreviousTrack() {
+    let tracks = projects[currentProject].tracks;
+    currentTrackIndex--;
+    if (currentTrackIndex < 0) currentTrackIndex = tracks.length - 1;
+    playTrack(currentTrackIndex);
+  }
+
+  // Audio ended event to auto play next or repeat track/project
+  audioPlayer.addEventListener('ended', () => {
+    if (repeatTrackEl.checked) {
+      audioPlayer.currentTime = 0;
+      audioPlayer.play();
+    } else {
+      playNextTrack();
+    }
+  });
+
+  // Sync vinyl spin state with playback
+  audioPlayer.addEventListener('play', () => {
+    isPlaying = true;
+    startVinylSpin();
+    updateUIPlaying();
+  });
+  audioPlayer.addEventListener('pause', () => {
+    isPlaying = false;
+    stopVinylSpin();
+    updateUIPlaying();
+  });
+
+  // Initialize app UI
+  function init() {
     switchProject(currentProject);
-
-    // Start particle animation
+    buildTracklist();
+    updateUIPlaying();
     initParticles();
     animateParticles();
   }
-
   init();
 </script>
+
+<audio id="audioPlayer" preload="auto"></audio>
 
 </body>
 </html>
