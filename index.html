@@ -1,397 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Kozybeats - Pillowcore Radio</title>
-
-<!-- Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins&display=swap" rel="stylesheet" />
-
-<style>
-  /* Reset */
-  * {
-    box-sizing: border-box;
-  }
-  body, html {
-    margin: 0; padding: 0; height: 100%;
-    font-family: 'Poppins', sans-serif;
-    overflow-x: hidden;
-    background: #f6f0e8;
-    position: relative;
-    color: #5a3e1a;
-  }
-
-  /* Video background container */
-  #video-background {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    overflow: hidden;
-    z-index: 0;
-  }
-  #video-background video {
-    position: absolute;
-    top: 50%; left: 50%;
-    min-width: 100%;
-    min-height: 100%;
-    width: auto;
-    height: auto;
-    transform: translate(-50%, -50%);
-    filter: brightness(0.6) blur(3px);
-    object-fit: cover;
-    pointer-events: none;
-  }
-
-  /* Dynamic cover blur background overlay */
-  #dynamic-bg {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    filter: blur(25px) brightness(0.8);
-    opacity: 0;
-    transition: opacity 1.2s ease;
-    z-index: 1;
-    pointer-events: none;
-  }
-
-  /* Particle container */
-  #particles {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  /* Main container */
-  #main-content {
-    position: relative;
-    z-index: 3;
-    max-width: 900px;
-    margin: 50px auto 80px auto;
-    background: #fff8f0dd;
-    border-radius: 20px;
-    padding: 30px 40px;
-    box-shadow: 0 0 30px rgba(150, 100, 50, 0.25);
-    user-select: none;
-    display: flex;
-    gap: 40px;
-    color: #5a3e1a;
-  }
-
-  /* Left side: cover + vinyl */
-  #left-side {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    user-select: none;
-  }
-
-  /* Vinyl container */
-  #vinyl-container {
-    width: 200px;
-    height: 200px;
-    margin-bottom: 30px;
-    position: relative;
-    user-select: none;
-    z-index: 3;
-  }
-  #vinyl {
-    width: 200px;
-    height: 200px;
-    border-radius: 50%;
-    background: radial-gradient(circle at center, #5a3e1a 0%, #3c2a0e 70%, #2c1e08 100%);
-    border: 15px solid #7c5d33;
-    box-shadow: inset 0 0 40px #3c2a0e;
-    animation: spin 20s linear infinite;
-    position: relative;
-    margin: 0 auto;
-  }
-  #vinyl::before {
-    content: "";
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80px;
-    height: 80px;
-    background: #d6c1a1;
-    border-radius: 50%;
-    box-shadow: inset 0 0 15px #b39e7e;
-    border: 4px solid #a98b63;
-  }
-
-  @keyframes spin {
-    from { transform: rotate(0deg);}
-    to { transform: rotate(360deg);}
-  }
-
-  /* Cover image */
-  #cover {
-    width: 100%;
-    max-width: 280px;
-    border-radius: 16px;
-    box-shadow: 0 0 15px rgba(150, 100, 50, 0.15);
-    user-select: none;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-  }
-  #cover:hover {
-    transform: scale(1.05);
-  }
-
-  /* Right side: tracks + player */
-  #right-side {
-    flex: 1.4;
-    display: flex;
-    flex-direction: column;
-    user-select: none;
-  }
-
-  h2 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 32px;
-    margin-bottom: 20px;
-    color: #6a4f3a;
-    user-select: text;
-  }
-
-  #nowPlaying {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    margin-bottom: 20px;
-    font-size: 20px;
-    color: #6a4f3a;
-    user-select: text;
-    min-height: 26px;
-  }
-
-  audio {
-    width: 100%;
-    border-radius: 12px;
-    outline: none;
-    margin-bottom: 30px;
-    user-select: none;
-  }
-
-  /* Tracklist styling */
-  .tracklist-section {
-    margin-bottom: 30px;
-  }
-  .tracklist-section h3 {
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 600;
-    font-size: 22px;
-    margin-bottom: 12px;
-    color: #7a5f3d;
-  }
-  .tracklist {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.6s ease;
-  }
-  .tracklist.expanded {
-    max-height: 1000px; /* big enough to show all tracks */
-  }
-  .tracklist button {
-    display: block;
-    width: 100%;
-    background: #c9b08c;
-    border: none;
-    border-radius: 10px;
-    padding: 12px 15px;
-    margin: 6px 0;
-    font-family: 'Poppins', sans-serif;
-    font-size: 16px;
-    color: #5a3e1a;
-    cursor: pointer;
-    transition: background 0.3s ease;
-    user-select: none;
-  }
-  .tracklist button:hover {
-    background: #a98b63;
-  }
-
-  /* Responsive tweaks */
-  @media (max-width: 800px) {
-    #main-content {
-      flex-direction: column;
-      max-width: 95%;
-      padding: 20px;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kozybeats Radio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --main-bg: #f6f0e8;
+      --primary-color: #5a3e1a;
+      --highlight: #c9b08c;
+      --button-bg: #c9b08c;
+      --button-hover: #a98b63;
     }
-    #left-side, #right-side {
-      flex: unset;
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body, html {
+      margin: 0; padding: 0;
+      height: 100%;
+      font-family: 'Poppins', sans-serif;
+      background-color: var(--main-bg);
+      overflow-x: hidden;
+    }
+
+    #video-background video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: -1;
+      filter: brightness(0.6) blur(3px);
+    }
+
+    .app-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 30px;
+      background-color: rgba(255, 248, 240, 0.85);
+      border-radius: 20px;
+      margin-top: 50px;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .cover {
+      width: 180px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+    }
+
+    .info {
+      flex-grow: 1;
+    }
+
+    .info h1 {
+      font-family: 'Montserrat', sans-serif;
+      margin: 0;
+      font-size: 28px;
+      color: var(--primary-color);
+    }
+
+    .info p {
+      font-size: 18px;
+      color: #7a5f3d;
+    }
+
+    .controls {
+      margin: 20px 0;
+    }
+
+    audio {
       width: 100%;
     }
-    #vinyl-container {
+
+    .tracklist button {
+      width: 100%;
+      padding: 10px 15px;
+      background: var(--button-bg);
+      color: var(--primary-color);
+      font-family: 'Poppins', sans-serif;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      margin: 5px 0;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .tracklist button:hover {
+      background: var(--button-hover);
+    }
+
+    .project-switcher {
+      display: flex;
+      gap: 12px;
       margin-bottom: 20px;
-      width: 150px;
-      height: 150px;
     }
-    #vinyl {
-      width: 150px;
-      height: 150px;
-      border-width: 10px;
+
+    .repeat-toggle {
+      margin-top: 10px;
+      font-size: 14px;
+      color: #333;
     }
-    #vinyl::before {
-      width: 60px;
-      height: 60px;
-      border-width: 3px;
-    }
-    #cover {
-      max-width: 100%;
-      margin-bottom: 20px;
-    }
-  }
-</style>
+  </style>
 </head>
 <body>
-
-  <!-- Video background -->
-  <div id="video-background" aria-hidden="true">
-    <video autoplay muted loop playsinline>
-      <source src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
+  <div id="video-background">
+    <video autoplay muted loop>
+      <source src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4" type="video/mp4">
     </video>
   </div>
 
-  <!-- Dynamic cover blur background overlay -->
-  <div id="dynamic-bg"></div>
+  <div class="app-container">
+    <div class="project-switcher">
+      <button onclick="switchProject('pillowcore')">Pillowcore Radio</button>
+      <button onclick="switchProject('evening')">Evening Static</button>
+    </div>
 
-  <!-- Particles -->
-  <div id="particles"></div>
-
-  <main id="main-content" role="main" aria-label="Music Player">
-
-    <section id="left-side" aria-label="Album cover and spinning vinyl">
-      <div id="vinyl-container">
-        <div id="vinyl"></div>
+    <div class="header">
+      <img id="cover" class="cover" src="" alt="Cover">
+      <div class="info">
+        <h1 id="projectTitle"></h1>
+        <p id="nowPlaying">Now Playing: —</p>
       </div>
+    </div>
 
-      <img
-        id="cover"
-        src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png"
-        alt="Pillowcore album cover by Kozybeats"
-        title="Click to show/hide tracks"
-        aria-expanded="false"
-      />
-    </section>
-
-    <section id="right-side" aria-label="Music player and tracklist">
-      <h2 id="pageHeader">Kozybeats - Pillowcore Radio 🎧</h2>
-
-      <p id="nowPlaying">Now Playing: —</p>
-
+    <div class="controls">
       <audio id="audioPlayer" controls></audio>
-
-      <div class="tracklist-section" aria-label="All Pillowcore Radio tracks">
-        <h3>All Tracks</h3>
-        <div id="tracklist" class="tracklist">
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', 'Ceiling Fan Dreams')">Ceiling Fan Dreams</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3', 'Curtains Closed')">Curtains Closed</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3', 'Dream Archive')">Dream Archive</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3', 'Glow Sink')">Glow Sink</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3', 'Lavender Shadows')">Lavender Shadows</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3', 'Midnight Left on Read')">Midnight Left on Read</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3', 'Moonlit Linen')">Moonlit Linen</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3', 'Paper Walls')">Paper Walls</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3', 'Rain on 4th Street')">Rain on 4th Street</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3', 'Snooze Signal')">Snooze Signal</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3', 'Warm Silence')">Warm Silence</button>
-          <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3', 'Whispers in Blue')">Whispers in Blue</button>
-        </div>
+      <div class="repeat-toggle">
+        <label><input type="checkbox" id="repeatTrack"> Repeat Track</label>
+        <label><input type="checkbox" id="repeatProject"> Repeat Project</label>
       </div>
-    </section>
+    </div>
 
-  </main>
+    <div class="tracklist" id="tracklist"></div>
+  </div>
 
-<script>
-  const audioPlayer = document.getElementById('audioPlayer');
-  const nowPlaying = document.getElementById('nowPlaying');
-  const tracklist = document.getElementById('tracklist');
-  const cover = document.getElementById('cover');
-  const dynamicBg = document.getElementById('dynamic-bg');
-  const pageHeader = document.getElementById('pageHeader');
+  <script>
+    const projects = {
+      pillowcore: {
+        title: "Pillowcore Radio",
+        cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png",
+        tracks: [
+          { title: "Ceiling Fan Dreams", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3" },
+          { title: "Curtains Closed", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3" },
+          { title: "Dream Archive", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3" },
+          { title: "Glow Sink", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3" },
+          { title: "Lavender Shadows", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3" },
+          { title: "Midnight Left on Read", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3" },
+          { title: "Moonlit Linen", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3" },
+          { title: "Paper Walls", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3" },
+          { title: "Rain on 4th Street", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3" },
+          { title: "Snooze Signal", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3" },
+          { title: "Warm Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3" },
+          { title: "Whispers in Blue", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3" },
+        ]
+      },
+      evening: {
+        title: "Evening Static",
+        cover: "https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229102/056f89b5bdd7b2944636c4e480196abe_1_bhyub6.jpg",
+        tracks: [
+          { title: "Curtains Breathing Slow", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Curtains_Breathing_Slow_si8vdi.mp3" },
+          { title: "Heard My Name in the Hiss", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Heard_My_Name_in_the_Hiss_yi1jfb.mp3" },
+          { title: "Stayed Just Long Enough", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229136/Stayed_Just_Long_Enough_wlkxsb.mp3" },
+          { title: "Memories on the Window Glass", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229137/Memories_on_the_Window_Glass_uw4vxm.mp3" },
+          { title: "TV Snow in My Mind", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229138/TV_Snow_in_My_Mind_oxtsqi.mp3" },
+          { title: "Pages Left Open", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/Pages_Left_Open_r4bxvz.mp3" },
+          { title: "The Fan Still Spins", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/The_Fan_Still_Spins_qba31z.mp3" },
+          { title: "When the Floorboard Creaked", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/When_the_Floorboard_Creaked_ljcd2m.mp3" },
+          { title: "A Thread Pulled from the Moon", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/A_Thread_Pulled_from_the_Moon_kqjhdq.mp3" },
+          { title: "Between the Glow and the Silence", url: "https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3" },
+        ]
+      }
+    };
 
-  // Tracklist visibility toggle
-  let isTracklistVisible = false;
+    const coverEl = document.getElementById('cover');
+    const projectTitleEl = document.getElementById('projectTitle');
+    const nowPlayingEl = document.getElementById('nowPlaying');
+    const audioPlayer = document.getElementById('audioPlayer');
+    const tracklistEl = document.getElementById('tracklist');
+    const repeatTrackEl = document.getElementById('repeatTrack');
+    const repeatProjectEl = document.getElementById('repeatProject');
 
-  cover.addEventListener('click', () => {
-    isTracklistVisible = !isTracklistVisible;
-    tracklist.classList.toggle('expanded', isTracklistVisible);
-    cover.setAttribute('aria-expanded', isTracklistVisible);
-  });
+    let currentProject = 'pillowcore';
+    let currentTrackIndex = 0;
 
-  function playTrack(url, title) {
-    audioPlayer.src = url;
-    nowPlaying.textContent = `Now Playing: Kozybeats - ${title}`;
-    pageHeader.textContent = `Kozybeats - ${title} 🎧`;
-    audioPlayer.play();
+    function switchProject(name) {
+      currentProject = name;
+      const project = projects[name];
+      projectTitleEl.textContent = `Kozybeats - ${project.title}`;
+      coverEl.src = project.cover;
+      nowPlayingEl.textContent = 'Now Playing: —';
+      audioPlayer.src = '';
+      currentTrackIndex = 0;
 
-    // Update dynamic background to a blurred version of cover
-    dynamicBg.style.backgroundImage = `url('${cover.src}')`;
-    dynamicBg.style.opacity = 1;
-  }
-
-  // Particle effect code:
-  const particlesContainer = document.getElementById('particles');
-  const particleCount = 40;
-  const particles = [];
-
-  function randomRange(min, max) {
-    return Math.random() * (max - min) + min;
-  }
-
-  class Particle {
-    constructor() {
-      this.el = document.createElement('div');
-      this.el.classList.add('particle');
-      this.reset();
-      particlesContainer.appendChild(this.el);
+      // Populate tracklist
+      tracklistEl.innerHTML = '';
+      project.tracks.forEach((track, index) => {
+        const btn = document.createElement('button');
+        btn.textContent = track.title;
+        btn.onclick = () => playTrack(index);
+        tracklistEl.appendChild(btn);
+      });
     }
 
-    reset() {
-      this.x = randomRange(0, window.innerWidth);
-      this.y = randomRange(0, window.innerHeight);
-      this.size = randomRange(4, 10);
-      this.speedX = randomRange(-0.1, 0.1);
-      this.speedY = randomRange(0.02, 0.07);
-      this.el.style.width = this.size + 'px';
-      this.el.style.height = this.size + 'px';
-      this.el.style.background = `rgba(170, 140, 90, ${randomRange(0.15, 0.3)})`;
-      this.el.style.opacity = 0.7;
-      this.el.style.filter = 'blur(1px)';
-      this.el.style.position = 'fixed';
-      this.el.style.borderRadius = '50%';
-      this.el.style.pointerEvents = 'none';
-      this.el.style.zIndex = 2;
+    function playTrack(index) {
+      const project = projects[currentProject];
+      const track = project.tracks[index];
+      currentTrackIndex = index;
+      audioPlayer.src = track.url;
+      audioPlayer.play();
+      nowPlayingEl.textContent = `Now Playing: Kozybeats - ${track.title}`;
     }
 
-    update() {
-      this.x += this.speedX;
-      this.y += this.speedY;
+    // Auto next song
+    audioPlayer.addEventListener('ended', () => {
+      if (repeatTrackEl.checked) {
+        audioPlayer.currentTime = 0;
+        audioPlayer.play();
+      } else {
+        const project = projects[currentProject];
+        currentTrackIndex++;
+        if (currentTrackIndex >= project.tracks.length) {
+          if (repeatProjectEl.checked) {
+            currentTrackIndex = 0;
+          } else {
+            return;
+          }
+        }
+        playTrack(currentTrackIndex);
+      }
+    });
 
-      if (this.x > window.innerWidth) this.x = 0;
-      else if (this.x < 0) this.x = window.innerWidth;
-
-      if (this.y > window.innerHeight) this.y = 0;
-
-      this.el.style.transform = `translate(${this.x}px, ${this.y}px)`;
-    }
-  }
-
-  for(let i = 0; i < particleCount; i++) {
-    particles.push(new Particle());
-  }
-
-  function animate() {
-    particles.forEach(p => p.update());
-    requestAnimationFrame(animate);
-  }
-  animate();
-</script>
-
+    switchProject('pillowcore');
+  </script>
 </body>
 </html>
