@@ -1,219 +1,247 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kozybeats - Pillowcore Radio</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Kozybeats - Pillowcore Radio</title>
 
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins&display=swap" rel="stylesheet" />
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600&family=Poppins&display=swap" rel="stylesheet" />
 
-  <style>
-    /* Reset */
-    * {
-      box-sizing: border-box;
-    }
-    body, html {
-      margin: 0; padding: 0; height: 100%;
-      font-family: 'Poppins', sans-serif;
-      overflow: hidden;
-      background: #f6f0e8;
-      position: relative;
-      color: #5a3e1a;
-    }
+<style>
+  /* Reset */
+  * {
+    box-sizing: border-box;
+  }
+  body, html {
+    margin: 0; padding: 0; height: 100%;
+    font-family: 'Poppins', sans-serif;
+    overflow-x: hidden;
+    background: #f6f0e8;
+    position: relative;
+    color: #5a3e1a;
+  }
 
-    /* Background image with blur behind everything */
-    #background {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: url('https://i.imgur.com/j0g9zcb.gif') no-repeat center center fixed;
-      background-size: cover;
-      filter: blur(6px);
-      z-index: 0;
-      pointer-events: none;
-    }
+  /* Base background image (cozy) */
+  #base-background {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: url('https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227922/download_1_qtmkfq.jpg') no-repeat center center fixed;
+    background-size: cover;
+    filter: brightness(0.6);
+    z-index: 0;
+    pointer-events: none;
+  }
 
-    /* Particle container */
-    #particles {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      pointer-events: none;
-      z-index: 1;
-    }
+  /* Dynamic cover blur background overlay */
+  #dynamic-bg {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    filter: blur(25px) brightness(0.8);
+    opacity: 0;
+    transition: opacity 1.2s ease;
+    z-index: 1;
+    pointer-events: none;
+  }
 
-    /* Main container */
+  /* Particle container */
+  #particles {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  /* Main container */
+  #main-content {
+    position: relative;
+    z-index: 3;
+    max-width: 900px;
+    margin: 50px auto 80px auto;
+    background: #fff8f0dd;
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow: 0 0 30px rgba(150, 100, 50, 0.25);
+    user-select: none;
+    display: flex;
+    gap: 40px;
+    color: #5a3e1a;
+  }
+
+  /* Left side: cover + vinyl */
+  #left-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    user-select: none;
+  }
+
+  /* Vinyl container */
+  #vinyl-container {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 30px;
+    position: relative;
+    user-select: none;
+    z-index: 3;
+  }
+  #vinyl {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle at center, #5a3e1a 0%, #3c2a0e 70%, #2c1e08 100%);
+    border: 15px solid #7c5d33;
+    box-shadow: inset 0 0 40px #3c2a0e;
+    animation: spin 20s linear infinite;
+    position: relative;
+    margin: 0 auto;
+  }
+  #vinyl::before {
+    content: "";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80px;
+    height: 80px;
+    background: #d6c1a1;
+    border-radius: 50%;
+    box-shadow: inset 0 0 15px #b39e7e;
+    border: 4px solid #a98b63;
+  }
+
+  @keyframes spin {
+    from { transform: rotate(0deg);}
+    to { transform: rotate(360deg);}
+  }
+
+  /* Cover image */
+  #cover {
+    width: 100%;
+    max-width: 280px;
+    border-radius: 16px;
+    box-shadow: 0 0 15px rgba(150, 100, 50, 0.15);
+    user-select: none;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+  #cover:hover {
+    transform: scale(1.05);
+  }
+
+  /* Right side: tracks + player */
+  #right-side {
+    flex: 1.4;
+    display: flex;
+    flex-direction: column;
+    user-select: none;
+  }
+
+  h2 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 32px;
+    margin-bottom: 20px;
+    color: #6a4f3a;
+    user-select: text;
+  }
+
+  #nowPlaying {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: #6a4f3a;
+    user-select: text;
+    min-height: 26px;
+  }
+
+  audio {
+    width: 100%;
+    border-radius: 12px;
+    outline: none;
+    margin-bottom: 30px;
+    user-select: none;
+  }
+
+  /* Tracklist styling */
+  .tracklist-section {
+    margin-bottom: 30px;
+  }
+  .tracklist-section h3 {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
+    font-size: 22px;
+    margin-bottom: 12px;
+    color: #7a5f3d;
+  }
+  .tracklist {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.6s ease;
+  }
+  .tracklist.expanded {
+    max-height: 1000px; /* big enough to show all tracks */
+  }
+  .tracklist button {
+    display: block;
+    width: 100%;
+    background: #c9b08c;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 15px;
+    margin: 6px 0;
+    font-family: 'Poppins', sans-serif;
+    font-size: 16px;
+    color: #5a3e1a;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+  .tracklist button:hover {
+    background: #a98b63;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 800px) {
     #main-content {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      margin: 50px auto 80px auto;
-      background: #fff8f0;
-      border-radius: 20px;
-      padding: 30px 40px;
-      box-shadow: 0 0 25px rgba(150, 100, 50, 0.25);
-      user-select: none;
-      display: flex;
-      gap: 40px;
-      color: #5a3e1a;
-    }
-
-    /* Left side: cover + vinyl */
-    #left-side {
-      flex: 1;
-      display: flex;
       flex-direction: column;
-      align-items: center;
-      user-select: none;
+      max-width: 95%;
+      padding: 20px;
     }
-
-    /* Vinyl container */
+    #left-side, #right-side {
+      flex: unset;
+      width: 100%;
+    }
     #vinyl-container {
-      width: 200px;
-      height: 200px;
-      margin-bottom: 30px;
-      position: relative;
-      user-select: none;
-      z-index: 3;
+      margin-bottom: 20px;
+      width: 150px;
+      height: 150px;
     }
     #vinyl {
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle at center, #5a3e1a 0%, #3c2a0e 70%, #2c1e08 100%);
-      border: 15px solid #7c5d33;
-      box-shadow: inset 0 0 40px #3c2a0e;
-      animation: spin 20s linear infinite;
-      position: relative;
-      margin: 0 auto;
+      width: 150px;
+      height: 150px;
+      border-width: 10px;
     }
     #vinyl::before {
-      content: "";
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -50%);
-      width: 80px;
-      height: 80px;
-      background: #d6c1a1;
-      border-radius: 50%;
-      box-shadow: inset 0 0 15px #b39e7e;
-      border: 4px solid #a98b63;
+      width: 60px;
+      height: 60px;
+      border-width: 3px;
     }
-
-    @keyframes spin {
-      from { transform: rotate(0deg);}
-      to { transform: rotate(360deg);}
-    }
-
-    /* Cover image */
     #cover {
-      width: 100%;
-      max-width: 280px;
-      border-radius: 16px;
-      box-shadow: 0 0 15px rgba(150, 100, 50, 0.15);
-      user-select: none;
-    }
-
-    /* Right side: tracks + player */
-    #right-side {
-      flex: 1.4;
-      display: flex;
-      flex-direction: column;
-      user-select: none;
-    }
-
-    h2 {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 600;
-      font-size: 32px;
+      max-width: 100%;
       margin-bottom: 20px;
-      color: #6a4f3a;
-      user-select: text;
     }
-
-    #nowPlaying {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 600;
-      margin-bottom: 20px;
-      font-size: 20px;
-      color: #6a4f3a;
-      user-select: text;
-      min-height: 26px;
-    }
-
-    audio {
-      width: 100%;
-      border-radius: 12px;
-      outline: none;
-      margin-bottom: 30px;
-      user-select: none;
-    }
-
-    /* Tracklist styling */
-    .tracklist-section {
-      margin-bottom: 30px;
-    }
-    .tracklist-section h3 {
-      font-family: 'Montserrat', sans-serif;
-      font-weight: 600;
-      font-size: 22px;
-      margin-bottom: 12px;
-      color: #7a5f3d;
-    }
-    .tracklist button {
-      display: block;
-      width: 100%;
-      background: #c9b08c;
-      border: none;
-      border-radius: 10px;
-      padding: 12px 15px;
-      margin: 6px 0;
-      font-family: 'Poppins', sans-serif;
-      font-size: 16px;
-      color: #5a3e1a;
-      cursor: pointer;
-      transition: background 0.3s ease;
-      user-select: none;
-    }
-    .tracklist button:hover {
-      background: #a98b63;
-    }
-
-    /* Responsive tweaks */
-    @media (max-width: 800px) {
-      #main-content {
-        flex-direction: column;
-        max-width: 95%;
-        padding: 20px;
-      }
-      #left-side, #right-side {
-        flex: unset;
-        width: 100%;
-      }
-      #vinyl-container {
-        margin-bottom: 20px;
-        width: 150px;
-        height: 150px;
-      }
-      #vinyl {
-        width: 150px;
-        height: 150px;
-        border-width: 10px;
-      }
-      #vinyl::before {
-        width: 60px;
-        height: 60px;
-        border-width: 3px;
-      }
-      #cover {
-        max-width: 100%;
-        margin-bottom: 20px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
-  <div id="background"></div>
+  <div id="base-background"></div>
+  <div id="dynamic-bg"></div>
   <div id="particles"></div>
 
   <main id="main-content" role="main" aria-label="Pillowcore Radio Music Player">
@@ -223,7 +251,13 @@
         <div id="vinyl"></div>
       </div>
 
-      <img id="cover" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png" alt="Pillowcore album cover by Kozybeats" />
+      <img
+        id="cover"
+        src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png"
+        alt="Pillowcore album cover by Kozybeats"
+        title="Click to show/hide tracks"
+        aria-expanded="false"
+      />
     </section>
 
     <section id="right-side" aria-label="Music player and tracklist">
@@ -231,11 +265,11 @@
 
       <p id="nowPlaying">Now Playing: —</p>
 
-      <audio id="audioPlayer" controls autoplay></audio>
+      <audio id="audioPlayer" controls></audio>
 
       <div class="tracklist-section" aria-label="All Pillowcore Radio tracks">
         <h3>All Tracks</h3>
-        <div class="tracklist">
+        <div id="tracklist" class="tracklist">
           <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', 'Ceiling Fan Dreams')">Ceiling Fan Dreams</button>
           <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3', 'Curtains Closed')">Curtains Closed</button>
           <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3', 'Dream Archive')">Dream Archive</button>
@@ -250,75 +284,96 @@
           <button onclick="playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3', 'Whispers in Blue')">Whispers in Blue</button>
         </div>
       </div>
-
     </section>
 
   </main>
 
-  <script>
-    // Audio player logic
-    const audioPlayer = document.getElementById('audioPlayer');
-    const nowPlaying = document.getElementById('nowPlaying');
+<script>
+  const audioPlayer = document.getElementById('audioPlayer');
+  const nowPlaying = document.getElementById('nowPlaying');
+  const tracklist = document.getElementById('tracklist');
+  const cover = document.getElementById('cover');
+  const dynamicBg = document.getElementById('dynamic-bg');
 
-    function playTrack(url, title) {
-      audioPlayer.src = url;
-      nowPlaying.textContent = `Now Playing: ${title}`;
-      audioPlayer.play();
+  // Start with tracklist hidden
+  let isTracklistVisible = false;
+
+  cover.addEventListener('click', () => {
+    isTracklistVisible = !isTracklistVisible;
+    tracklist.classList.toggle('expanded', isTracklistVisible);
+    cover.setAttribute('aria-expanded', isTracklistVisible);
+  });
+
+  function playTrack(url, title) {
+    audioPlayer.src = url;
+    nowPlaying.textContent = `Now Playing: ${title}`;
+    audioPlayer.play();
+
+    // Update dynamic background to a blurred version of cover
+    dynamicBg.style.backgroundImage = `url('${cover.src}')`;
+    dynamicBg.style.opacity = 1;
+  }
+
+  // Optionally, auto play first track on load:
+  // playTrack('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3', 'Ceiling Fan Dreams');
+
+  // Particle effect code - same as before:
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 40;
+  const particles = [];
+
+  function randomRange(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  class Particle {
+    constructor() {
+      this.el = document.createElement('div');
+      this.el.classList.add('particle');
+      this.reset();
+      particlesContainer.appendChild(this.el);
     }
 
-    // Particles
-    const particlesContainer = document.getElementById('particles');
-    const particleCount = 40;
-    const particles = [];
-
-    function randomRange(min, max) {
-      return Math.random() * (max - min) + min;
+    reset() {
+      this.x = randomRange(0, window.innerWidth);
+      this.y = randomRange(0, window.innerHeight);
+      this.size = randomRange(4, 10);
+      this.speedX = randomRange(-0.1, 0.1);
+      this.speedY = randomRange(0.02, 0.07);
+      this.el.style.width = this.size + 'px';
+      this.el.style.height = this.size + 'px';
+      this.el.style.background = `rgba(170, 140, 90, ${randomRange(0.15, 0.3)})`;
+      this.el.style.opacity = 0.7;
+      this.el.style.filter = 'blur(1px)';
+      this.el.style.position = 'fixed';
+      this.el.style.borderRadius = '50%';
+      this.el.style.pointerEvents = 'none';
+      this.el.style.zIndex = 2;
     }
 
-    class Particle {
-      constructor() {
-        this.el = document.createElement('div');
-        this.el.classList.add('particle');
-        this.reset();
-        particlesContainer.appendChild(this.el);
-      }
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
 
-      reset() {
-        this.x = randomRange(0, window.innerWidth);
-        this.y = randomRange(0, window.innerHeight);
-        this.size = randomRange(4, 10);
-        this.speedX = randomRange(-0.1, 0.1);
-        this.speedY = randomRange(0.02, 0.07);
-        this.el.style.width = this.size + 'px';
-        this.el.style.height = this.size + 'px';
-        this.el.style.background = `rgba(170, 140, 90, ${randomRange(0.15, 0.3)})`;
-        this.el.style.opacity = 0.7;
-        this.el.style.filter = 'blur(1px)';
-      }
+      if (this.x > window.innerWidth) this.x = 0;
+      else if (this.x < 0) this.x = window.innerWidth;
 
-      update() {
-        this.x += this.speedX;
-        this.y += this.speedY;
+      if (this.y > window.innerHeight) this.y = 0;
 
-        if (this.x > window.innerWidth) this.x = 0;
-        else if (this.x < 0) this.x = window.innerWidth;
-
-        if (this.y > window.innerHeight) this.y = 0;
-
-        this.el.style.transform = `translate(${this.x}px, ${this.y}px)`;
-      }
+      this.el.style.transform = `translate(${this.x}px, ${this.y}px)`;
     }
+  }
 
-    for(let i = 0; i < particleCount; i++) {
-      particles.push(new Particle());
-    }
+  for(let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
 
-    function animate() {
-      particles.forEach(p => p.update());
-      requestAnimationFrame(animate);
-    }
-    animate();
-  </script>
+  function animate() {
+    particles.forEach(p => p.update());
+    requestAnimationFrame(animate);
+  }
+  animate();
+</script>
 
 </body>
 </html>
