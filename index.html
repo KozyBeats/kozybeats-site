@@ -255,20 +255,23 @@
       white-space: nowrap;
     }
     .spotify-link {
-      display: inline-block;
-      font-size: 0.8rem;
-      color: white;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
       background: #1DB954;
-      padding: 4px 10px;
-      border-radius: 12px;
+      border-radius: 50%;
       text-decoration: none;
       font-weight: 600;
-      width: fit-content;
       user-select: none;
       transition: background 0.3s;
+      font-size: 10px;
+      color: white;
     }
     .spotify-link:hover {
       background: #1ed760;
+      transform: scale(1.1);
     }
 
     /* Controls */
@@ -309,6 +312,7 @@
       width: 100%;
       margin-top: 8px;
       user-select: none;
+      flex: 1;
     }
     input[type=range] {
       -webkit-appearance: none;
@@ -549,7 +553,7 @@
         <div class="info-buttons">
           <div class="song-info">
             <div class="now-playing" id="nowPlaying">Now Playing: Kozybeats - </div>
-            <a href="#" id="spotifyLink" class="spotify-link" target="_blank" style="display:none;">Open in Spotify</a>
+            <a href="#" id="spotifyLink" class="spotify-link" target="_blank" style="display:none;">♪</a>
             
             <!-- Progress bar and time -->
             <div class="progress-container">
