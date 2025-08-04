@@ -235,9 +235,18 @@
     .info-buttons {
       flex: 1;
       display: flex;
-      flex-direction: column;
-      gap: 12px;
+      flex-direction: row;
+      align-items: center;
+      gap: 25px;
       min-width: 0;
+    }
+    
+    .song-info {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
     }
     .now-playing {
       font-size: 1.3rem;
@@ -299,9 +308,10 @@
 
     /* Progress bar - made longer and bigger */
     .progress-container {
-      width: 100%;
-      margin-top: 12px;
+      flex: 1;
+      margin-top: 0;
       user-select: none;
+      min-width: 200px;
     }
     input[type=range] {
       -webkit-appearance: none;
@@ -538,8 +548,10 @@
       <div class="player">
         <img id="vinyl" class="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Vinyl cover" />
         <div class="info-buttons">
-          <div class="now-playing" id="nowPlaying">Now Playing: Kozybeats - </div>
-          <a href="#" id="spotifyLink" class="spotify-link" target="_blank" style="display:none;">Open in Spotify</a>
+          <div class="song-info">
+            <div class="now-playing" id="nowPlaying">Now Playing: Kozybeats - </div>
+            <a href="#" id="spotifyLink" class="spotify-link" target="_blank" style="display:none;">Open in Spotify</a>
+          </div>
 
           <!-- Progress bar and time -->
           <div class="progress-container">
