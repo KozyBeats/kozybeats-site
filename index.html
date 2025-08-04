@@ -235,9 +235,8 @@
     .info-buttons {
       flex: 1;
       display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: 25px;
+      flex-direction: column;
+      gap: 12px;
       min-width: 0;
     }
     
@@ -308,10 +307,9 @@
 
     /* Progress bar - made longer and bigger */
     .progress-container {
-      flex: 1;
-      margin-top: 0;
+      width: 100%;
+      margin-top: 8px;
       user-select: none;
-      min-width: 200px;
     }
     input[type=range] {
       -webkit-appearance: none;
@@ -551,14 +549,14 @@
           <div class="song-info">
             <div class="now-playing" id="nowPlaying">Now Playing: Kozybeats - </div>
             <a href="#" id="spotifyLink" class="spotify-link" target="_blank" style="display:none;">Open in Spotify</a>
-          </div>
-
-          <!-- Progress bar and time -->
-          <div class="progress-container">
-            <input type="range" id="progress" min="0" max="100" value="0" />
-            <div class="time">
-              <span id="currentTime">00:00</span>
-              <span id="duration">00:00</span>
+            
+            <!-- Progress bar and time -->
+            <div class="progress-container">
+              <input type="range" id="progress" min="0" max="100" value="0" />
+              <div class="time">
+                <span id="currentTime">00:00</span>
+                <span id="duration">00:00</span>
+              </div>
             </div>
           </div>
         </div>
