@@ -208,10 +208,20 @@
       border-radius: 16px;
       padding: 20px 30px;
       display: flex;
+      flex-direction: column;
+      gap: 15px;
+      box-shadow: 0 0 20px rgba(156, 119, 75, 0.4);
+    }
+
+    .player-top {
+      display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 25px;
-      box-shadow: 0 0 20px rgba(156, 119, 75, 0.4);
+    }
+
+    .player-bottom {
+      width: 100%;
     }
 
     /* Vinyl */
@@ -245,7 +255,6 @@
       flex-direction: column;
       gap: 8px;
       min-width: 0;
-      flex: 1;
     }
     .now-playing {
       font-size: 1.3rem;
@@ -255,23 +264,17 @@
       white-space: nowrap;
     }
     .spotify-link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 20px;
-      height: 20px;
-      background: #1DB954;
-      border-radius: 50%;
+      display: inline-block;
+      font-size: 0.8rem;
+      color: #1DB954;
+      background: none;
       text-decoration: none;
       font-weight: 600;
       user-select: none;
-      transition: background 0.3s;
-      font-size: 10px;
-      color: white;
+      transition: color 0.3s;
     }
     .spotify-link:hover {
-      background: #1ed760;
-      transform: scale(1.1);
+      color: #1ed760;
     }
 
     /* Controls */
@@ -310,9 +313,8 @@
     /* Progress bar - made longer and bigger */
     .progress-container {
       width: 100%;
-      margin-top: 8px;
+      margin-top: 0;
       user-select: none;
-      flex: 1;
     }
     input[type=range] {
       -webkit-appearance: none;
