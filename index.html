@@ -251,9 +251,19 @@
       font-size: 1.3rem;
       font-weight: 700;
       user-select: none;
-      line-height: 1.4;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .now-playing.scrolling {
+      animation: marquee 10s linear infinite;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-100%); }
     }
     .spotify-link {
       display: inline-block;
@@ -892,6 +902,14 @@
     const track = project.tracks[currentTrackIndex];
     audio.src = track.url;
     nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
+    
+    // Add scrolling animation if text is too long
+    const container = nowPlaying.parentElement;
+    if (nowPlaying.scrollWidth > container.clientWidth) {
+      nowPlaying.classList.add('scrolling');
+    } else {
+      nowPlaying.classList.remove('scrolling');
+    }
     
     // Only show Spotify link if track has a valid spotifyId
     if (track.spotifyId && track.spotifyId.trim() !== '') {
