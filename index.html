@@ -1,593 +1,778 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kozybeats – Lofi Station</title>
-  <script src="https://unpkg.com/feather-icons"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kozybeats Music Player</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.28.0/feather.min.js"></script>
   <style>
-    /* Reset and base */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0e0e0e;
+      font-family: 'Arial', sans-serif;
       color: white;
       overflow: hidden;
-      user-select: none;
+      height: 100vh;
     }
 
-    /* Background video & overlay */
-    video#bg {
+    #background-video {
       position: fixed;
-      top: 0; left: 0;
-      width: 100vw;
-      height: 100vh;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      z-index: -3;
-      filter: blur(10px) brightness(0.5);
+      z-index: -2;
     }
+
     .overlay {
       position: fixed;
-      width: 100vw;
-      height: 100vh;
-      z-index: -2;
-      background-image: radial-gradient(white 1px, transparent 1px);
-      background-size: 30px 30px;
-      opacity: 0.06;
-      pointer-events: none;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: -1;
     }
 
-    /* Container */
     .container {
       display: flex;
       height: 100vh;
-      padding: 15px;
-      gap: 15px;
     }
 
-    /* Sidebar projects */
     .sidebar {
-      width: 22%;
-      background: rgba(0,0,0,0.3);
-      border-radius: 12px;
+      width: 300px;
+      background: rgba(0, 0, 0, 0.8);
       padding: 20px;
       overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-      scrollbar-width: thin;
-      scrollbar-color: #666 transparent;
-    }
-    .sidebar::-webkit-scrollbar {
-      width: 8px;
-    }
-    .sidebar::-webkit-scrollbar-thumb {
-      background: #666;
-      border-radius: 4px;
     }
 
-    /* Each project item */
+    .sidebar h2 {
+      margin-bottom: 20px;
+      color: #dab36b;
+      font-size: 1.5rem;
+    }
+
     .project-item {
       display: flex;
       align-items: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: background 0.2s;
+      padding: 12px;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.1);
       border-radius: 8px;
-      padding: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
     }
-    .project-item:hover, .project-item.active {
-      background: rgba(255, 255, 255, 0.15);
+
+    .project-item:hover {
+      background: rgba(255, 255, 255, 0.2);
     }
+
+    .project-item.active {
+      background: rgba(218, 179, 107, 0.3);
+      border-left: 4px solid #dab36b;
+    }
+
     .project-item img {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
+      width: 50px;
+      height: 50px;
+      border-radius: 6px;
+      margin-right: 12px;
       object-fit: cover;
-      flex-shrink: 0;
-      box-shadow: 0 0 8px rgba(0,0,0,0.6);
     }
+
     .project-item span {
-      font-size: 1.1rem;
-      font-weight: 600;
-      white-space: nowrap;
-      user-select: none;
-    }
-
-    /* Tracklist */
-    .tracklist {
-      width: 22%;
-      background: rgba(0,0,0,0.3);
-      border-radius: 12px;
-      padding: 20px;
-      overflow-y: auto;
-      scrollbar-width: thin;
-      scrollbar-color: #666 transparent;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-    .tracklist::-webkit-scrollbar {
-      width: 8px;
-    }
-    .tracklist::-webkit-scrollbar-thumb {
-      background: #666;
-      border-radius: 4px;
-    }
-
-    /* Each track with cover image */
-    .track {
-      background: rgba(255,255,255,0.08);
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.2s;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      font-size: 0.95rem;
       font-weight: 500;
-      gap: 12px;
-    }
-    .track:hover {
-      background: rgba(255,255,255,0.18);
-    }
-    .track.active {
-      background: #9c774b;
-      color: #fff;
-      box-shadow: 0 0 10px #9c774b;
-      font-weight: 700;
     }
 
-    .track img {
-      width: 48px;
-      height: 48px;
-      border-radius: 8px;
-      object-fit: cover;
-      flex-shrink: 0;
-      box-shadow: 0 0 8px rgba(0,0,0,0.6);
-    }
-    .track .title-container {
-      flex: 1;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    /* Spotify button */
-    .track button {
-      background: none;
-      border: none;
-      color: #1DB954;
-      cursor: pointer;
-      font-weight: 700;
-      font-size: 0.9rem;
-      flex-shrink: 0;
-    }
-
-    /* Main player area */
-    .main {
+    .main-content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
-      gap: 18px;
-      padding-bottom: 15px;
     }
 
-    /* Player controls */
-    .player {
-      background: rgba(0, 0, 0, 0.6);
-      border-radius: 16px;
-      padding: 20px 30px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 25px;
-      box-shadow: 0 0 20px rgba(156, 119, 75, 0.4);
-    }
-
-    /* Vinyl */
-    .vinyl {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      box-shadow: 0 0 30px rgba(156, 119, 75, 0.7);
-      animation: spin 7s linear infinite;
-      object-fit: cover;
-      flex-shrink: 0;
-      background: #222;
-    }
-
-    @keyframes spin {
-      0% {transform: rotate(0deg);}
-      100% {transform: rotate(360deg);}
-    }
-
-    /* Info & buttons container */
-    .info-buttons {
+    .player-section {
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .now-playing {
-      font-size: 1.2rem;
-      font-weight: 700;
-      user-select: none;
-    }
-    .spotify-link {
-      display: inline-block;
-      font-size: 0.9rem;
-      color: #1DB954;
-      background: rgba(29, 185, 84, 0.2);
-      padding: 6px 14px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 700;
-      width: fit-content;
-      user-select: none;
-      transition: background 0.3s;
-    }
-    .spotify-link:hover {
-      background: rgba(29, 185, 84, 0.4);
-    }
-
-    /* Controls */
-    .controls {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      user-select: none;
-    }
-    .controls button {
-      all: unset;
-      cursor: pointer;
-      color: white;
-      background: #1a1a1a;
-      padding: 10px 14px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: background 0.25s ease;
-    }
-    .controls button:hover {
-      background: #3c2f1d;
-      color: #dab36b;
-    }
-    .controls button:focus {
-      outline: none;
-      box-shadow: 0 0 8px 2px #dab36b;
-    }
-    .controls i {
-      width: 24px;
-      height: 24px;
+      padding: 40px;
     }
 
-    /* Progress bar */
-    .progress-container {
-      width: 100%;
-      margin-top: 8px;
-      user-select: none;
-    }
-    input[type=range] {
-      -webkit-appearance: none;
-      width: 100%;
-      background: transparent;
-      cursor: pointer;
-      height: 8px;
-    }
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      background: #dab36b;
-      cursor: pointer;
-      border-radius: 50%;
-      border: none;
-      margin-top: -4px;
-      box-shadow: 0 0 5px #dab36b;
-    }
-    input[type=range]::-webkit-slider-runnable-track {
-      height: 8px;
-      background: #3c2f1d;
-      border-radius: 4px;
-    }
-    input[type=range]:focus {
-      outline: none;
-    }
-
-    /* Time display */
-    .time {
-      font-size: 0.9rem;
-      font-variant-numeric: tabular-nums;
-      color: #dab36b;
-      margin-top: 4px;
-      user-select: none;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    /* Volume controls */
-    .volume-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-left: 20px;
-      user-select: none;
-    }
-    .volume-slider {
-      width: 120px;
-      -webkit-appearance: none;
-      height: 8px;
-      border-radius: 4px;
-      background: #3c2f1d;
-      cursor: pointer;
-    }
-    .volume-slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      appearance: none;
-      width: 16px;
-      height: 16px;
-      background: #dab36b;
-      cursor: pointer;
-      border-radius: 50%;
-      border: none;
-      margin-top: -4px;
-      box-shadow: 0 0 5px #dab36b;
-    }
-    .volume-slider::-webkit-slider-runnable-track {
-      height: 8px;
-      background: #3c2f1d;
-      border-radius: 4px;
-    }
-
-    /* Ambient button */
-    .ambient-button {
-      all: unset;
-      cursor: pointer;
-      background: #1a1a1a;
-      padding: 10px 14px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.5);
-      color: #dab36b;
-      font-weight: 700;
-      user-select: none;
-      transition: background 0.25s ease;
-      margin-left: 15px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .ambient-button:hover {
-      background: #3c2f1d;
-      color: #fff;
-    }
-
-    /* Ambient panel */
-    #ambientPanel {
-      position: fixed;
-      bottom: 110px;
-      right: 20px;
-      width: 280px;
-      background: rgba(0,0,0,0.85);
-      border-radius: 14px;
-      padding: 16px;
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-      color: #dab36b;
-      box-shadow: 0 0 15px #dab36b;
-      user-select: none;
-      z-index: 10;
-    }
-    #ambientPanel h3 {
-      margin-bottom: 8px;
-      font-weight: 700;
-      font-size: 1.1rem;
+    .player-card {
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
+      padding: 40px;
       text-align: center;
+      max-width: 500px;
+      width: 100%;
     }
-    .ambient-sound {
+
+    .vinyl-container {
+      margin-bottom: 30px;
+    }
+
+    .vinyl {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      margin: 0 auto;
+      display: block;
+      object-fit: cover;
+    }
+
+    .now-playing {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+      color: #dab36b;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .control-btn {
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .control-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .play-pause-btn {
+      background: #dab36b;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+    }
+
+    .play-pause-btn:hover {
+      background: #c9a55a;
+    }
+
+    .progress-container {
+      margin-bottom: 20px;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      appearance: none;
+      outline: none;
+    }
+
+    .progress-bar::-webkit-slider-thumb {
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #dab36b;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .time-display {
       display: flex;
       justify-content: space-between;
+      font-size: 0.9rem;
+      color: #ccc;
+      margin-top: 8px;
+    }
+
+    .volume-controls {
+      display: flex;
       align-items: center;
+      justify-content: center;
       gap: 10px;
     }
-    .ambient-sound label {
-      flex: 1;
-      cursor: pointer;
-      user-select: none;
-    }
-    .ambient-sound input[type=range] {
-      flex-shrink: 0;
+
+    .volume-slider {
       width: 100px;
-      -webkit-appearance: none;
-      height: 6px;
-      border-radius: 3px;
-      background: #3c2f1d;
-      cursor: pointer;
-    }
-    .ambient-sound input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
       appearance: none;
-      width: 14px;
-      height: 14px;
-      background: #dab36b;
-      border-radius: 50%;
-      border: none;
-      margin-top: -4px;
-      box-shadow: 0 0 5px #dab36b;
+      outline: none;
+      border-radius: 2px;
     }
 
-    /* Scrollbar for tracklist */
-    .tracklist::-webkit-scrollbar-thumb {
-      background: #9c774b;
+    .volume-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: #dab36b;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .tracklist-section {
+      width: 350px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .tracklist-section h3 {
+      margin-bottom: 20px;
+      color: #dab36b;
+      font-size: 1.3rem;
+    }
+
+    .track {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .track:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .track.active {
+      background: rgba(218, 179, 107, 0.3);
+      border-left: 3px solid #dab36b;
+    }
+
+    .spotify-link {
+      color: #1DB954;
+      text-decoration: none;
+      font-size: 0.9rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: rgba(29, 185, 84, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .spotify-link:hover {
+      background: rgba(29, 185, 84, 0.2);
+    }
+
+    .ambient-controls {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+    }
+
+    .ambient-btn {
+      background: rgba(0, 0, 0, 0.7);
+      border: none;
+      color: white;
+      padding: 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .ambient-btn:hover {
+      background: rgba(218, 179, 107, 0.7);
+    }
+
+    .ambient-panel {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.9);
+      padding: 20px;
+      border-radius: 12px;
+      display: none;
+      min-width: 250px;
+    }
+
+    .ambient-panel h4 {
+      color: #dab36b;
+      margin-bottom: 15px;
+    }
+
+    .ambient-control {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .ambient-control label {
+      font-size: 0.9rem;
+    }
+
+    .ambient-control input[type="range"] {
+      width: 100px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      appearance: none;
+      outline: none;
+      border-radius: 2px;
+    }
+
+    .ambient-control input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      background: #dab36b;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+      font-size: 1.2rem;
     }
   </style>
 </head>
 <body>
-
-  <!-- Background video -->
-  <video autoplay muted loop id="bg" playsinline>
-    <source src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228640/Cat_Mushroom_Animated_Digital_Wide_PC_Background_HD_Live_-_Etsy_Video_Video___Anime_wallpaper_Cute_wallpapers_Art_whcjmg.mp4" type="video/mp4"/>
+  <video id="background-video" autoplay muted loop>
+    <source src="https://res.cloudinary.com/dvtt0ymce/video/upload/v1754052952/chill-evening-room-chill-night-room-moewalls-com_1_nnr4qg.mp4" type="video/mp4">
   </video>
-
   <div class="overlay"></div>
 
   <div class="container">
-    <!-- Left: Projects -->
-    <aside class="sidebar" id="projects"></aside>
+    <div class="sidebar">
+      <h2>Albums</h2>
+      <div id="projects-container"></div>
+    </div>
 
-    <!-- Right: Tracklist -->
-    <aside class="tracklist" id="tracks"></aside>
+    <div class="main-content">
+      <div class="player-section">
+        <div class="player-card">
+          <div class="vinyl-container">
+            <img id="vinyl" class="vinyl" src="" alt="Album Cover">
+          </div>
+          <div id="now-playing" class="now-playing">Select a track to play</div>
+          
+          <div class="controls">
+            <button id="shuffle-btn" class="control-btn" title="Shuffle">
+              <i data-feather="shuffle"></i>
+            </button>
+            <button id="prev-btn" class="control-btn" title="Previous">
+              <i data-feather="skip-back"></i>
+            </button>
+            <button id="play-pause-btn" class="play-pause-btn" title="Play/Pause">
+              <i data-feather="play"></i>
+            </button>
+            <button id="next-btn" class="control-btn" title="Next">
+              <i data-feather="skip-forward"></i>
+            </button>
+            <button id="repeat-btn" class="control-btn" title="Repeat">
+              <i data-feather="repeat"></i>
+            </button>
+          </div>
 
-    <!-- Center: Player -->
-    <section class="main">
-      <div class="player">
-        <img id="vinyl" class="vinyl" src="https://res.cloudinary.com/dvtt0ymce/image/upload/v1754230124/Vinyl-PNG-Transparent-Image_lnmiyw.png" alt="Vinyl cover" />
-        <div class="info-buttons">
-          <div class="now-playing" id="nowPlaying">Now Playing: Kozybeats - </div>
-          <a href="#" id="spotifyLink" class="spotify-link" target="_blank" style="display:none;">Open in Spotify</a>
-
-          <!-- Progress bar and time -->
           <div class="progress-container">
-            <input type="range" id="progress" min="0" max="100" value="0" />
-            <div class="time">
-              <span id="currentTime">00:00</span>
-              <span id="duration">00:00</span>
+            <input type="range" id="progress" class="progress-bar" min="0" max="100" value="0">
+            <div class="time-display">
+              <span id="current-time">0:00</span>
+              <span id="duration">0:00</span>
             </div>
           </div>
-        </div>
 
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="controls">
-            <button id="prev" title="Previous Track" aria-label="Previous Track"><i data-feather="skip-back"></i></button>
-            <button id="playPause" title="Play/Pause" aria-label="Play/Pause"><i data-feather="play"></i></button>
-            <button id="next" title="Next Track" aria-label="Next Track"><i data-feather="skip-forward"></i></button>
-            <button id="shuffle" title="Shuffle" aria-label="Shuffle"><i data-feather="shuffle"></i></button>
-            <button id="repeat" title="Repeat" aria-label="Repeat"><i data-feather="repeat"></i></button>
-          </div>
-
-          <div class="volume-container" title="Volume Control" aria-label="Volume Control">
-            <button id="muteBtn" title="Mute/Unmute" aria-label="Mute/Unmute" style="all: unset; cursor: pointer; color: white;">
-              <i data-feather="volume-2" id="volumeIcon"></i>
+          <div class="volume-controls">
+            <button id="mute-btn" class="control-btn" title="Mute">
+              <i id="volume-icon" data-feather="volume-2"></i>
             </button>
-            <input type="range" id="volumeSlider" class="volume-slider" min="0" max="1" step="0.01" value="0.6" />
+            <input type="range" id="volume-slider" class="volume-slider" min="0" max="1" step="0.1" value="0.6">
           </div>
 
-          <button class="ambient-button" id="ambientBtn" title="Toggle Ambient Sounds" aria-label="Toggle Ambient Sounds">
-            <i data-feather="wind"></i> Ambience
-          </button>
+          <a id="spotify-link" class="spotify-link" href="#" target="_blank" style="display: none; margin-top: 20px; display: inline-block;">
+            Open in Spotify
+          </a>
         </div>
       </div>
+    </div>
 
-      <audio id="audio" preload="auto"></audio>
-    </section>
+    <div class="tracklist-section">
+      <h3>Tracklist</h3>
+      <div id="tracks-container"></div>
+    </div>
   </div>
 
-  <!-- Ambient Sounds Panel -->
-  <div id="ambientPanel" aria-hidden="true" role="region" aria-label="Ambient Sounds Panel">
-    <h3>Ambient Sounds</h3>
-    <div class="ambient-sound">
-      <label for="rainVol">Rain</label>
-      <input type="range" id="rainVol" min="0" max="1" step="0.01" value="0" />
+  <div class="ambient-controls">
+    <button id="ambient-btn" class="ambient-btn" title="Ambient Sounds">
+      <i data-feather="cloud-rain"></i>
+    </button>
+    <div id="ambient-panel" class="ambient-panel">
+      <button class="close-btn" id="ambient-close-btn">&times;</button>
+      <h4>Ambient Sounds</h4>
+      <div class="ambient-control">
+        <label>Rain</label>
+        <input type="range" id="rain-vol" min="0" max="1" step="0.1" value="0">
+      </div>
+      <div class="ambient-control">
+        <label>Vinyl Crackle</label>
+        <input type="range" id="vinyl-crackle-vol" min="0" max="1" step="0.1" value="0">
+      </div>
     </div>
-    <div class="ambient-sound">
-      <label for="vinylCrackleVol">Vinyl Crackle</label>
-      <input type="range" id="vinylCrackleVol" min="0" max="1" step="0.01" value="0" />
-    </div>
-    <button id="ambientCloseBtn" style="margin-top:10px; padding:8px; border:none; border-radius:8px; background:#9c774b; color:#fff; cursor:pointer; font-weight:bold;">Close</button>
   </div>
+
+  <audio id="audio"></audio>
 
 <script>
-  feather.replace();
-
-  // Elements
-  const projectsContainer = document.getElementById('projects');
-  const tracksContainer = document.getElementById('tracks');
-  const nowPlaying = document.getElementById('nowPlaying');
-  const spotifyLink = document.getElementById('spotifyLink');
-  const vinyl = document.getElementById('vinyl');
+  // DOM elements
   const audio = document.getElementById('audio');
-  const playPauseBtn = document.getElementById('playPause');
+  const projectsContainer = document.getElementById('projects-container');
+  const tracksContainer = document.getElementById('tracks-container');
+  const playPauseBtn = document.getElementById('play-pause-btn');
+  const prevBtn = document.getElementById('prev-btn');
+  const nextBtn = document.getElementById('next-btn');
+  const shuffleBtn = document.getElementById('shuffle-btn');
+  const repeatBtn = document.getElementById('repeat-btn');
   const progress = document.getElementById('progress');
-  const currentTimeEl = document.getElementById('currentTime');
+  const currentTimeEl = document.getElementById('current-time');
   const durationEl = document.getElementById('duration');
-  const prevBtn = document.getElementById('prev');
-  const nextBtn = document.getElementById('next');
-  const shuffleBtn = document.getElementById('shuffle');
-  const repeatBtn = document.getElementById('repeat');
-  const volumeSlider = document.getElementById('volumeSlider');
-  const muteBtn = document.getElementById('muteBtn');
-  const volumeIcon = document.getElementById('volumeIcon');
-  const ambientBtn = document.getElementById('ambientBtn');
-  const ambientPanel = document.getElementById('ambientPanel');
-  const ambientCloseBtn = document.getElementById('ambientCloseBtn');
-  const rainVolSlider = document.getElementById('rainVol');
-  const vinylCrackleVolSlider = document.getElementById('vinylCrackleVol');
-
-  // Ambient sounds
-  const ambientSounds = {
-    rain: new Audio('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754393197/rain-ambient_viea6w.mp3'),
-    vinylCrackle: new Audio('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754393199/vinyl-crackle_mle25e.mp3')
-  };
-  ambientSounds.rain.loop = true;
-  ambientSounds.vinylCrackle.loop = true;
-
-  // Data for projects and tracks
-  const projects = [
-    {
-      id: 'kozybeats',
-      name: 'Kozybeats Album',
-      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229970/album_cover_yfwv4b.jpg',
-      spotifyPrefix: 'https://open.spotify.com/track/',
-      tracks: [
-        { title: 'Track 1', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228000/kozy_beat_1.mp3', spotifyId: '7uH1tuJn4PS5fjBqLBgJ8N' },
-        { title: 'Track 2', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754228001/kozy_beat_2.mp3', spotifyId: '0lU1dbGse05h0VufP7j8gH' }
-        // ... other tracks
-      ]
-    },
-
-    // Your Singles Collection added here:
-    {
-      id: 'singles',
-      name: 'Singles Collection',
-      cover: '', // you can add a general cover here if you want
-      spotifyPrefix: '',
-      tracks: [
-        { title: 'Cruise', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285225/cruise_rhfjnm.mp3', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754383149/cruise_pfp_bp9xmx.jpg' },
-        { title: 'Lucid', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285226/Lucid_zvhmoo.mp3', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754383177/lucid_pfp_tqyr9w.png' },
-        { title: '12:47, Nowhere', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285230/1247PMnowhere_qin5ho.wav', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754291919/1247pmss_hvqwr6.png' },
-        { title: 'Dreams', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285231/Dreams_vjwhkx.wav', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754383484/dreams_cover_virztf.jpg' },
-        { title: 'cozy', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285231/cozy_zdw1pt.wav', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754383749/6884605_qs2kvv.jpg' },
-        { title: 'Get Away', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285231/Get_away_vubrgr.wav', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384109/artworks-732yRw5eWNsmhTHg-vU6rRQ-t500x500_1_kko2zk.jpg' },
-        { title: 'Faded', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285231/faded_vxyodd.wav', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384578/af9f14f99815b4ace4eac07526149278_1_cvbmxa.jpg' },
-        { title: 'lazy afternoon', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285232/lazy_afternoon_qdilfg.wav', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384613/lazy_afternoon_ss_m3epkx.png' },
-        { title: 'Memory Lane', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285233/Memory_lane_nxeywk.wav', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384824/artworks-HwZDN0lnIYdlhdNJ-uXRV4g-t500x500_1_rvtt4t.jpg' },
-        { title: 'Moonlight', url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285233/moonlight_khwzt2.wav', cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384826/moonlight_cover_bvmezz.jpg' }
-      ]
-    }
-  ];
+  const volumeSlider = document.getElementById('volume-slider');
+  const muteBtn = document.getElementById('mute-btn');
+  const volumeIcon = document.getElementById('volume-icon');
+  const nowPlaying = document.getElementById('now-playing');
+  const vinyl = document.getElementById('vinyl');
+  const spotifyLink = document.getElementById('spotify-link');
+  const ambientBtn = document.getElementById('ambient-btn');
+  const ambientPanel = document.getElementById('ambient-panel');
+  const ambientCloseBtn = document.getElementById('ambient-close-btn');
+  const rainVolSlider = document.getElementById('rain-vol');
+  const vinylCrackleVolSlider = document.getElementById('vinyl-crackle-vol');
 
   // State
-  let currentProjectId = projects[0].id;
+  let currentProjectId = 'pillowcore-radio';
   let currentTrackIndex = 0;
   let isPlaying = false;
   let isShuffle = false;
   let isRepeat = false;
 
+  // Ambient sounds
+  const ambientSounds = {
+    rain: new Audio('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754052907/rain-sounds-gentle-background-audio-track-loopable-peaceful-drizzle-251234_1_dhgx0p.mp3'),
+    vinylCrackle: new Audio('https://res.cloudinary.com/dvtt0ymce/video/upload/v1754052913/vintage-vinyl-crackle-loop-35890_1_kx8yrk.mp3')
+  };
+
+  // Set ambient sounds to loop
+  ambientSounds.rain.loop = true;
+  ambientSounds.vinylCrackle.loop = true;
+
+  // Projects data
+  const projects = [
+    {
+      id: 'pillowcore-radio',
+      name: 'Pillowcore Radio',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754227293/pillow_radio_xrdpqc.png',
+      tracks: [
+        {
+          title: 'Glow Sink',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Glow_Sink_sprxbn.mp3',
+          spotifyId: '6N1Zq0bHWfP1kkWl3nycTt'
+        },
+        {
+          title: 'Paper Walls',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225847/Paper_Walls_est5ei.mp3',
+          spotifyId: '3F3JbGloD9R0CZVqQ0jUXp'
+        },
+        {
+          title: 'Lavender Shadows',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225846/Lavender_Shadows_s3wayo.mp3',
+          spotifyId: '4klZewFkNr83CGZ8xLrU62'
+        },
+        {
+          title: 'Snooze Signal',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225844/Snooze_Signal_vqjo70.mp3',
+          spotifyId: '2JH2jP5bYqzqphF6BXxKBN'
+        },
+        {
+          title: 'Dream Archive',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Dream_Archive_wrtdy3.mp3',
+          spotifyId: '0p0RVv4GBZ7FhkXyPjv4eG'
+        },
+        {
+          title: 'Warm Silence',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Warm_Silence_zxijcq.mp3',
+          spotifyId: '1rF7EFfH1bzKYFFzTs8Xoh'
+        },
+        {
+          title: 'Curtains Closed',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Curtains_Closed_nqpgtq.mp3',
+          spotifyId: '2qzP8rvksVRS2VpXEBmLHt'
+        },
+        {
+          title: 'Ceiling Fan Dreams',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225842/Ceiling_Fan_Dreams_xqlsq7.mp3',
+          spotifyId: '0h0FfHoT7PLRklqQv6a8jh'
+        },
+        {
+          title: 'Whispers in Blue',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Whispers_in_Blue_tgitgu.mp3',
+          spotifyId: '5Bg3MkL1yr8mX53hCEEqDU'
+        },
+        {
+          title: 'Rain on 4th Street',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Rain_on_4th_Street_vt5sb9.mp3',
+          spotifyId: '5ayVG1cbBOcDJkuSxrT63w'
+        },
+        {
+          title: 'Moonlit Linen',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Moonlit_Linen_nwjuzr.mp3',
+          spotifyId: '6TE46h3nViLpz1qjNQqGqI'
+        },
+        {
+          title: 'Midnight Left on Read',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754225841/Midnight_Left_on_Read_vy5iqm.mp3',
+          spotifyId: '7kVrLvbdOfXdQeEKpWLjTx'
+        }
+      ]
+    },
+    {
+      id: 'evening-static',
+      name: 'Evening Static',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754229102/056f89b5bdd7b2944636c4e480196abe_1_bhyub6.jpg',
+      tracks: [
+        {
+          title: 'Curtains Breathing Slow',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Curtains_Breathing_Slow_si8vdi.mp3',
+          spotifyId: '5yxkEeFwzOZVsxmJ1nCeXY'
+        },
+        {
+          title: 'Heard My Name in the Hiss',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229134/Heard_My_Name_in_the_Hiss_yi1jfb.mp3',
+          spotifyId: '3rUp7kRfPydeRWIFVYsAxa'
+        },
+        {
+          title: 'Stayed Just Long Enough',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229136/Stayed_Just_Long_Enough_wlkxsb.mp3',
+          spotifyId: '2a91z7WfW0dw2u0TVY5gQ0'
+        },
+        {
+          title: 'Memories on the Window Glass',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229137/Memories_on_the_Window_Glass_uw4vxm.mp3',
+          spotifyId: '1xYbI3QZsERLDj6yTz2xQh'
+        },
+        {
+          title: 'TV Snow in My Mind',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229138/TV_Snow_in_My_Mind_oxtsqi.mp3',
+          spotifyId: '7cxNNnAqCmibzVDRZTjFMf'
+        },
+        {
+          title: 'Pages Left Open',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/Pages_Left_Open_r4bxvz.mp3',
+          spotifyId: '2nOdlEhT4E0T7Ud0Ft3nd6'
+        },
+        {
+          title: 'The Fan Still Spins',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229139/The_Fan_Still_Spins_qba31z.mp3',
+          spotifyId: '4x2RTHOZs1CEwNXtdU6cZD'
+        },
+        {
+          title: 'When the Floorboard Creaked',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229142/When_the_Floorboard_Creaked_ljcd2m.mp3',
+          spotifyId: '6zZlCGrM4NjGYMaMHu6yeG'
+        },
+        {
+          title: 'A Thread Pulled from the Moon',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/A_Thread_Pulled_from_the_Moon_kqjhdq.mp3',
+          spotifyId: '2uHbJoODkV2JusPJW7SBL9'
+        },
+        {
+          title: 'Between the Glow and the Silence',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754229143/Between_the_Glow_and_the_Silence_xv6mht.mp3',
+          spotifyId: '5vMcmcNnNKki4QQ2tyTLPq'
+        }
+      ]
+    },
+    // Singles
+    {
+      id: 'cruise',
+      name: 'Cruise',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754383149/cruise_pfp_bp9xmx.jpg',
+      tracks: [
+        {
+          title: 'Cruise',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285225/cruise_rhfjnm.mp3',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'lucid',
+      name: 'Lucid',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754383177/lucid_pfp_tqyr9w.png',
+      tracks: [
+        {
+          title: 'Lucid',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285226/Lucid_zvhmoo.mp3',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: '1247-nowhere',
+      name: '12:47, Nowhere',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754291919/1247pmss_hvqwr6.png',
+      tracks: [
+        {
+          title: '12:47, Nowhere',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285230/1247PMnowhere_qin5ho.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'dreams',
+      name: 'Dreams',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754383484/dreams_cover_virztf.jpg',
+      tracks: [
+        {
+          title: 'Dreams',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285231/Dreams_vjwhkx.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'cozy',
+      name: 'Cozy',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754383749/6884605_qs2kvv.jpg',
+      tracks: [
+        {
+          title: 'Cozy',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285231/cozy_zdw1pt.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'get-away',
+      name: 'Get Away',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384109/artworks-732yRw5eWNsmhTHg-vU6rRQ-t500x500_1_kko2zk.jpg',
+      tracks: [
+        {
+          title: 'Get Away',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285231/Get_away_vubrgr.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'faded',
+      name: 'Faded',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384578/af9f14f99815b4ace4eac07526149278_1_cvbmxa.jpg',
+      tracks: [
+        {
+          title: 'Faded',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285231/faded_vxyodd.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'lazy-afternoon',
+      name: 'Lazy Afternoon',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384613/lazy_afternoon_ss_m3epkx.png',
+      tracks: [
+        {
+          title: 'Lazy Afternoon',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285232/lazy_afternoon_qdilfg.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'memory-lane',
+      name: 'Memory Lane',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754384824/artworks-HwZDN0lnIYdlhdNJ-uXRV4g-t500x500_1_rvtt4t.jpg',
+      tracks: [
+        {
+          title: 'Memory Lane',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285233/Memory_lane_nxeywk.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'moonlight',
+      name: 'Moonlight',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754284991/1900x1900-000000-80-0-0_1_so2nhv.jpg',
+      tracks: [
+        {
+          title: 'Moonlight',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285233/moonlight_khwzt2.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'nights-like-this',
+      name: 'Nights like this',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754385151/artworks-pbJH2yhw4wIJIB4d-2HePHg-t500x500_1_fbe3yb.jpg',
+      tracks: [
+        {
+          title: 'Nights like this',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285233/Nights_like_this_mdqerh.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'polaroid',
+      name: 'Polaroid',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754385326/d8304432beb5407387469bdfec2c9e5e_464_464_1_pewxkq.jpg',
+      tracks: [
+        {
+          title: 'Polaroid',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285233/polaroid_gsfe71.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'night-in',
+      name: 'Night in',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754385562/a1156147878_16_1_xi47ja.jpg',
+      tracks: [
+        {
+          title: 'Night in',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285233/night_in_h23bn6.wav',
+          spotifyId: null
+        }
+      ]
+    },
+    {
+      id: 'sunset-reverie',
+      name: 'Sunset Reverie',
+      cover: 'https://res.cloudinary.com/dvtt0ymce/image/upload/v1754385639/sunset_ss_i04gpe.png',
+      tracks: [
+        {
+          title: 'Sunset Reverie',
+          url: 'https://res.cloudinary.com/dvtt0ymce/video/upload/v1754285236/sunset_reverie_agkkok.wav',
+          spotifyId: null
+        }
+      ]
+    }
+  ];
+
   // Shuffle helper
   function getRandomTrackIndex() {
-    const project = projects.find(p => p.id === currentProjectId);
-    if (!project) return 0;
-    return Math.floor(Math.random() * project.tracks.length);
+    return Math.floor(Math.random() * projects.find(p => p.id === currentProjectId).tracks.length);
   }
 
   // Initialize volume
@@ -603,7 +788,7 @@
       div.dataset.projectId = project.id;
 
       const img = document.createElement('img');
-      img.src = project.cover || 'https://via.placeholder.com/48?text=?';
+      img.src = project.cover;
       img.alt = project.name + ' Cover';
 
       const span = document.createElement('span');
@@ -618,7 +803,6 @@
           currentTrackIndex = 0;
           renderProjects();
           renderTracks();
-          loadTrack();
         }
       });
 
@@ -626,7 +810,7 @@
     });
   }
 
-  // Render tracklist for current project with cover images next to title
+  // Render tracklist for current project
   function renderTracks() {
     const project = projects.find(p => p.id === currentProjectId);
     tracksContainer.innerHTML = '';
@@ -634,32 +818,27 @@
       const div = document.createElement('div');
       div.classList.add('track');
       if (idx === currentTrackIndex) div.classList.add('active');
+      div.textContent = track.title;
+      div.title = track.title;
 
-      // Track cover thumbnail
-      const img = document.createElement('img');
-      img.src = track.cover || project.cover || 'https://via.placeholder.com/48?text=?';
-      img.alt = track.title + ' Cover';
+      // Add spotify button if spotifyId exists
+      if (track.spotifyId) {
+        const spotifyBtn = document.createElement('button');
+        spotifyBtn.title = 'Open in Spotify';
+        spotifyBtn.style.background = 'none';
+        spotifyBtn.style.border = 'none';
+        spotifyBtn.style.color = '#1DB954';
+        spotifyBtn.style.cursor = 'pointer';
+        spotifyBtn.style.fontWeight = '700';
+        spotifyBtn.style.fontSize = '0.9rem';
+        spotifyBtn.textContent = 'Spotify';
+        spotifyBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          window.open('https://open.spotify.com/track/' + track.spotifyId, '_blank');
+        });
 
-      // Title container for ellipsis
-      const titleContainer = document.createElement('div');
-      titleContainer.classList.add('title-container');
-      titleContainer.textContent = track.title;
-      titleContainer.title = track.title;
-
-      // Spotify button
-      const spotifyBtn = document.createElement('button');
-      spotifyBtn.title = 'Open in Spotify';
-      spotifyBtn.textContent = 'Spotify';
-      spotifyBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (track.spotifyId) {
-          window.open(project.spotifyPrefix + track.spotifyId, '_blank');
-        }
-      });
-
-      div.appendChild(img);
-      div.appendChild(titleContainer);
-      div.appendChild(spotifyBtn);
+        div.appendChild(spotifyBtn);
+      }
 
       div.addEventListener('click', () => {
         if (currentTrackIndex !== idx) {
@@ -681,8 +860,8 @@
     audio.src = track.url;
     nowPlaying.textContent = `Now Playing: Kozybeats - ${track.title}`;
     spotifyLink.style.display = track.spotifyId ? 'inline-block' : 'none';
-    spotifyLink.href = track.spotifyId ? project.spotifyPrefix + track.spotifyId : '#';
-    vinyl.src = track.cover || project.cover || vinyl.src;
+    spotifyLink.href = track.spotifyId ? 'https://open.spotify.com/track/' + track.spotifyId : '#';
+    vinyl.src = project.cover;
     updatePlayPauseIcon();
   }
 
@@ -831,17 +1010,10 @@
 
   // Ambient panel toggle
   ambientBtn.addEventListener('click', () => {
-    if (ambientPanel.style.display === 'flex') {
-      ambientPanel.style.display = 'none';
-      ambientPanel.setAttribute('aria-hidden', 'true');
-    } else {
-      ambientPanel.style.display = 'flex';
-      ambientPanel.setAttribute('aria-hidden', 'false');
-    }
+    ambientPanel.style.display = ambientPanel.style.display === 'flex' ? 'none' : 'flex';
   });
   ambientCloseBtn.addEventListener('click', () => {
     ambientPanel.style.display = 'none';
-    ambientPanel.setAttribute('aria-hidden', 'true');
   });
 
   // Volume slider changes
@@ -877,7 +1049,5 @@
   renderTracks();
   loadTrack();
 
-</script>
-
-</body>
-</html>
+  // Initialize icons
+  feather.replace();
